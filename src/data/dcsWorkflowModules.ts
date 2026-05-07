@@ -1,0 +1,2075 @@
+import type { TrainingModule } from '../types/training';
+
+const reviewSchedule = 'Again today. Hard tomorrow. Good in 3 days. Easy in 7 days.';
+
+export const dcsWorkflowModules: TrainingModule[] = [
+  {
+    id: 'parent-portal-registration',
+    title: 'Parent Portal Registration',
+    description:
+      'First-line triage for parent portal account creation and access-key issues with clear escalation to administration owners.',
+    domain: 'Operations',
+    level: 'L1',
+    estimatedMinutes: 22,
+    tags: ['Parent Portal', 'registration', 'access key', 'escalation'],
+    learningObjectives: [
+      'Separate ICT connectivity problems from administration-owned enrolment or identity workflows.',
+      'Collect access-key, timing, and device-scope evidence without handling authoritative record changes.',
+      'Draft parent-facing wording that is calm, privacy-safe, and escalation-ready.'
+    ],
+    dcsRelevance: [
+      'Reduces rework when registration symptoms are actually workflow or data completeness problems.',
+      'Keeps student and parent detail out of improvised ICT fixes.'
+    ],
+    sections: [
+      {
+        id: 'ppr-1',
+        title: 'Diagnose registration vs technical blocker',
+        bodyMarkdown:
+          'Ask whether the parent completed the expected invitation flow, received any confirmation message, and whether the symptom is “cannot start”, “code rejected”, or “cannot log in after success”. Capture browser/device scope without requesting passwords.'
+      },
+      {
+        id: 'ppr-2',
+        title: 'Access-key and timing clues',
+        bodyMarkdown:
+          'Capture whether the key expired, was reused, or looks truncated when read aloud. Note timezone/date confusion gently and confirm which campus or cohort the parent expects.'
+      },
+      {
+        id: 'ppr-3',
+        title: 'Ownership boundary',
+        bodyMarkdown:
+          'ICT validates obvious technical blockers and captures evidence; authoritative enrolment or demographic corrections usually belong with administration. Escalate with who/when/what tried and privacy-safe wording.'
+      }
+    ],
+    flashcards: [
+      { id: 'ppr-f1', front: 'What three symptom buckets help Parent Portal registration triage?', back: 'Cannot start flow, code or link rejected, or login fails after apparent success.' },
+      { id: 'ppr-f2', front: 'Why avoid collecting passwords in chat?', back: 'Passwords are secrets; use safer flows and escalate compromise suspicion properly.' },
+      { id: 'ppr-f3', front: 'Who usually owns authoritative enrolment record fixes?', back: 'School administration or designated enrolment owners—not ICT improvisation.' },
+      { id: 'ppr-f4', front: 'What evidence proves scope?', back: 'Whether multiple parents fail or only one household/device.' },
+      { id: 'ppr-f5', front: 'What should a parent-facing reply prioritise?', back: 'Calm clarity, next safe step, and realistic timeframe without blaming.' },
+      { id: 'ppr-f6', front: 'Why capture exact error text or screen?', back: 'It distinguishes validation faults from connectivity faults faster.' },
+      { id: 'ppr-f7', front: 'When should Josh escalate instead of retry loops?', back: 'When evidence shows administrative action or repeated failures after safe checks.' },
+      { id: 'ppr-f8', front: 'What is wrong with “Portal broken”?', back: 'It hides workflow stage and blocks the next owner from acting.' },
+      { id: 'ppr-f9', front: 'Why confirm campus/cohort context?', back: 'Different cohorts can use different instructions or timing windows.' },
+      { id: 'ppr-f10', front: 'Safe escalation tone includes?', back: 'Facts, scope, urgency for learning, and privacy-safe identifiers only.' }
+    ],
+    quiz: [
+      {
+        type: 'mcq',
+        id: 'ppr-q1',
+        prompt: 'A parent says the portal code “does nothing”. What is the safest first framing?',
+        domain: 'Parent Portal registration',
+        difficulty: 'foundation',
+        explanation: 'Separate workflow completion from device/browser symptoms.',
+        modelAnswer:
+          'Clarify whether they opened the link, whether any confirmation appeared, and whether another device shows the same symptom before assuming infrastructure failure.',
+        commonMistakes: ['Resetting passwords immediately', 'Claiming the portal is globally down without scope'],
+        dcsContext: 'Registration calls mix emotions with imperfect technical detail.',
+        reviewSchedule,
+        recommendedModuleId: 'parent-portal-registration',
+        weakTopic: 'dcs-parent-portal',
+        options: [
+          { id: 'a', label: 'Declare the portal offline school-wide' },
+          { id: 'b', label: 'Capture workflow stage, device/browser scope, and exact symptom wording' },
+          { id: 'c', label: 'Ask the parent to send their password so you can test' },
+          { id: 'd', label: 'Tell them to wait a week without recording evidence' }
+        ],
+        correctOptionId: 'b'
+      },
+      {
+        type: 'short-answer',
+        id: 'ppr-q2',
+        prompt: 'List four privacy-safe facts to capture before escalating a registration failure.',
+        domain: 'Parent Portal registration',
+        difficulty: 'stretch',
+        explanation: 'Good notes avoid secrets yet remain actionable.',
+        modelAnswer:
+          'Reporter relationship to student, time of failure, browser/device type, exact error or behaviour, whether others are affected, and what steps already failed safely.',
+        commonMistakes: ['Copying parent emails verbatim with unnecessary detail', 'Skipping scope'],
+        dcsContext: 'Admin teams need crisp boundaries between ICT and enrolment actions.',
+        reviewSchedule,
+        recommendedModuleId: 'parent-portal-registration',
+        weakTopic: 'dcs-parent-portal',
+        rubric: ['Avoids passwords', 'Shows scope', 'Shows timing', 'Shows steps tried'],
+        keywordHints: ['scope', 'browser', 'error', 'others affected']
+      },
+      {
+        type: 'order-steps',
+        id: 'ppr-q3',
+        prompt: 'Order first-line registration triage steps.',
+        domain: 'Parent Portal registration',
+        difficulty: 'foundation',
+        explanation: 'Confirm workflow evidence before deeper checks.',
+        modelAnswer: 'Clarify symptom bucket → confirm scope → capture safe evidence → escalate with boundary note if admin-owned.',
+        commonMistakes: ['Starting with password resets', 'Skipping scope'],
+        dcsContext: 'Keeps parents oriented while protecting boundaries.',
+        reviewSchedule,
+        recommendedModuleId: 'parent-portal-registration',
+        weakTopic: 'dcs-parent-portal',
+        steps: [
+          { id: 'bucket', label: 'Clarify which registration stage fails' },
+          { id: 'scope', label: 'Confirm whether one household/device or wider' },
+          { id: 'evidence', label: 'Capture privacy-safe error evidence' },
+          { id: 'boundary', label: 'Escalate with admin boundary if record workflow is likely' }
+        ],
+        correctOrder: ['bucket', 'scope', 'evidence', 'boundary'],
+        rubric: ['Orders workflow before guesses', 'Ends with safe escalation']
+      },
+      {
+        type: 'scenario-response',
+        id: 'ppr-q4',
+        prompt:
+          'Parent insists ICT “just fix enrolment.” Explain how you acknowledge urgency while protecting the correct ownership boundary.',
+        domain: 'Parent Portal registration',
+        difficulty: 'stretch',
+        explanation: 'Tone plus boundary preserves trust.',
+        modelAnswer:
+          'Acknowledge impact on communication, explain what ICT can verify now, document evidence, and route authoritative record issues to administration while keeping the ticket moving.',
+        commonMistakes: ['Arguing with the parent', 'Promising enrolment fixes ICT cannot own'],
+        dcsContext: 'Parents interpret ICT as owning all systems.',
+        reviewSchedule,
+        recommendedModuleId: 'parent-portal-registration',
+        weakTopic: 'dcs-parent-portal',
+        rubric: ['Acknowledges urgency', 'States ICT scope', 'Hands off cleanly']
+      },
+      {
+        type: 'mcq',
+        id: 'ppr-q5',
+        prompt: 'Which parent-facing statement is most appropriate?',
+        domain: 'Parent Portal registration',
+        difficulty: 'foundation',
+        explanation: 'Avoid blaming users while staying factual.',
+        modelAnswer:
+          'Transparent status with next steps beats vague reassurance or blaming.',
+        commonMistakes: ['Overpromising timelines', 'Technical jargon overload'],
+        dcsContext: 'Parent trust affects adoption of self-service flows.',
+        reviewSchedule,
+        recommendedModuleId: 'parent-portal-registration',
+        weakTopic: 'dcs-parent-portal',
+        options: [
+          { id: 'a', label: 'You must have done it wrong—try again harder.' },
+          { id: 'b', label: 'Thanks—here is what we can check today and who owns the next step if it persists.' },
+          { id: 'c', label: 'ICT cannot help with portals at all.' },
+          { id: 'd', label: 'Send your passwords so we can reproduce it.' }
+        ],
+        correctOptionId: 'b'
+      },
+      {
+        type: 'explain-it-simply',
+        id: 'ppr-q6',
+        prompt: 'Explain access-key expiry to a parent using plain language.',
+        domain: 'Parent Portal registration',
+        difficulty: 'foundation',
+        explanation: 'Plain language reduces repeated failures.',
+        modelAnswer:
+          'Many invites expire for safety; a fresh code from the school restores access without sharing passwords.',
+        commonMistakes: ['Blaming parents', 'Technical RFC language'],
+        dcsContext: 'Parents may not understand invite lifetimes.',
+        reviewSchedule,
+        recommendedModuleId: 'parent-portal-registration',
+        weakTopic: 'dcs-parent-portal',
+        rubric: ['Mentions expiry safety', 'Offers constructive path'],
+        keywordHints: ['expire', 'invite', 'fresh']
+      },
+      {
+        type: 'mcq',
+        id: 'ppr-q7',
+        prompt: 'When should suspicion of account compromise change your path?',
+        domain: 'Parent Portal registration',
+        difficulty: 'stretch',
+        explanation: 'Compromise reporting needs authorised handling.',
+        modelAnswer:
+          'Escalate through security-sensitive pathways instead of improvising resets.',
+        commonMistakes: ['Ignoring unusual MFA prompts', 'Testing phishing links'],
+        dcsContext: 'School credentials intersect with personal devices.',
+        reviewSchedule,
+        recommendedModuleId: 'parent-portal-registration',
+        weakTopic: 'dcs-parent-portal',
+        options: [
+          { id: 'a', label: 'Continue normal registration retries silently' },
+          { id: 'b', label: 'Treat as possible security signal and escalate via authorised process' },
+          { id: 'c', label: 'Ask the parent to screenshot passwords' },
+          { id: 'd', label: 'Disable accounts yourself immediately' }
+        ],
+        correctOptionId: 'b'
+      },
+      {
+        type: 'short-answer',
+        id: 'ppr-q8',
+        prompt: 'Draft one sentence for a ticket noting ICT vs admin ownership on registration.',
+        domain: 'Parent Portal registration',
+        difficulty: 'stretch',
+        explanation: 'Crisp ownership prevents rework.',
+        modelAnswer:
+          'ICT verified safe connectivity/device behaviour; enrolment record or invitation reissue requires administration confirmation.',
+        commonMistakes: ['Vague ownership', 'Including sensitive identifiers unnecessarily'],
+        dcsContext: 'Handoffs should read well for non-ICT readers.',
+        reviewSchedule,
+        recommendedModuleId: 'parent-portal-registration',
+        weakTopic: 'dcs-parent-portal',
+        rubric: ['States ICT checks done', 'Names admin next step'],
+        keywordHints: ['ICT verified', 'administration', 'invitation']
+      }
+    ],
+    scenarioPrompts: [
+      {
+        id: 'ppr-s1',
+        title: 'Registration invitation fails only on mobile',
+        prompt: 'Describe evidence capture and escalation split between ICT troubleshooting and admin invitation workflow.'
+      }
+    ],
+    practicalOutputs: [
+      {
+        id: 'ppr-p1',
+        title: 'Parent-facing registration update template',
+        description:
+          'Draft a short template acknowledging receipt, stating safe checks underway, and outlining realistic next milestones without sensitive detail.'
+      }
+    ]
+  },
+  {
+    id: 'parent-portal-details-updates',
+    title: 'Parent Portal Details Updates',
+    description:
+      'Triage requests to change household or student details with safe evidence capture and clean administration handoff.',
+    domain: 'Operations',
+    level: 'L1',
+    estimatedMinutes: 20,
+    tags: ['Parent Portal', 'records', 'privacy', 'administration'],
+    learningObjectives: [
+      'Tell observable ICT symptoms from authoritative demographic updates.',
+      'Capture urgency and safeguarding-sensitive context without over-collecting detail.',
+      'Produce escalation notes that administration can action quickly.'
+    ],
+    dcsRelevance: [
+      'Prevents ICT from becoming an unauthorised records desk.',
+      'Keeps urgent safeguarding pathways visible.'
+    ],
+    sections: [
+      {
+        id: 'ppd-1',
+        title: 'What ICT can observe vs what admin changes',
+        bodyMarkdown:
+          'ICT may confirm account visibility or obvious workflow errors; authoritative amendments to family structure typically belong with administration. Never promise timeline unless confirmed.'
+      },
+      {
+        id: 'ppd-2',
+        title: 'Urgent exceptions',
+        bodyMarkdown:
+          'Custody, safety, or legal-timing scenarios need calm prioritisation language and routed escalation—not improvised database edits.'
+      },
+      {
+        id: 'ppd-3',
+        title: 'Privacy-safe capture',
+        bodyMarkdown:
+          'Record categories of change requested, urgency reason category, and verification evidence—not unnecessary narrative.'
+      }
+    ],
+    flashcards: [
+      { id: 'ppd-f1', front: 'Who owns authoritative parent/student record edits?', back: 'School administration or designated records owners.' },
+      { id: 'ppd-f2', front: 'Why avoid promising instant fixes?', back: 'Verification and authority pathways protect everyone legally.' },
+      { id: 'ppd-f3', front: 'What belongs in an escalation note?', back: 'Requested change category, urgency driver, evidence location, and ICT checks performed.' },
+      { id: 'ppd-f4', front: 'Should ICT paste full legal documents into tickets?', back: 'Usually no—route according to policy with minimal necessary reference.' },
+      { id: 'ppd-f5', front: 'Good empathy phrase?', back: 'Acknowledge impact first, then explain verified next step.' },
+      { id: 'ppd-f6', front: 'Why clarify portal vs admin workflow?', back: 'Parents may confuse display bugs with data amendment queues.' },
+      { id: 'ppd-f7', front: 'ICT-safe checks?', back: 'Confirm account context visible to parent without altering authoritative fields.' },
+      { id: 'ppd-f8', front: 'Safeguarding urgency signals?', back: 'Safety risk, legal deadlines, or inability to contact verified guardians.' },
+      { id: 'ppd-f9', front: 'Tone trap?', back: 'Dismissive tech jargon when emotions run high.' },
+      { id: 'ppd-f10', front: 'Escalation hygiene?', back: 'Single narrative plus pointers—not duplicated contradictory threads.' }
+    ],
+    quiz: [
+      {
+        type: 'mcq',
+        id: 'ppd-q1',
+        prompt: 'A parent demands immediate surname correction during class photos week. Best first move?',
+        domain: 'Parent Portal updates',
+        difficulty: 'stretch',
+        explanation: 'Empathy plus routing beats improvisation.',
+        modelAnswer:
+          'Acknowledge downstream impact, capture verified change request category, and escalate via authorised administration pathway without altering records.',
+        commonMistakes: ['Editing records directly', 'Debating custody'],
+        dcsContext: 'Peak-season emotion amplifies urgency.',
+        reviewSchedule,
+        recommendedModuleId: 'parent-portal-details-updates',
+        weakTopic: 'dcs-parent-portal',
+        options: [
+          { id: 'a', label: 'Change it immediately in any admin tool you can reach' },
+          { id: 'b', label: 'Acknowledge urgency, capture authorised change pathway, escalate to administration owner' },
+          { id: 'c', label: 'Tell them portals never handle names' },
+          { id: 'd', label: 'Ask them to post copies of IDs in chat' }
+        ],
+        correctOptionId: 'b'
+      },
+      {
+        type: 'short-answer',
+        id: 'ppd-q2',
+        prompt: 'Give two reasons ICT avoids improvising demographic edits.',
+        domain: 'Parent Portal updates',
+        difficulty: 'foundation',
+        explanation: 'Authority and audit trails matter.',
+        modelAnswer:
+          'Authoritative data integrity requires verified owners, and ICT improvisation can break compliance or dual-record truth.',
+        commonMistakes: ['Speed-only justification'],
+        dcsContext: 'School records tie to legal and safeguarding workflows.',
+        reviewSchedule,
+        recommendedModuleId: 'parent-portal-details-updates',
+        weakTopic: 'dcs-parent-portal',
+        rubric: ['Names authority', 'Names audit/compliance'],
+        keywordHints: ['authority', 'audit', 'verified']
+      },
+      {
+        type: 'order-steps',
+        id: 'ppd-q3',
+        prompt: 'Order a safe details-update workflow.',
+        domain: 'Parent Portal updates',
+        difficulty: 'foundation',
+        explanation: 'Evidence before routing.',
+        modelAnswer: 'Acknowledge → clarify category → capture minimal evidence → ICT-safe observation → admin escalation.',
+        commonMistakes: ['Routing before understanding'],
+        dcsContext: 'Clean narratives reduce parent repetition.',
+        reviewSchedule,
+        recommendedModuleId: 'parent-portal-details-updates',
+        weakTopic: 'dcs-parent-portal',
+        steps: [
+          { id: 'ack', label: 'Acknowledge impact and timeframe uncertainty' },
+          { id: 'cat', label: 'Clarify what change is requested at category level' },
+          { id: 'ev', label: 'Capture privacy-safe evidence pointers' },
+          { id: 'route', label: 'Escalate through authorised administration channel' }
+        ],
+        correctOrder: ['ack', 'cat', 'ev', 'route'],
+        rubric: ['Shows empathy early', 'Ends with authorised routing']
+      },
+      {
+        type: 'scenario-response',
+        id: 'ppd-q4',
+        prompt: 'Staff forwards angry email chain with identifiers visible. What do you do?',
+        domain: 'Parent Portal updates',
+        difficulty: 'stretch',
+        explanation: 'Protect privacy while progressing work.',
+        modelAnswer:
+          'Stop proliferation of unnecessary identifiers, summarise categories needed for action, route via secure pathway, and advise sender on safer forwarding.',
+        commonMistakes: ['Ignoring privacy spill'],
+        dcsContext: 'Email chains accumulate oversharing.',
+        reviewSchedule,
+        recommendedModuleId: 'parent-portal-details-updates',
+        weakTopic: 'dcs-parent-portal',
+        rubric: ['Reduces overshare', 'Keeps ticket actionable']
+      },
+      {
+        type: 'mcq',
+        id: 'ppd-q5',
+        prompt: 'Which detail should usually stay out of a PD reflection note?',
+        domain: 'Parent Portal updates',
+        difficulty: 'foundation',
+        explanation: 'PD notes teach principles, not living records.',
+        modelAnswer: 'Student legal names, custody schedules, or medical specifics.',
+        commonMistakes: ['Duplicating incident specifics'],
+        dcsContext: 'Mirrors phishing-module guidance.',
+        reviewSchedule,
+        recommendedModuleId: 'parent-portal-details-updates',
+        weakTopic: 'dcs-parent-portal',
+        options: [
+          { id: 'a', label: 'General principle about authorised records ownership' },
+          { id: 'b', label: 'Full names and addresses copied from email' },
+          { id: 'c', label: 'Lesson learned about routing urgency' },
+          { id: 'd', label: 'Reminder not to edit authoritative fields casually' }
+        ],
+        correctOptionId: 'b'
+      },
+      {
+        type: 'explain-it-simply',
+        id: 'ppd-q6',
+        prompt: 'Explain why portals show stale details.',
+        domain: 'Parent Portal updates',
+        difficulty: 'foundation',
+        explanation: 'Caches and workflows explain mismatch calmly.',
+        modelAnswer:
+          'Displayed information may lag verification pipelines or rely on separate authoritative updates—ICT confirms symptom category without guessing timelines.',
+        commonMistakes: ['Blaming parents'],
+        dcsContext: 'Stale UI drives angry tickets.',
+        reviewSchedule,
+        recommendedModuleId: 'parent-portal-details-updates',
+        weakTopic: 'dcs-parent-portal',
+        rubric: ['Mentions verification lag', 'Avoids blame'],
+        keywordHints: ['verification', 'pipeline', 'lag']
+      },
+      {
+        type: 'mcq',
+        id: 'ppd-q7',
+        prompt: 'Safeguarding-sensitive urgency should prompt?',
+        domain: 'Parent Portal updates',
+        difficulty: 'stretch',
+        explanation: 'Follow school safeguarding escalation routes.',
+        modelAnswer: 'Immediate routing via safeguarding pathway rather than casual queue.',
+        commonMistakes: ['Downplaying keywords'],
+        dcsContext: 'ICT sees forwarded distress signals.',
+        reviewSchedule,
+        recommendedModuleId: 'parent-portal-details-updates',
+        weakTopic: 'dcs-parent-portal',
+        options: [
+          { id: 'a', label: 'Standard fortnightly admin backlog' },
+          { id: 'b', label: 'Safeguarding-aware escalation per policy' },
+          { id: 'c', label: 'Ask parent to wait silently' },
+          { id: 'd', label: 'Discuss details openly in staff kitchen' }
+        ],
+        correctOptionId: 'b'
+      },
+      {
+        type: 'short-answer',
+        id: 'ppd-q8',
+        prompt: 'Write a neutral ticket sentence separating ICT observation from admin action.',
+        domain: 'Parent Portal updates',
+        difficulty: 'stretch',
+        explanation: 'Neutral clarity aids routing.',
+        modelAnswer:
+          'ICT confirmed portal reflects outdated household detail after login; authoritative amendment queued for administration verification.',
+        commonMistakes: ['Accusatory tone'],
+        dcsContext: 'Multi-team readability matters.',
+        reviewSchedule,
+        recommendedModuleId: 'parent-portal-details-updates',
+        weakTopic: 'dcs-parent-portal',
+        rubric: ['ICT observation', 'Admin action'],
+        keywordHints: ['confirmed', 'administration']
+      }
+    ],
+    scenarioPrompts: [
+      {
+        id: 'ppd-s1',
+        title: 'Custody-sensitive correction',
+        prompt: 'Outline verification boundaries and escalation without improvising legal judgements.'
+      }
+    ],
+    practicalOutputs: [
+      {
+        id: 'ppd-p1',
+        title: 'Administration handoff snippet library',
+        description: 'Draft three neutral sentences routing demographic updates without oversharing identifiers.'
+      }
+    ]
+  },
+  {
+    id: 'sentral-support',
+    title: 'Sentral Support (First-Line)',
+    description:
+      'Markbook visibility, access-key, and reporting-period symptoms with respectful boundaries toward Sentral administration owners.',
+    domain: 'Operations',
+    level: 'L1',
+    estimatedMinutes: 22,
+    tags: ['Sentral', 'markbook', 'access key', 'reporting'],
+    learningObjectives: [
+      'Gather structured symptom detail for admin workflows.',
+      'Avoid implying ICT performs authoritative Sentral configuration.',
+      'Communicate impact on reporting timelines clearly.'
+    ],
+    dcsRelevance: ['Reporting deadlines create predictable spikes.', 'Clean notes reduce ping-pong with admin.'],
+    sections: [
+      {
+        id: 'sen-1',
+        title: 'Symptom categories',
+        bodyMarkdown:
+          'Separate login failures, missing classes or subjects, mark entry visibility, sync/export symptoms, and timeline questions about reporting windows.'
+      },
+      {
+        id: 'sen-2',
+        title: 'Evidence parents and teachers can supply',
+        bodyMarkdown:
+          'Screenshots with minimal student identifiers, exact labels missing, timeframe, and whether others share the symptom.'
+      },
+      {
+        id: 'sen-3',
+        title: 'Escalation handshake',
+        bodyMarkdown:
+          'Summarise ICT-performed checks, cite urgency driver (report cut-off), and attach pointers—not bulky narratives.'
+      }
+    ],
+    flashcards: [
+      { id: 'sen-f1', front: 'Who owns authoritative Sentral configuration?', back: 'Designated administration/Sentral owners—not ICT improvisation.' },
+      { id: 'sen-f2', front: 'Why capture reporting-period context?', back: 'Deadlines change prioritisation language legitimately.' },
+      { id: 'sen-f3', front: 'ICT-safe checks?', back: 'Browser basics, account context visibility, obvious connectivity—not roster edits.' },
+      { id: 'sen-f4', front: 'Avoid claiming?', back: '"Fixed forever" without verified admin closure.' },
+      { id: 'sen-f5', front: 'Good escalation opener?', back: 'Impact → scope → evidence → asks.' },
+      { id: 'sen-f6', front: 'Why screenshots curated?', back: 'Reduce accidental overshare of student rows.' },
+      { id: 'sen-f7', front: 'Many users symptom?', back: 'Signals systemic vs isolated records issue.' },
+      { id: 'sen-f8', front: 'Parent expectation trap?', back: 'Assuming ICT can silently edit grades or timelines.' },
+      { id: 'sen-f9', front: 'Staff emotion cue?', back: 'Reporting pressure—respond with calm sequencing.' },
+      { id: 'sen-f10', front: 'Ticket outcome?', back: 'Clear owner plus verification expectation.' }
+    ],
+    quiz: [
+      {
+        type: 'mcq',
+        id: 'sen-q1',
+        prompt: 'Teacher cannot see class in markbook after timetable change. First-line stance?',
+        domain: 'Sentral support',
+        difficulty: 'foundation',
+        explanation: 'Capture structured evidence for admin workflow.',
+        modelAnswer:
+          'Document scope, timing versus change, and escalate to Sentral owner—avoid roster edits.',
+        commonMistakes: ['Promising instant roster edits'],
+        dcsContext: 'Post-timetable churn spikes tickets.',
+        reviewSchedule,
+        recommendedModuleId: 'sentral-support',
+        weakTopic: 'dcs-sentral-support',
+        options: [
+          { id: 'a', label: 'Tell them ICT never touches Sentral' },
+          { id: 'b', label: 'Capture timing, scope, and escalate with reporting urgency context' },
+          { id: 'c', label: 'Edit classes directly if you know how' },
+          { id: 'd', label: 'Ask them to reinstall Windows' }
+        ],
+        correctOptionId: 'b'
+      },
+      {
+        type: 'short-answer',
+        id: 'sen-q2',
+        prompt: 'List four facts for an access-key fault.',
+        domain: 'Sentral support',
+        difficulty: 'stretch',
+        explanation: 'Keys need expiry and reuse clarity.',
+        modelAnswer: 'Recipient, delivery channel, approximate time sent, error wording, retries, alternate inbox/device scope.',
+        commonMistakes: ['No scope'],
+        dcsContext: 'Keys bounce silently.',
+        reviewSchedule,
+        recommendedModuleId: 'sentral-support',
+        weakTopic: 'dcs-sentral-support',
+        rubric: ['Shows timing', 'Shows channel', 'Shows error'],
+        keywordHints: ['expiry', 'inbox', 'scope']
+      },
+      {
+        type: 'order-steps',
+        id: 'sen-q3',
+        prompt: 'Order Sentral triage.',
+        domain: 'Sentral support',
+        difficulty: 'foundation',
+        explanation: 'Understand before routing.',
+        modelAnswer: 'Clarify symptom category → confirm scope → ICT-safe checks → escalate with deadline context.',
+        commonMistakes: ['Routing vague tickets'],
+        dcsContext: 'Admin queues sort by evidence quality.',
+        reviewSchedule,
+        recommendedModuleId: 'sentral-support',
+        weakTopic: 'dcs-sentral-support',
+        steps: [
+          { id: 'sym', label: 'Clarify symptom category' },
+          { id: 'scp', label: 'Determine single vs many users' },
+          { id: 'chk', label: 'Perform ICT-safe visibility checks' },
+          { id: 'esc', label: 'Escalate with reporting-period urgency if relevant' }
+        ],
+        correctOrder: ['sym', 'scp', 'chk', 'esc'],
+        rubric: ['Logical flow']
+      },
+      {
+        type: 'scenario-response',
+        id: 'sen-q4',
+        prompt: 'Leadership pings for instant Sentral fix during reporting freeze. Response?',
+        domain: 'Sentral support',
+        difficulty: 'challenge',
+        explanation: 'Balance urgency with honest boundaries.',
+        modelAnswer:
+          'Acknowledge cutoff pressure, relay captured evidence to authorised owner, avoid faux certainty, offer parallel communication template.',
+        commonMistakes: ['Ghosting leadership'],
+        dcsContext: 'Executive pings spike anxiety.',
+        reviewSchedule,
+        recommendedModuleId: 'sentral-support',
+        weakTopic: 'dcs-sentral-support',
+        rubric: ['Acknowledges urgency', 'Honest boundary']
+      },
+      {
+        type: 'mcq',
+        id: 'sen-q5',
+        prompt: 'Screenshots for Sentral tickets should?',
+        domain: 'Sentral support',
+        difficulty: 'foundation',
+        explanation: 'Minimise student exposure.',
+        modelAnswer: 'Crop or anonymise where possible while remaining actionable.',
+        commonMistakes: ['Whole roster dumps'],
+        dcsContext: 'Privacy obligations persist under pressure.',
+        reviewSchedule,
+        recommendedModuleId: 'sentral-support',
+        weakTopic: 'dcs-sentral-support',
+        options: [
+          { id: 'a', label: 'Include every student name for completeness' },
+          { id: 'b', label: 'Prefer minimal necessary fields with redaction mindset' },
+          { id: 'c', label: 'Avoid screenshots entirely always' },
+          { id: 'd', label: 'Post in public Teams channel for speed' }
+        ],
+        correctOptionId: 'b'
+      },
+      {
+        type: 'explain-it-simply',
+        id: 'sen-q6',
+        prompt: 'Explain reporting-period freeze to a stressed teacher.',
+        domain: 'Sentral support',
+        difficulty: 'foundation',
+        explanation: 'Plain timelines reduce repeated contacts.',
+        modelAnswer:
+          'Some windows lock edits so reports stay consistent—your note captures urgency for the owner authorised to adjust inside rules.',
+        commonMistakes: ['Blaming teacher procrastination'],
+        dcsContext: 'Tone affects adoption.',
+        reviewSchedule,
+        recommendedModuleId: 'sentral-support',
+        weakTopic: 'dcs-sentral-support',
+        rubric: ['Plain language', 'No blame'],
+        keywordHints: ['window', 'authorised']
+      },
+      {
+        type: 'mcq',
+        id: 'sen-q7',
+        prompt: 'Multiple staff lose Sentral access simultaneously—likely?',
+        domain: 'Sentral support',
+        difficulty: 'stretch',
+        explanation: 'Think systemic.',
+        modelAnswer: 'Service/authentication incident vs isolated credential.',
+        commonMistakes: ['Infinite individual resets'],
+        dcsContext: 'Correlated outages deserve consolidated escalation.',
+        reviewSchedule,
+        recommendedModuleId: 'sentral-support',
+        weakTopic: 'dcs-sentral-support',
+        options: [
+          { id: 'a', label: 'Ignore correlation' },
+          { id: 'b', label: 'Treat as potential systemic signal and escalate with correlated evidence' },
+          { id: 'c', label: 'Re-image laptops' },
+          { id: 'd', label: 'Tell staff browsers are always broken' }
+        ],
+        correctOptionId: 'b'
+      },
+      {
+        type: 'short-answer',
+        id: 'sen-q8',
+        prompt: 'One sentence stating ICT boundary on roster edits.',
+        domain: 'Sentral support',
+        difficulty: 'stretch',
+        explanation: 'Explicit boundaries reduce assumptions.',
+        modelAnswer:
+          'ICT captured connectivity/account visibility symptoms; authoritative timetable or cohort corrections belong with Sentral administration.',
+        commonMistakes: ['Waffle'],
+        dcsContext: 'Copy-paste friendly.',
+        reviewSchedule,
+        recommendedModuleId: 'sentral-support',
+        weakTopic: 'dcs-sentral-support',
+        rubric: ['ICT vs admin'],
+        keywordHints: ['authoritative', 'administration']
+      }
+    ],
+    scenarioPrompts: [{ id: 'sen-s1', title: 'Reporting eve visibility fault', prompt: 'Capture urgency without owning unauthorised edits.' }],
+    practicalOutputs: [{ id: 'sen-p1', title: 'Sentral escalation checklist', description: 'Checklist: symptom bucket, scope, deadlines, evidence pointers.' }]
+  },
+  {
+    id: 'ourdcs-schoolbox-support',
+    title: 'OurDCS / Schoolbox Support',
+    description:
+      'Separate LMS/content/login faults for staff and student workflows while capturing classroom-impact evidence.',
+    domain: 'Cloud and Platforms',
+    level: 'L1',
+    estimatedMinutes: 21,
+    tags: ['Schoolbox', 'OurDCS', 'LMS', 'portal'],
+    learningObjectives: [
+      'Differentiate browser/session faults from content authoring problems.',
+      'Identify when escalation belongs with digital learning owners.',
+      'Communicate triage steps teachers can retry safely.'
+    ],
+    dcsRelevance: ['High-touch classroom moments.', 'Reduces “everything broken” noise.'],
+    sections: [
+      {
+        id: 'odb-1',
+        title: 'Login vs content symptom fork',
+        bodyMarkdown:
+          'Ask whether authentication fails, pages partially render, attachments fail, or class tiles missing—each implies different owners.'
+      },
+      {
+        id: 'odb-2',
+        title: 'Safe teacher retries',
+        bodyMarkdown:
+          'Second browser, incognito with caution, network check, known-good device compares—without deleting profiles blindly.'
+      },
+      {
+        id: 'odb-3',
+        title: 'Escalation packaging',
+        bodyMarkdown:
+          'Exact URL/page name, role context, class impacted, timestamp, screenshot cropped—plus student impact statement.'
+      }
+    ],
+    flashcards: [
+      { id: 'odb-f1', front: 'Login fault vs content fault?', back: 'Auth/session versus missing tile/asset/upload path.' },
+      { id: 'odb-f2', front: 'Why capture URL?', back: 'Many issues are page-specific configurations.' },
+      { id: 'odb-f3', front: 'ICT-first checks?', back: 'Browser basics, session, simple connectivity compares.' },
+      { id: 'odb-f4', front: 'Avoid?', back: 'Clearing caches blindly during class without backup plan.' },
+      { id: 'odb-f5', front: 'Student bulk symptom?', back: 'May indicate service—not one laptop.' },
+      { id: 'odb-f6', front: 'Teacher authoring issue?', back: 'May need LMS champion—not ICT guessing pedagogy.' },
+      { id: 'odb-f7', front: 'Attachments failing?', back: 'Think size, format, storage quota signals.' },
+      { id: 'odb-f8', front: 'Mobile vs desktop?', back: 'Scoped symptom narrows responsive bugs.' },
+      { id: 'odb-f9', front: 'Communication tone?', back: 'Offer interim workaround if safe.' },
+      { id: 'odb-f10', front: 'Escalation includes?', back: 'Impact minutes + workaround status.' }
+    ],
+    quiz: [
+      {
+        type: 'mcq',
+        id: 'odb-q1',
+        prompt: 'Staff sees blank Schoolbox page after login elsewhere works. Likely first bucket?',
+        domain: 'Schoolbox triage',
+        difficulty: 'foundation',
+        explanation: 'Differentiate session versus page asset.',
+        modelAnswer: 'Page-specific rendering or permission scoped to class tile.',
+        commonMistakes: ['Declaring entire internet down'],
+        dcsContext: 'Blank pages scare teachers mid-lesson.',
+        reviewSchedule,
+        recommendedModuleId: 'ourdcs-schoolbox-support',
+        weakTopic: 'dcs-schoolbox-portal',
+        options: [
+          { id: 'a', label: 'Assume core switch failure' },
+          { id: 'b', label: 'Capture exact page/URL, compare session/device, escalate with scope' },
+          { id: 'c', label: 'Rebuild laptop image immediately' },
+          { id: 'd', label: 'Tell them teaching should avoid tech' }
+        ],
+        correctOptionId: 'b'
+      },
+      {
+        type: 'short-answer',
+        id: 'odb-q2',
+        prompt: 'Two safe compares for LMS issues.',
+        domain: 'Schoolbox triage',
+        difficulty: 'stretch',
+        explanation: 'Comparison isolates layers.',
+        modelAnswer: 'Known-good staff device or browser profile; alternate network path if policy-safe.',
+        commonMistakes: ['No compares'],
+        dcsContext: 'Fast classroom triage.',
+        reviewSchedule,
+        recommendedModuleId: 'ourdcs-schoolbox-support',
+        weakTopic: 'dcs-schoolbox-portal',
+        rubric: ['Names compares'],
+        keywordHints: ['browser', 'device']
+      },
+      {
+        type: 'order-steps',
+        id: 'odb-q3',
+        prompt: 'Order LMS triage.',
+        domain: 'Schoolbox triage',
+        difficulty: 'foundation',
+        explanation: 'Understand symptom location early.',
+        modelAnswer: 'Confirm login success → capture URL → compare device/browser → note impact → escalate with artefacts.',
+        commonMistakes: ['Random cache nukes'],
+        dcsContext: 'Keeps class moving.',
+        reviewSchedule,
+        recommendedModuleId: 'ourdcs-schoolbox-support',
+        weakTopic: 'dcs-schoolbox-portal',
+        steps: [
+          { id: 'auth', label: 'Confirm authentication layer vs content layer' },
+          { id: 'url', label: 'Capture exact page and timestamp' },
+          { id: 'cmp', label: 'Compare device/browser safely' },
+          { id: 'pkg', label: 'Package escalation with cropped evidence' }
+        ],
+        correctOrder: ['auth', 'url', 'cmp', 'pkg'],
+        rubric: ['Logical']
+      },
+      {
+        type: 'scenario-response',
+        id: 'odb-q4',
+        prompt: 'Teacher demands projector swap blaming Schoolbox. Response framework?',
+        domain: 'Schoolbox triage',
+        difficulty: 'stretch',
+        explanation: 'Politely decouple display chain issues.',
+        modelAnswer:
+          'Acknowledge urgency, verify LMS layer evidence separately from HDMI/audio chain, coordinate dual-track troubleshooting without blaming.',
+        commonMistakes: ['Merging unrelated symptom chains'],
+        dcsContext: 'Composite failures occur under stress.',
+        reviewSchedule,
+        recommendedModuleId: 'ourdcs-schoolbox-support',
+        weakTopic: 'dcs-schoolbox-portal',
+        rubric: ['Separates layers']
+      },
+      {
+        type: 'mcq',
+        id: 'odb-q5',
+        prompt: 'Student devices fail uploads while staff OK—signal?',
+        domain: 'Schoolbox triage',
+        difficulty: 'stretch',
+        explanation: 'Segment roles/policies.',
+        modelAnswer: 'Possible permission/quota/policy segmentation affecting student cohort.',
+        commonMistakes: ['Assuming identical configs'],
+        dcsContext: 'BYOD vs managed nuances.',
+        reviewSchedule,
+        recommendedModuleId: 'ourdcs-schoolbox-support',
+        weakTopic: 'dcs-schoolbox-portal',
+        options: [
+          { id: 'a', label: 'Ignore student cohort segmentation' },
+          { id: 'b', label: 'Escalate noting role segmentation suspicion with examples' },
+          { id: 'c', label: 'Ban uploads school-wide' },
+          { id: 'd', label: 'Tell students Wi-Fi is luxury' }
+        ],
+        correctOptionId: 'b'
+      },
+      {
+        type: 'explain-it-simply',
+        id: 'odb-q6',
+        prompt: 'Explain cached stale page.',
+        domain: 'Schoolbox triage',
+        difficulty: 'foundation',
+        explanation: 'Simple mental model.',
+        modelAnswer:
+          'Browsers sometimes reuse old page fragments; controlled refresh or second browser tests whether content truly missing versus stuck cache.',
+        commonMistakes: ['Unsafe jargon'],
+        dcsContext: 'Teachers blame LMS unfairly.',
+        reviewSchedule,
+        recommendedModuleId: 'ourdcs-schoolbox-support',
+        weakTopic: 'dcs-schoolbox-portal',
+        rubric: ['Plain explanation'],
+        keywordHints: ['cache', 'refresh']
+      },
+      {
+        type: 'mcq',
+        id: 'odb-q7',
+        prompt: 'Which escalation artefact is weakest?',
+        domain: 'Schoolbox triage',
+        difficulty: 'foundation',
+        explanation: 'Specificity matters.',
+        modelAnswer: '“Schoolbox broken” without URL/time/role.',
+        commonMistakes: [],
+        dcsContext: 'Classic vague ticket.',
+        reviewSchedule,
+        recommendedModuleId: 'ourdcs-schoolbox-support',
+        weakTopic: 'dcs-schoolbox-portal',
+        options: [
+          { id: 'a', label: 'Cropped screenshot with page title and timestamp' },
+          { id: 'b', label: '“Schoolbox broken” without specifics' },
+          { id: 'c', label: 'Role plus class plus reproduction steps' },
+          { id: 'd', label: 'Second staff confirms same page fault' }
+        ],
+        correctOptionId: 'b'
+      },
+      {
+        type: 'short-answer',
+        id: 'odb-q8',
+        prompt: 'Draft teacher-facing micro-steps before escalation.',
+        domain: 'Schoolbox triage',
+        difficulty: 'stretch',
+        explanation: 'Empowers safe retries.',
+        modelAnswer:
+          'Retry page after noting time; try second browser; confirm correct account; if persists capture screenshot—ICT escalates with bundle.',
+        commonMistakes: ['Unsafe advanced tweaks'],
+        dcsContext: 'Micro-scripts reduce repeat contacts.',
+        reviewSchedule,
+        recommendedModuleId: 'ourdcs-schoolbox-support',
+        weakTopic: 'dcs-schoolbox-portal',
+        rubric: ['Safe steps'],
+        keywordHints: ['browser', 'screenshot']
+      }
+    ],
+    scenarioPrompts: [{ id: 'odb-s1', title: 'Tile missing for one class only', prompt: 'Determine LMS vs timetable ownership cues.' }],
+    practicalOutputs: [{ id: 'odb-p1', title: 'LMS triage micro-script', description: 'Teacher-facing 5-line retry list with escalation boundary.' }]
+  },
+  {
+    id: 'login-password-support',
+    title: 'Login and Password Support',
+    description:
+      'Username checks, lockouts, expired passwords, self-service reset failures, and compromise suspicion—without ever collecting passwords.',
+    domain: 'Identity and Access',
+    level: 'L1',
+    estimatedMinutes: 23,
+    tags: ['password', 'MFA', 'lockout', 'identity'],
+    learningObjectives: [
+      'Apply safe verification prompts consistent with school identity policies.',
+      'Differentiate client faults from directory-side signals needing escalation.',
+      'Phrase escalation without alarming users unnecessarily.'
+    ],
+    dcsRelevance: ['Daily volume driver.', 'Security-sensitive mis-steps costly.'],
+    sections: [
+      {
+        id: 'lpw-1',
+        title: 'Never ask for passwords',
+        bodyMarkdown:
+          'Use sanctioned reset portals and escalation pathways; coach users through screens verbally without capturing secrets in tickets.'
+      },
+      {
+        id: 'lpw-2',
+        title: 'Lockout vs expiry vs wrong context',
+        bodyMarkdown:
+          'Wrong username domain, stale cached credential, clock skew, MFA fatigue, or actual compromise—capture symptom timestamps.'
+      },
+      {
+        id: 'lpw-3',
+        title: 'Compromise suspicion pathway',
+        bodyMarkdown:
+          'Unexpected MFA pushes, unfamiliar geography prompts, or mass spam sending—preserve evidence and escalate urgently via security route.'
+      }
+    ],
+    flashcards: [
+      { id: 'lpw-f1', front: 'Collect passwords in tickets?', back: 'No—use approved flows only.' },
+      { id: 'lpw-f2', front: 'Expired password symptom?', back: 'Grace prompts until hard lock depending on policy.' },
+      { id: 'lpw-f3', front: 'Lockout symptom?', back: 'Repeated failures despite knowing password—time-bound.' },
+      { id: 'lpw-f4', front: 'Stale credential?', back: 'Old cached username dominating new attempts.' },
+      { id: 'lpw-f5', front: 'MFA loop?', back: 'Device trust vs method drift—escalate if systemic.' },
+      { id: 'lpw-f6', front: 'Clock skew relevance?', back: 'Auth may fail mysteriously—basic sanity check.' },
+      { id: 'lpw-f7', front: 'Self-service reset fails?', back: 'Recovery info stale—authorised identity assist.' },
+      { id: 'lpw-f8', front: 'Bulk simultaneous failures?', back: 'Possible identity dependency outage signal.' },
+      { id: 'lpw-f9', front: 'Tone when suspicious?', back: 'Calm, factual, fast escalation—not panic accusation.' },
+      { id: 'lpw-f10', front: 'Documentation gold?', back: 'Exact error strings + timestamps + scope.' }
+    ],
+    quiz: [
+      {
+        type: 'mcq',
+        id: 'lpw-q1',
+        prompt: 'User offers password to speed ticket up.',
+        domain: 'Login support',
+        difficulty: 'foundation',
+        explanation: 'Reject secret capture politely.',
+        modelAnswer: 'Decline, redirect to approved authentication pathway immediately.',
+        commonMistakes: ['Accepting “just this once”'],
+        dcsContext: 'Social engineering pressure.',
+        reviewSchedule,
+        recommendedModuleId: 'login-password-support',
+        weakTopic: 'dcs-login-password',
+        options: [
+          { id: 'a', label: 'Paste it into ticket notes for debugging' },
+          { id: 'b', label: 'Politely refuse and guide sanctioned reset steps' },
+          { id: 'c', label: 'Ask them to email password privately' },
+          { id: 'd', label: 'Share your admin password pattern for empathy' }
+        ],
+        correctOptionId: 'b'
+      },
+      {
+        type: 'short-answer',
+        id: 'lpw-q2',
+        prompt: 'Three clues separating compromise suspicion from forgetfulness.',
+        domain: 'Login support',
+        difficulty: 'stretch',
+        explanation: 'Safety judgement.',
+        modelAnswer: 'Unexpected MFA prompts, unfamiliar locations, mailbox rule changes, outbound spam reports despite knowing password.',
+        commonMistakes: ['Ignoring MFA anomalies'],
+        dcsContext: 'School accounts attacked routinely.',
+        reviewSchedule,
+        recommendedModuleId: 'login-password-support',
+        weakTopic: 'dcs-login-password',
+        rubric: ['Security signals'],
+        keywordHints: ['MFA', 'spam', 'rules']
+      },
+      {
+        type: 'order-steps',
+        id: 'lpw-q3',
+        prompt: 'Order password triage.',
+        domain: 'Login support',
+        difficulty: 'foundation',
+        explanation: 'Evidence-driven.',
+        modelAnswer: 'Verify identity context → confirm exact error → attempt sanctioned reset guidance → escalate if systemic/suspicious.',
+        commonMistakes: ['Random resets'],
+        dcsContext: 'Avoid churn.',
+        reviewSchedule,
+        recommendedModuleId: 'login-password-support',
+        weakTopic: 'dcs-login-password',
+        steps: [
+          { id: 'ctx', label: 'Verify account context (username/domain/device)' },
+          { id: 'err', label: 'Capture exact error text/time' },
+          { id: 'self', label: 'Coach sanctioned self-service reset' },
+          { id: 'esc', label: 'Escalate identity/security route if signals warrant' }
+        ],
+        correctOrder: ['ctx', 'err', 'self', 'esc'],
+        rubric: ['Logical']
+      },
+      {
+        type: 'scenario-response',
+        id: 'lpw-q4',
+        prompt: 'Teacher overseas suddenly blocked—possible travel vs compromise?',
+        domain: 'Login support',
+        difficulty: 'challenge',
+        explanation: 'Avoid blaming travel.',
+        modelAnswer:
+          'Gather MFA prompts, unfamiliar login notices, recent forwarding rules suspicion; escalate via security-aware pathway without accusing.',
+        commonMistakes: ['Ignoring geo anomalies'],
+        dcsContext: 'School staff travel patterns vary.',
+        reviewSchedule,
+        recommendedModuleId: 'login-password-support',
+        weakTopic: 'dcs-login-password',
+        rubric: ['Balanced judgement']
+      },
+      {
+        type: 'mcq',
+        id: 'lpw-q5',
+        prompt: 'Cached credential issue suspicion?',
+        domain: 'Login support',
+        difficulty: 'stretch',
+        explanation: 'Windows loves stale identities.',
+        modelAnswer: 'Mismatch between logged-on identity and attempted resource identity.',
+        commonMistakes: [],
+        dcsContext: 'Shared classroom laptops.',
+        reviewSchedule,
+        recommendedModuleId: 'login-password-support',
+        weakTopic: 'dcs-login-password',
+        options: [
+          { id: 'a', label: 'Always motherboard fault' },
+          { id: 'b', label: 'Different username displayed vs attempting login resource expects' },
+          { id: 'c', label: 'Printer VLAN mismatch' },
+          { id: 'd', label: 'SMARTBoard firmware exclusively' }
+        ],
+        correctOptionId: 'b'
+      },
+      {
+        type: 'explain-it-simply',
+        id: 'lpw-q6',
+        prompt: 'Explain MFA prompt fatigue calmly.',
+        domain: 'Login support',
+        difficulty: 'foundation',
+        explanation: 'Reduce panic clicks.',
+        modelAnswer:
+          'Extra prompts often mean your account is verifying unusual activity—pause approvals until context confirmed via authorised channel.',
+        commonMistakes: ['Technical overwhelm'],
+        dcsContext: 'Teachers rushed.',
+        reviewSchedule,
+        recommendedModuleId: 'login-password-support',
+        weakTopic: 'dcs-login-password',
+        rubric: ['Plain calm wording'],
+        keywordHints: ['verify', 'pause']
+      },
+      {
+        type: 'mcq',
+        id: 'lpw-q7',
+        prompt: 'Mass password failures at bell—think?',
+        domain: 'Login support',
+        difficulty: 'stretch',
+        explanation: 'Correlated outage.',
+        modelAnswer: 'Dependency outage vs coincidence.',
+        commonMistakes: ['Individual-only framing'],
+        dcsContext: 'Bell curve spikes.',
+        reviewSchedule,
+        recommendedModuleId: 'login-password-support',
+        weakTopic: 'dcs-login-password',
+        options: [
+          { id: 'a', label: 'Ignore correlation entirely' },
+          { id: 'b', label: 'Raise correlated outage suspicion with timestamps + counts' },
+          { id: 'c', label: 'Tell everyone passwords expired maliciously' },
+          { id: 'd', label: 'Disable Wi-Fi' }
+        ],
+        correctOptionId: 'b'
+      },
+      {
+        type: 'short-answer',
+        id: 'lpw-q8',
+        prompt: 'Ticket sentence escalating suspected compromise.',
+        domain: 'Login support',
+        difficulty: 'stretch',
+        explanation: 'Signal without drama.',
+        modelAnswer:
+          'Unexpected MFA prompts and unfamiliar login notices reported—request authorised identity/security review; user coached not to approve unknown prompts.',
+        commonMistakes: [],
+        dcsContext: 'Triggers SOC analogues.',
+        reviewSchedule,
+        recommendedModuleId: 'login-password-support',
+        weakTopic: 'dcs-login-password',
+        rubric: ['Signals urgency', 'Safe interim guidance'],
+        keywordHints: ['MFA', 'review']
+      }
+    ],
+    scenarioPrompts: [{ id: 'lpw-s1', title: 'Self-service reset loop', prompt: 'Balance empathy vs escalation triggers.' }],
+    practicalOutputs: [{ id: 'lpw-p1', title: 'Login triage script', description: 'Coach-through checklist without secret capture.' }]
+  },
+  {
+    id: 'permissions-access-requests',
+    title: 'Permissions and Access Requests',
+    description:
+      'Shared drives, groups, software installs—capture approvals, least privilege, and clean managerial visibility.',
+    domain: 'Identity and Access',
+    level: 'L1',
+    estimatedMinutes: 22,
+    tags: ['permissions', 'groups', 'least privilege', 'approvals'],
+    learningObjectives: [
+      'Gather approver, role context, data sensitivity, and duration.',
+      'Spot risky shortcuts conflicting with policy.',
+      'Document deny paths professionally.'
+    ],
+    dcsRelevance: ['Access creep creates audit risk.', 'Managers expect crisp rationale.'],
+    sections: [
+      {
+        id: 'perm-1',
+        title: 'Request completeness',
+        bodyMarkdown:
+          'Who needs access, to what resource, why now, for how long, existing alternatives tried, business owner endorsement.'
+      },
+      {
+        id: 'perm-2',
+        title: 'Least privilege lens',
+        bodyMarkdown:
+          'Prefer scoped shares or role groups over blanket admin adjacent rights unless justified.'
+      },
+      {
+        id: 'perm-3',
+        title: 'Software installs',
+        bodyMarkdown:
+          'Licensing, deployment channel (Company Portal vs ad hoc), classroom urgency vs compliance packaging.'
+      }
+    ],
+    flashcards: [
+      { id: 'perm-f1', front: 'Why capture duration?', back: 'Temporary project access should expire conceptually.' },
+      { id: 'perm-f2', front: 'Business owner?', back: 'Data steward signs risk—not only requester.' },
+      { id: 'perm-f3', front: 'Deny gracefully?', back: 'Policy citation + alternative pathway.' },
+      { id: 'perm-f4', front: 'Emergency exceptions?', back: 'Document urgency + retro approval expectation.' },
+      { id: 'perm-f5', front: 'Shared mailbox pitfalls?', back: 'Delegated access creep—monitor scope.' },
+      { id: 'perm-f6', front: 'Student data shares?', back: 'Higher scrutiny—minimise blast radius.' },
+      { id: 'perm-f7', front: 'Local admin asks?', back: 'Usually tightly controlled—avoid silent yes.' },
+      { id: 'perm-f8', front: 'Ticket clarity?', back: 'Readable by auditor months later.' },
+      { id: 'perm-f9', front: 'Pattern detection?', back: 'Repeated shortcuts may indicate training gap.' },
+      { id: 'perm-f10', front: 'ICT stance?', back: 'Implement authorised changes—not invent policy.' }
+    ],
+    quiz: [
+      {
+        type: 'mcq',
+        id: 'perm-q1',
+        prompt: 'Staff asks “same access as colleague”. Issue?',
+        domain: 'Access requests',
+        difficulty: 'foundation',
+        explanation: 'Jobs differ—least privilege breaks.',
+        modelAnswer: 'Need role-based justification rather than cloning.',
+        commonMistakes: ['Rubber stamping'],
+        dcsContext: 'Lazy requests.',
+        reviewSchedule,
+        recommendedModuleId: 'permissions-access-requests',
+        weakTopic: 'dcs-permissions-access',
+        options: [
+          { id: 'a', label: 'Always mirror colleague groups instantly' },
+          { id: 'b', label: 'Ask for role/task justification vs blanket cloning' },
+          { id: 'c', label: 'Grant Domain Admin to reduce tickets' },
+          { id: 'd', label: 'Ignore manager approval' }
+        ],
+        correctOptionId: 'b'
+      },
+      {
+        type: 'short-answer',
+        id: 'perm-q2',
+        prompt: 'Four fields documenting software request.',
+        domain: 'Access requests',
+        difficulty: 'stretch',
+        explanation: 'Operational clarity.',
+        modelAnswer: 'Application name/version, device scope, license pathway, urgency instructional driver, approver.',
+        commonMistakes: ['Vague “need app”'],
+        dcsContext: 'Deployment pipelines.',
+        reviewSchedule,
+        recommendedModuleId: 'permissions-access-requests',
+        weakTopic: 'dcs-permissions-access',
+        rubric: ['Concrete fields'],
+        keywordHints: ['license', 'approver']
+      },
+      {
+        type: 'order-steps',
+        id: 'perm-q3',
+        prompt: 'Order safe access workflow.',
+        domain: 'Access requests',
+        difficulty: 'foundation',
+        explanation: 'Governance order.',
+        modelAnswer: 'Validate completeness → verify approver → assess least privilege → schedule change → confirm outcome.',
+        commonMistakes: ['Change before approval'],
+        dcsContext: 'Audit trails.',
+        reviewSchedule,
+        recommendedModuleId: 'permissions-access-requests',
+        weakTopic: 'dcs-permissions-access',
+        steps: [
+          { id: 'cmp', label: 'Confirm request completeness' },
+          { id: 'apr', label: 'Verify business approver' },
+          { id: 'lpl', label: 'Apply least-privilege design' },
+          { id: 'chg', label: 'Execute via authorised change path' }
+        ],
+        correctOrder: ['cmp', 'apr', 'lpl', 'chg'],
+        rubric: ['Governance']
+      },
+      {
+        type: 'scenario-response',
+        id: 'perm-q4',
+        prompt: 'Leader pressures bypass approval tonight.',
+        domain: 'Access requests',
+        difficulty: 'challenge',
+        explanation: 'Professional backbone.',
+        modelAnswer:
+          'Acknowledge instructional urgency, document risk, seek delegated emergency approver or interim least-scope workaround instead of silent bypass.',
+        commonMistakes: ['Silent bypass'],
+        dcsContext: 'Leadership pressure spikes.',
+        reviewSchedule,
+        recommendedModuleId: 'permissions-access-requests',
+        weakTopic: 'dcs-permissions-access',
+        rubric: ['Risk awareness']
+      },
+      {
+        type: 'mcq',
+        id: 'perm-q5',
+        prompt: 'Temporary contractor access should?',
+        domain: 'Access requests',
+        difficulty: 'stretch',
+        explanation: 'Time-bound mindset.',
+        modelAnswer: 'Include planned review/removal expectation.',
+        commonMistakes: ['Permanent drift'],
+        dcsContext: 'Contract cycles.',
+        reviewSchedule,
+        recommendedModuleId: 'permissions-access-requests',
+        weakTopic: 'dcs-permissions-access',
+        options: [
+          { id: 'a', label: 'Persist silently forever' },
+          { id: 'b', label: 'Include timeframe + review expectation in ticket' },
+          { id: 'c', label: 'Grant student-level rights for simplicity' },
+          { id: 'd', label: 'Avoid documenting contractor presence' }
+        ],
+        correctOptionId: 'b'
+      },
+      {
+        type: 'explain-it-simply',
+        id: 'perm-q6',
+        prompt: 'Explain least privilege to impatient teacher.',
+        domain: 'Access requests',
+        difficulty: 'foundation',
+        explanation: 'Non-jargony.',
+        modelAnswer:
+          'You receive the smallest door needed for today’s teaching task—wider access waits until someone accountable signs off.',
+        commonMistakes: [],
+        dcsContext: 'Pedagogy vs risk.',
+        reviewSchedule,
+        recommendedModuleId: 'permissions-access-requests',
+        weakTopic: 'dcs-permissions-access',
+        rubric: ['Plain metaphor'],
+        keywordHints: ['smallest', 'sign-off']
+      },
+      {
+        type: 'mcq',
+        id: 'perm-q7',
+        prompt: 'Shared drive “need everything” ask?',
+        domain: 'Access requests',
+        difficulty: 'stretch',
+        explanation: 'Probe folders.',
+        modelAnswer: 'Request specific path + rationale.',
+        commonMistakes: [],
+        dcsContext: 'Data sprawl.',
+        reviewSchedule,
+        recommendedModuleId: 'permissions-access-requests',
+        weakTopic: 'dcs-permissions-access',
+        options: [
+          { id: 'a', label: 'Grant root drive blindly' },
+          { id: 'b', label: 'Ask which folders map to actual lesson workflow' },
+          { id: 'c', label: 'Email ZIP of entire drive' },
+          { id: 'd', label: 'Tell them use USB sticks only' }
+        ],
+        correctOptionId: 'b'
+      },
+      {
+        type: 'short-answer',
+        id: 'perm-q8',
+        prompt: 'Professional deny sentence citing policy.',
+        domain: 'Access requests',
+        difficulty: 'stretch',
+        explanation: 'Tone matters.',
+        modelAnswer:
+          'Policy requires sponsor approval for that sensitivity tier—happy to route via [approver]; meanwhile here’s interim workaround X if safe.',
+        commonMistakes: ['Abrasive denial'],
+        dcsContext: 'Relationship preservation.',
+        reviewSchedule,
+        recommendedModuleId: 'permissions-access-requests',
+        weakTopic: 'dcs-permissions-access',
+        rubric: ['Policy + empathy'],
+        keywordHints: ['approval', 'workaround']
+      }
+    ],
+    scenarioPrompts: [{ id: 'perm-s1', title: 'Emergency exam folder access', prompt: 'Least scope temporary fix narrative.' }],
+    practicalOutputs: [{ id: 'perm-p1', title: 'Access request completeness form', description: 'Bulleted intake fields for tickets.' }]
+  },
+  {
+    id: 'website-filtering-unblock-requests',
+    title: 'Website Filtering and Unblock Requests',
+    description:
+      'Capture URLs, audience, curriculum justification, timing, and approvals for filtering workflows—without promising instant blanket unblocks.',
+    domain: 'Operations',
+    level: 'L1',
+    estimatedMinutes: 19,
+    tags: ['filtering', 'safeguarding', 'unblock', 'web'],
+    learningObjectives: [
+      'Treat filtering as policy workflow—not personal improvisation.',
+      'Collect evidence suitable for curriculum approvers.',
+      'Explain student-impact timelines honestly.'
+    ],
+    dcsRelevance: ['Lesson plans halt suddenly.', 'Safeguarding intersections real.'],
+    sections: [
+      {
+        id: 'wf-1',
+        title: 'Exact URL granularity',
+        bodyMarkdown:
+          'Protocol, full hostname, path fragments matter—avoid “the blue science site”.'
+      },
+      {
+        id: 'wf-2',
+        title: 'Audience & supervision context',
+        bodyMarkdown:
+          'Age band, supervised lab vs take-home BYOD, alternative resources attempted.'
+      },
+      {
+        id: 'wf-3',
+        title: 'Lead time honesty',
+        bodyMarkdown:
+          'Approval queues vary—offer interim sanctioned alternative when possible.'
+      }
+    ],
+    flashcards: [
+      { id: 'wf-f1', front: 'Why exact URL?', back: 'Different paths hit different categories.' },
+      { id: 'wf-f2', front: 'Screenshot value?', back: 'Shows block category message—not vague.' },
+      { id: 'wf-f3', front: 'Bypass morally?', back: 'No informal tunnels—follow approvals.' },
+      { id: 'wf-f4', front: 'Curriculum justification?', back: 'Links syllabus outcome → resource.' },
+      { id: 'wf-f5', front: 'BYOD nuance?', back: 'Policy may differ from managed fleet.' },
+      { id: 'wf-f6', front: 'Safeguarding escalation?', back: 'If content risk ambiguous—route specialist.' },
+      { id: 'wf-f7', front: 'Temporary teaching workaround?', back: 'Downloaded sanctioned bundle vs rogue hotspot.' },
+      { id: 'wf-f8', front: 'Communication?', back: 'Transparent ETA ranges—not fantasy instant.' },
+      { id: 'wf-f9', front: 'Duplicate tickets?', back: 'Merge narratives reduce fatigue.' },
+      { id: 'wf-f10', front: 'Ticket closes with?', back: 'Approver reference + scope of unblock.' }
+    ],
+    quiz: [
+      {
+        type: 'mcq',
+        id: 'wf-q1',
+        prompt: 'Teacher demands VPN install to bypass filter.',
+        domain: 'Web filtering',
+        difficulty: 'stretch',
+        explanation: 'Unsafe improvisation.',
+        modelAnswer: 'Decline; route formal unblock or sanctioned alternative.',
+        commonMistakes: [],
+        dcsContext: 'Shadow IT pressure.',
+        reviewSchedule,
+        recommendedModuleId: 'website-filtering-unblock-requests',
+        weakTopic: 'dcs-web-filtering',
+        options: [
+          { id: 'a', label: 'Install personal VPN immediately' },
+          { id: 'b', label: 'Explain policy pathway and capture unblock evidence bundle' },
+          { id: 'c', label: 'Tell students filters optional' },
+          { id: 'd', label: 'Disable filtering centrally yourself' }
+        ],
+        correctOptionId: 'b'
+      },
+      {
+        type: 'short-answer',
+        id: 'wf-q2',
+        prompt: 'Minimum unblock evidence bundle.',
+        domain: 'Web filtering',
+        difficulty: 'stretch',
+        explanation: 'Approver-ready.',
+        modelAnswer: 'Exact URLs, block screen category/time, cohort/year level, lesson date, learning outcome link, approver name.',
+        commonMistakes: ['Only saying blocked'],
+        dcsContext: 'Queues reject vagueness.',
+        reviewSchedule,
+        recommendedModuleId: 'website-filtering-unblock-requests',
+        weakTopic: 'dcs-web-filtering',
+        rubric: ['Concrete bundle'],
+        keywordHints: ['URL', 'year level']
+      },
+      {
+        type: 'order-steps',
+        id: 'wf-q3',
+        prompt: 'Order unblock intake.',
+        domain: 'Web filtering',
+        difficulty: 'foundation',
+        explanation: 'Structured empathy.',
+        modelAnswer: 'Acknowledge lesson impact → capture URLs → capture cohort/time → identify approver pathway → set expectation → attach artefacts.',
+        commonMistakes: [],
+        dcsContext: 'Teachers stressed.',
+        reviewSchedule,
+        recommendedModuleId: 'website-filtering-unblock-requests',
+        weakTopic: 'dcs-web-filtering',
+        steps: [
+          { id: 'imp', label: 'Acknowledge instructional impact' },
+          { id: 'url', label: 'Record exact URLs + block evidence' },
+          { id: 'coh', label: 'Capture cohort/timeframe' },
+          { id: 'apr', label: 'Identify approval routing' }
+        ],
+        correctOrder: ['imp', 'url', 'coh', 'apr'],
+        rubric: ['Empathy early']
+      },
+      {
+        type: 'scenario-response',
+        id: 'wf-q4',
+        prompt: 'Surprising block labelled malware—possible compromise vs false positive?',
+        domain: 'Web filtering',
+        difficulty: 'challenge',
+        explanation: 'Dual pathways.',
+        modelAnswer:
+          'Preserve teacher context but escalate security review if malware categorisation suggests compromised asset behaviour—not silent unblock.',
+        commonMistakes: [],
+        dcsContext: 'Interesting overlaps.',
+        reviewSchedule,
+        recommendedModuleId: 'website-filtering-unblock-requests',
+        weakTopic: 'dcs-web-filtering',
+        rubric: ['Balances instructional + security']
+      },
+      {
+        type: 'mcq',
+        id: 'wf-q5',
+        prompt: 'Wildcard unblock entire domain requested?',
+        domain: 'Web filtering',
+        difficulty: 'stretch',
+        explanation: 'Blast radius.',
+        modelAnswer: 'Prefer scoped paths unless risk accepted.',
+        commonMistakes: [],
+        dcsContext: 'Minimal exposure mindset.',
+        reviewSchedule,
+        recommendedModuleId: 'website-filtering-unblock-requests',
+        weakTopic: 'dcs-web-filtering',
+        options: [
+          { id: 'a', label: 'Always approve domain-wide instantly' },
+          { id: 'b', label: 'Prefer narrowed URLs unless documented broad approval exists' },
+          { id: 'c', label: 'Tell teacher internet forbidden' },
+          { id: 'd', label: 'Ask students to use cellular hotspots unsupervised' }
+        ],
+        correctOptionId: 'b'
+      },
+      {
+        type: 'explain-it-simply',
+        id: 'wf-q6',
+        prompt: 'Explain filtering delay.',
+        domain: 'Web filtering',
+        difficulty: 'foundation',
+        explanation: 'Expectation alignment.',
+        modelAnswer:
+          'Automated categories update for safety; humans verify exceptions so classrooms stay both safe and intentional.',
+        commonMistakes: [],
+        dcsContext: 'Reduces anger.',
+        reviewSchedule,
+        recommendedModuleId: 'website-filtering-unblock-requests',
+        weakTopic: 'dcs-web-filtering',
+        rubric: ['Balanced explanation'],
+        keywordHints: ['safety', 'review']
+      },
+      {
+        type: 'mcq',
+        id: 'wf-q7',
+        prompt: 'Student psychological counselling resource blocked—tone?',
+        domain: 'Web filtering',
+        difficulty: 'challenge',
+        explanation: 'Sensitivity.',
+        modelAnswer: 'Fast-track language with safeguarding-aware routing—not sarcasm.',
+        commonMistakes: [],
+        dcsContext: 'High stakes.',
+        reviewSchedule,
+        recommendedModuleId: 'website-filtering-unblock-requests',
+        weakTopic: 'dcs-web-filtering',
+        options: [
+          { id: 'a', label: 'Laugh it off as filtering nonsense' },
+          { id: 'b', label: 'Treat as priority safeguarding-sensitive escalation with calm urgency' },
+          { id: 'c', label: 'Tell student figure it out alone' },
+          { id: 'd', label: 'Disable all filtering silently' }
+        ],
+        correctOptionId: 'b'
+      },
+      {
+        type: 'short-answer',
+        id: 'wf-q8',
+        prompt: 'Interim workaround examples (safe).',
+        domain: 'Web filtering',
+        difficulty: 'stretch',
+        explanation: 'Creativity within guardrails.',
+        modelAnswer:
+          'Teacher downloads sanctioned offline package via alternate approved machine; uses curated substitute resource; schedules lab slot after approval ETA if unavoidable.',
+        commonMistakes: ['Unsafe hotspot suggestions'],
+        dcsContext: 'Keeps class moving legally.',
+        reviewSchedule,
+        recommendedModuleId: 'website-filtering-unblock-requests',
+        weakTopic: 'dcs-web-filtering',
+        rubric: ['Safe interim paths'],
+        keywordHints: ['offline', 'substitute']
+      }
+    ],
+    scenarioPrompts: [{ id: 'wf-s1', title: 'Exam morning surprise block', prompt: 'Transparent urgency note without policy breach.' }],
+    practicalOutputs: [{ id: 'wf-p1', title: 'Unblock intake snippet', description: 'Copy-ready ticket skeleton.' }]
+  },
+  {
+    id: 'new-user-onboarding',
+    title: 'New User Onboarding Checks',
+    description:
+      'Staff, student, and prac teacher readiness—accounts, groups, devices, and software completeness before day one.',
+    domain: 'Operations',
+    level: 'L1',
+    estimatedMinutes: 24,
+    tags: ['onboarding', 'accounts', 'groups', 'devices'],
+    learningObjectives: [
+      'Standardise day-one validation checks ICT can perform safely.',
+      'Recognise missing upstream HR/academic signals.',
+      'Package escalation when provisioning sequencing breaks.'
+    ],
+    dcsRelevance: ['Bad first days erode trust.', 'Cross-team dependencies frequent.'],
+    sections: [
+      {
+        id: 'onb-1',
+        title: 'Role-specific checklist mindset',
+        bodyMarkdown:
+          'Teachers need Teams/SPO paths; students need timetable-linked access patterns; pracs need constrained scopes—avoid one-size flows.'
+      },
+      {
+        id: 'onb-2',
+        title: 'Dependency sequencing',
+        bodyMarkdown:
+          'HR record → directory object → licensing → group memberships → device enrollment—failure upstream cascades.'
+      },
+      {
+        id: 'onb-3',
+        title: 'Friendly verification scripts',
+        bodyMarkdown:
+          'Guided login tests, sample file save locations, print release trial—bounded time boxed.'
+      }
+    ],
+    flashcards: [
+      { id: 'onb-f1', front: 'Why compare HR start date?', back: 'Automations often time-gated.' },
+      { id: 'onb-f2', front: 'Missing groups symptom?', back: 'Partial resource visibility.' },
+      { id: 'onb-f3', front: 'Device enrollment fails?', back: 'Could be timing/licensing—not “bad laptop only”.' },
+      { id: 'onb-f4', front: 'Prac boundaries?', back: 'Least privilege + supervision expectations.' },
+      { id: 'onb-f5', front: 'Student bulk onboarding?', back: 'Watch correlated template failures.' },
+      { id: 'onb-f6', front: 'Communicate delays?', back: 'Honest ETA + interim workaround.' },
+      { id: 'onb-f7', front: 'Managers expect?', back: 'Visibility ticket trail—not verbal-only promises.' },
+      { id: 'onb-f8', front: 'Password day-one confusing?', back: 'Coach sanctioned change flows calmly.' },
+      { id: 'onb-f9', front: 'Software gaps?', back: 'License queue vs packaging bug distinction.' },
+      { id: 'onb-f10', front: 'Close ticket with?', back: 'Verification checklist outcomes snapshot.' }
+    ],
+    quiz: [
+      {
+        type: 'mcq',
+        id: 'onb-q1',
+        prompt: 'New teacher missing Teams team membership day one.',
+        domain: 'Onboarding',
+        difficulty: 'foundation',
+        explanation: 'Think sequencing.',
+        modelAnswer: 'Verify directory group mappings vs manual add drift.',
+        commonMistakes: ['Adding random teams manually without governance'],
+        dcsContext: 'Common churn.',
+        reviewSchedule,
+        recommendedModuleId: 'new-user-onboarding',
+        weakTopic: 'dcs-onboarding',
+        options: [
+          { id: 'a', label: 'Always blame teacher patience' },
+          { id: 'b', label: 'Trace provisioning signals and escalate missing authoritative mappings' },
+          { id: 'c', label: 'Grant global admin to expedite' },
+          { id: 'd', label: 'Ignore correlation with start date' }
+        ],
+        correctOptionId: 'b'
+      },
+      {
+        type: 'short-answer',
+        id: 'onb-q2',
+        prompt: 'Four checks in student lab login validation.',
+        domain: 'Onboarding',
+        difficulty: 'stretch',
+        explanation: 'Concrete.',
+        modelAnswer: 'Correct username format, password change success, home drive/map visibility, printer release trial if applicable.',
+        commonMistakes: [],
+        dcsContext: 'Mass lab scenarios.',
+        reviewSchedule,
+        recommendedModuleId: 'new-user-onboarding',
+        weakTopic: 'dcs-onboarding',
+        rubric: ['Concrete checks'],
+        keywordHints: ['username', 'printer']
+      },
+      {
+        type: 'order-steps',
+        id: 'onb-q3',
+        prompt: 'Order onboarding triage.',
+        domain: 'Onboarding',
+        difficulty: 'foundation',
+        explanation: 'Upstream before device rabbit holes.',
+        modelAnswer: 'Confirm HR/start signals → directory presence → licensing → group memberships → device enrollment validation.',
+        commonMistakes: [],
+        dcsContext: 'Avoid laptop Imaging obsession prematurely.',
+        reviewSchedule,
+        recommendedModuleId: 'new-user-onboarding',
+        weakTopic: 'dcs-onboarding',
+        steps: [
+          { id: 'hr', label: 'Verify upstream HR/start readiness signals' },
+          { id: 'dir', label: 'Confirm directory account presence' },
+          { id: 'grp', label: 'Validate group memberships / licensing' },
+          { id: 'dev', label: 'Validate device enrollment & login smoke tests' }
+        ],
+        correctOrder: ['hr', 'dir', 'grp', 'dev'],
+        rubric: ['Logical sequencing']
+      },
+      {
+        type: 'scenario-response',
+        id: 'onb-q4',
+        prompt: 'Contractor starts Monday 7am—nothing provisioned Sunday 11pm ping.',
+        domain: 'Onboarding',
+        difficulty: 'challenge',
+        explanation: 'Human limits.',
+        modelAnswer:
+          'Acknowledge urgency, verify earliest actionable window, document minimal interim access risks accepted by delegate approver, escalate provisioning owners.',
+        commonMistakes: ['Silent hero burnout'],
+        dcsContext: 'After-hours moral hazard.',
+        reviewSchedule,
+        recommendedModuleId: 'new-user-onboarding',
+        weakTopic: 'dcs-onboarding',
+        rubric: ['Boundaries + urgency']
+      },
+      {
+        type: 'mcq',
+        id: 'onb-q5',
+        prompt: 'Prac teacher overscoped access discovered.',
+        domain: 'Onboarding',
+        difficulty: 'stretch',
+        explanation: 'Correct downward safely.',
+        modelAnswer: 'Escalate adjustment via governance—not silent removal chaos.',
+        commonMistakes: [],
+        dcsContext: 'Safeguarding optics.',
+        reviewSchedule,
+        recommendedModuleId: 'new-user-onboarding',
+        weakTopic: 'dcs-onboarding',
+        options: [
+          { id: 'a', label: 'Ignore for semester simplicity' },
+          { id: 'b', label: 'Raise correction via authorised adjustment pathway with audit-friendly note' },
+          { id: 'c', label: 'Publicly shame prac in staffroom' },
+          { id: 'd', label: 'Grant more access “balance universe”' }
+        ],
+        correctOptionId: 'b'
+      },
+      {
+        type: 'explain-it-simply',
+        id: 'onb-q6',
+        prompt: 'Explain upstream dependency delay to anxious principal.',
+        domain: 'Onboarding',
+        difficulty: 'foundation',
+        explanation: 'Executive clarity.',
+        modelAnswer:
+          'Digital accounts often chain off roster approvals—one missing link blocks automation until authoritative data arrives.',
+        commonMistakes: [],
+        dcsContext: 'Reduce blame spirals.',
+        reviewSchedule,
+        recommendedModuleId: 'new-user-onboarding',
+        weakTopic: 'dcs-onboarding',
+        rubric: ['Plain dependency metaphor'],
+        keywordHints: ['chain', 'data']
+      },
+      {
+        type: 'mcq',
+        id: 'onb-q7',
+        prompt: 'Successful smoke test includes?',
+        domain: 'Onboarding',
+        difficulty: 'foundation',
+        explanation: 'Evidence closure.',
+        modelAnswer: 'Bounded realistic login + resource touch verification.',
+        commonMistakes: [],
+        dcsContext: 'Avoid infinite scope creep.',
+        reviewSchedule,
+        recommendedModuleId: 'new-user-onboarding',
+        weakTopic: 'dcs-onboarding',
+        options: [
+          { id: 'a', label: 'Teaching entire curriculum trial' },
+          { id: 'b', label: 'Sanctioned login + key resource path verification snapshot' },
+          { id: 'c', label: 'Deleting profile repeatedly' },
+          { id: 'd', label: 'Ignoring errors “might fix itself”' }
+        ],
+        correctOptionId: 'b'
+      },
+      {
+        type: 'short-answer',
+        id: 'onb-q8',
+        prompt: 'Ticket closure summary lines.',
+        domain: 'Onboarding',
+        difficulty: 'stretch',
+        explanation: 'Future audits.',
+        modelAnswer:
+          'Provisioning verified through step X; residual dependency Y owned by team Z; interim workaround A until ETA B.',
+        commonMistakes: [],
+        dcsContext: 'Readable retrospectives.',
+        reviewSchedule,
+        recommendedModuleId: 'new-user-onboarding',
+        weakTopic: 'dcs-onboarding',
+        rubric: ['Ownership clarity'],
+        keywordHints: ['workaround', 'ETA']
+      }
+    ],
+    scenarioPrompts: [{ id: 'onb-s1', title: 'Late roster sync', prompt: 'Explain dependency without blaming humans.' }],
+    practicalOutputs: [{ id: 'onb-p1', title: 'Day-one verification card', description: 'Printable quick checklist by role.' }]
+  },
+  {
+    id: 'teams-sharepoint-onedrive-support',
+    title: 'Teams, SharePoint, and OneDrive Support',
+    description:
+      'First-line triage for collaboration sync, sharing links, channel membership confusion, and recoverable file paths.',
+    domain: 'Cloud and Platforms',
+    level: 'L1',
+    estimatedMinutes: 24,
+    tags: ['Teams', 'SharePoint', 'OneDrive', 'sync'],
+    learningObjectives: [
+      'Separate Teams client faults from SharePoint permission faults.',
+      'Coach safe link-sharing patterns aligned with school policy.',
+      'Recognise when escalation requires tenant-level investigation.'
+    ],
+    dcsRelevance: ['Collaboration outages feel existential.', 'Privacy mistakes propagate fast.'],
+    sections: [
+      {
+        id: 'tso-1',
+        title: 'Three-layer mental model',
+        bodyMarkdown:
+          'Identity sign-in → Teams shell → underlying SharePoint/OneDrive storage paths.'
+      },
+      {
+        id: 'tso-2',
+        title: 'Sync and cache clues',
+        bodyMarkdown:
+          'Stuck files, version conflicts, naming length limits—capture client versions.'
+      },
+      {
+        id: 'tso-3',
+        title: 'Sharing boundaries',
+        bodyMarkdown:
+          'Anyone links vs org-only; accidental external exposure—coach review before send.'
+      }
+    ],
+    flashcards: [
+      { id: 'tso-f1', front: 'SharePoint vs OneDrive quick?', back: 'Team/department persistence vs personal working library.' },
+      { id: 'tso-f2', front: 'Channel files location?', back: 'SharePoint site underpinning—not magical separate disk.' },
+      { id: 'tso-f3', front: 'Sync stuck?', back: 'Conflict files/version history angles.' },
+      { id: 'tso-f4', front: 'Missing team?', back: 'Group membership vs favourite pinning distinction.' },
+      { id: 'tso-f5', front: 'External sharing risk?', back: 'Accidental guest invites—review dial.' },
+      { id: 'tso-f6', front: 'Mobile symptom variance?', back: 'Different cache lifecycle.' },
+      { id: 'tso-f7', front: 'Search confusion?', back: 'Indexing delays vs actual missing permissions.' },
+      { id: 'tso-f8', front: 'Large file moves?', back: 'Think throttling or alternate sanctioned transfer.' },
+      { id: 'tso-f9', front: 'Deleted channel panic?', back: 'Recovery windows concept—escalate appropriately.' },
+      { id: 'tso-f10', front: 'Client updates?', back: 'Sometimes first safe mitigation.' }
+    ],
+    quiz: [
+      {
+        type: 'mcq',
+        id: 'tso-q1',
+        prompt: 'Staff cannot open Teams file tab—others OK.',
+        domain: 'Teams collaboration',
+        difficulty: 'foundation',
+        explanation: 'Scoped permission investigation.',
+        modelAnswer: 'Likely membership or channel-specific SharePoint permission drift.',
+        commonMistakes: ['Blaming entire Teams outage'],
+        dcsContext: 'Partial faults common.',
+        reviewSchedule,
+        recommendedModuleId: 'teams-sharepoint-onedrive-support',
+        weakTopic: 'dcs-teams-sharepoint-onedrive',
+        options: [
+          { id: 'a', label: 'Assume Microsoft globally down' },
+          { id: 'b', label: 'Investigate membership + SharePoint permissions for that channel resource' },
+          { id: 'c', label: 'Delete team to reset vibes' },
+          { id: 'd', label: 'Tell them email files only forever' }
+        ],
+        correctOptionId: 'b'
+      },
+      {
+        type: 'short-answer',
+        id: 'tso-q2',
+        prompt: 'Three questions diagnosing sync conflict.',
+        domain: 'Teams collaboration',
+        difficulty: 'stretch',
+        explanation: 'Version awareness.',
+        modelAnswer: 'Edited offline simultaneously? Same filename recursion? Different libraries crossed?',
+        commonMistakes: [],
+        dcsContext: 'Staff blame tech ghosts.',
+        reviewSchedule,
+        recommendedModuleId: 'teams-sharepoint-onedrive-support',
+        weakTopic: 'dcs-teams-sharepoint-onedrive',
+        rubric: ['Conflict angles'],
+        keywordHints: ['offline', 'duplicate']
+      },
+      {
+        type: 'order-steps',
+        id: 'tso-q3',
+        prompt: 'Order collaboration triage.',
+        domain: 'Teams collaboration',
+        difficulty: 'foundation',
+        explanation: 'Layer order.',
+        modelAnswer: 'Verify sign-in identity → verify membership → reproduce path → capture client versions → escalate if tenant-wide.',
+        commonMistakes: [],
+        dcsContext: 'Avoid reinstall obsession immediately.',
+        reviewSchedule,
+        recommendedModuleId: 'teams-sharepoint-onedrive-support',
+        weakTopic: 'dcs-teams-sharepoint-onedrive',
+        steps: [
+          { id: 'sig', label: 'Confirm signed-in identity context' },
+          { id: 'mem', label: 'Verify Teams/SharePoint membership' },
+          { id: 'rep', label: 'Reproduce resource path + timestamps' },
+          { id: 'ten', label: 'Escalate if correlated tenant-wide signal' }
+        ],
+        correctOrder: ['sig', 'mem', 'rep', 'ten'],
+        rubric: ['Layered']
+      },
+      {
+        type: 'scenario-response',
+        id: 'tso-q4',
+        prompt: 'Accidental public link shared containing assessment drafts.',
+        domain: 'Teams collaboration',
+        difficulty: 'challenge',
+        explanation: 'Incident framing.',
+        modelAnswer:
+          'Stop propagation coaching, revoke/modify link per policy guidance, escalate privacy-sensitive exposure, document calmly.',
+        commonMistakes: [],
+        dcsContext: 'Exam integrity stakes.',
+        reviewSchedule,
+        recommendedModuleId: 'teams-sharepoint-onedrive-support',
+        weakTopic: 'dcs-teams-sharepoint-onedrive',
+        rubric: ['Containment mindset']
+      },
+      {
+        type: 'mcq',
+        id: 'tso-q5',
+        prompt: 'Tenant-wide search outage suspicion?',
+        domain: 'Teams collaboration',
+        difficulty: 'stretch',
+        explanation: 'Correlation.',
+        modelAnswer: 'Multiple unrelated teams/users simultaneously search broken.',
+        commonMistakes: [],
+        dcsContext: 'Shift escalation upward.',
+        reviewSchedule,
+        recommendedModuleId: 'teams-sharepoint-onedrive-support',
+        weakTopic: 'dcs-teams-sharepoint-onedrive',
+        options: [
+          { id: 'a', label: 'Ignore if one VIP quiet' },
+          { id: 'b', label: 'Capture correlated evidence across roles + escalate service-wide' },
+          { id: 'c', label: 'Delete indexes locally only joke' },
+          { id: 'd', label: 'Ban search feature school-wide humor' }
+        ],
+        correctOptionId: 'b'
+      },
+      {
+        type: 'explain-it-simply',
+        id: 'tso-q6',
+        prompt: 'Explain personal vs team library quickly.',
+        domain: 'Teams collaboration',
+        difficulty: 'foundation',
+        explanation: 'Reduce mis-saves.',
+        modelAnswer:
+          'OneDrive is your draft notebook; team libraries are the shared cupboard everyone authorised can reach.',
+        commonMistakes: [],
+        dcsContext: 'Pedagogy metaphor.',
+        reviewSchedule,
+        recommendedModuleId: 'teams-sharepoint-onedrive-support',
+        weakTopic: 'dcs-teams-sharepoint-onedrive',
+        rubric: ['Metaphor clarity'],
+        keywordHints: ['draft', 'shared']
+      },
+      {
+        type: 'mcq',
+        id: 'tso-q7',
+        prompt: 'Coach safer sharing default?',
+        domain: 'Teams collaboration',
+        difficulty: 'foundation',
+        explanation: 'Least exposure.',
+        modelAnswer: 'Org-only unless explicit curriculum need.',
+        commonMistakes: [],
+        dcsContext: 'Reduce data leaks.',
+        reviewSchedule,
+        recommendedModuleId: 'teams-sharepoint-onedrive-support',
+        weakTopic: 'dcs-teams-sharepoint-onedrive',
+        options: [
+          { id: 'a', label: 'Anyone with link always fastest' },
+          { id: 'b', label: 'Prefer organisation-scoped links unless external collaboration approved' },
+          { id: 'c', label: 'Screenshots on Instagram fastest' },
+          { id: 'd', label: 'USB modem sneakernet default' }
+        ],
+        correctOptionId: 'b'
+      },
+      {
+        type: 'short-answer',
+        id: 'tso-q8',
+        prompt: 'Escalation sentence for persistent sync failure after client update.',
+        domain: 'Teams collaboration',
+        difficulty: 'stretch',
+        explanation: 'Evidence dense.',
+        modelAnswer:
+          'Reproduced on second device post-update; conflicts cleared; still failing—likely tenant-side investigation needed with logs captured.',
+        commonMistakes: [],
+        dcsContext: 'Signals preparation depth.',
+        reviewSchedule,
+        recommendedModuleId: 'teams-sharepoint-onedrive-support',
+        weakTopic: 'dcs-teams-sharepoint-onedrive',
+        rubric: ['Evidence + ask'],
+        keywordHints: ['reproduced', 'tenant']
+      }
+    ],
+    scenarioPrompts: [{ id: 'tso-s1', title: 'Mystery disappearing channel files', prompt: 'Differentiate deletion vs permission drift.' }],
+    practicalOutputs: [{ id: 'tso-p1', title: 'Collaboration triage one-pager', description: 'Teams/SharePoint layers quick diagram notes.' }]
+  },
+  {
+    id: 'ipad-jamf-workflow-basics',
+    title: 'iPad and Jamf Workflow Basics',
+    description:
+      'First-line triage for supervised devices: enrollment state, app installs, restrictions, and evidence capture before MDM escalation.',
+    domain: 'Endpoint Support',
+    level: 'L1',
+    estimatedMinutes: 21,
+    tags: ['iPad', 'Jamf', 'MDM', 'mobile'],
+    learningObjectives: [
+      'Read supervision/enrollment cues safely.',
+      'Differentiate policy restriction messages from network faults.',
+      'Package MDM escalation with identifiers minus oversharing.'
+    ],
+    dcsRelevance: ['Class sets amplify correlated failures.', 'MDM moves slowly—notes matter.'],
+    sections: [
+      {
+        id: 'jamf-1',
+        title: 'Enrollment mental model',
+        bodyMarkdown:
+          'Devices receive profiles and apps from MDM; missing profiles produce patterned restrictions or absent apps.'
+      },
+      {
+        id: 'jamf-2',
+        title: 'Safe classroom checks',
+        bodyMarkdown:
+          'Restart, verify Wi-Fi, confirm storage headroom, validate policy banner messaging—no jailbreak snake oil.'
+      },
+      {
+        id: 'jamf-3',
+        title: 'Escalation identifiers',
+        bodyMarkdown:
+          'Serial patterns, iOS version, last successful push timestamps if visible, scope counts.'
+      }
+    ],
+    flashcards: [
+      { id: 'jamf-f1', front: 'MDM scope?', back: 'Admin-defined profiles—not arbitrary toggles.' },
+      { id: 'jamf-f2', front: 'App missing?', back: 'Assignment vs device scope vs licensing layers.' },
+      { id: 'jamf-f3', front: 'Restriction screen?', back: 'Policy—not random glitch.' },
+      { id: 'jamf-f4', front: 'Network vs MDM?', back: 'Online but policies not updating—different path.' },
+      { id: 'jamf-f5', front: 'Storage pressure?', back: 'Updates fail mysteriously.' },
+      { id: 'jamf-f6', front: 'Correlation?', back: 'Whole class suggests assignment push failure.' },
+      { id: 'jamf-f7', front: 'Privacy?', back: 'Don’t screenshot student lock screens casually.' },
+      { id: 'jamf-f8', front: 'Lost mode?', back: 'Security-sensitive—authorised only.' },
+      { id: 'jamf-f9', front: 'User expectation?', back: 'Explain realistic MDM propagation delays.' },
+      { id: 'jamf-f10', front: 'Ticket clarity?', back: 'Counts + versions + timeline.' }
+    ],
+    quiz: [
+      {
+        type: 'mcq',
+        id: 'jamf-q1',
+        prompt: 'Single iPad lacks mandated app while peers OK.',
+        domain: 'Jamf basics',
+        difficulty: 'foundation',
+        explanation: 'Device-specific investigation.',
+        modelAnswer: 'Check enrollment health + targeted assignment vs group drift.',
+        commonMistakes: [],
+        dcsContext: 'Individual outliers.',
+        reviewSchedule,
+        recommendedModuleId: 'ipad-jamf-workflow-basics',
+        weakTopic: 'dcs-ipad-jamf',
+        options: [
+          { id: 'a', label: 'Erase school without approval' },
+          { id: 'b', label: 'Verify enrollment/app assignment signals before MDM deep dive escalation' },
+          { id: 'c', label: 'Tell student buy Android' },
+          { id: 'd', label: 'Disable MDM yourself' }
+        ],
+        correctOptionId: 'b'
+      },
+      {
+        type: 'short-answer',
+        id: 'jamf-q2',
+        prompt: 'Evidence bundle for MDM escalation.',
+        domain: 'Jamf basics',
+        difficulty: 'stretch',
+        explanation: 'Actionable.',
+        modelAnswer: 'Serial last four digits pattern substitute list, iOS version, symptom category, failed install message text, scope count, timestamp.',
+        commonMistakes: [],
+        dcsContext: 'Avoid listing full student roster unnecessarily.',
+        reviewSchedule,
+        recommendedModuleId: 'ipad-jamf-workflow-basics',
+        weakTopic: 'dcs-ipad-jamf',
+        rubric: ['Concrete artefacts'],
+        keywordHints: ['version', 'timestamp']
+      },
+      {
+        type: 'order-steps',
+        id: 'jamf-q3',
+        prompt: 'Order classroom iPad triage.',
+        domain: 'Jamf basics',
+        difficulty: 'foundation',
+        explanation: 'Safe cheap moves first.',
+        modelAnswer: 'Confirm Wi-Fi → storage → reboot → compare peer devices → capture restriction message → escalate MDM if correlated.',
+        commonMistakes: [],
+        dcsContext: 'Student patience thin.',
+        reviewSchedule,
+        recommendedModuleId: 'ipad-jamf-workflow-basics',
+        weakTopic: 'dcs-ipad-jamf',
+        steps: [
+          { id: 'wifi', label: 'Verify connectivity basics' },
+          { id: 'stor', label: 'Check storage headroom' },
+          { id: 'reb', label: 'Controlled reboot' },
+          { id: 'mdm', label: 'Escalate with correlated evidence if persists' }
+        ],
+        correctOrder: ['wifi', 'stor', 'reb', 'mdm'],
+        rubric: ['Low-risk first']
+      },
+      {
+        type: 'scenario-response',
+        id: 'jamf-q4',
+        prompt: 'Teacher demands immediate wipe of student iPad found unlocked.',
+        domain: 'Jamf basics',
+        difficulty: 'challenge',
+        explanation: 'Safeguarding device handling.',
+        modelAnswer:
+          'Pause—follow authorised safeguarding/device-loss playbook; remote wipe is sensitive; coordinate leadership/security—not solo impulse.',
+        commonMistakes: [],
+        dcsContext: 'Legal/safety nuances.',
+        reviewSchedule,
+        recommendedModuleId: 'ipad-jamf-workflow-basics',
+        weakTopic: 'dcs-ipad-jamf',
+        rubric: ['Policy-first']
+      },
+      {
+        type: 'mcq',
+        id: 'jamf-q5',
+        prompt: 'Whole class missing app after push?',
+        domain: 'Jamf basics',
+        difficulty: 'stretch',
+        explanation: 'Correlation.',
+        modelAnswer: 'Likely assignment/scoping push failure upstream.',
+        commonMistakes: [],
+        dcsContext: 'Efficiency—don’t loop per kid endlessly.',
+        reviewSchedule,
+        recommendedModuleId: 'ipad-jamf-workflow-basics',
+        weakTopic: 'dcs-ipad-jamf',
+        options: [
+          { id: 'a', label: 'Student discipline issue obviously' },
+          { id: 'b', label: 'Treat as probable MDM deployment scope failure & escalate with counts' },
+          { id: 'c', label: 'Ask kids reinstall personally Apple IDs improperly' },
+          { id: 'd', label: 'Ignore correlation magic' }
+        ],
+        correctOptionId: 'b'
+      },
+      {
+        type: 'explain-it-simply',
+        id: 'jamf-q6',
+        prompt: 'Explain profile installation delay.',
+        domain: 'Jamf basics',
+        difficulty: 'foundation',
+        explanation: 'Expectations.',
+        modelAnswer:
+          'The management server queues commands—devices check in periodically; urgent class impact belongs in escalation note.',
+        commonMistakes: [],
+        dcsContext: 'Teachers want instant.',
+        reviewSchedule,
+        recommendedModuleId: 'ipad-jamf-workflow-basics',
+        weakTopic: 'dcs-ipad-jamf',
+        rubric: ['Plain queued metaphor'],
+        keywordHints: ['check-in', 'queue']
+      },
+      {
+        type: 'mcq',
+        id: 'jamf-q7',
+        prompt: 'Restriction message screenshots?',
+        domain: 'Jamf basics',
+        difficulty: 'foundation',
+        explanation: 'Privacy cautious cropping.',
+        modelAnswer: 'Crop tightly to message chrome.',
+        commonMistakes: [],
+        dcsContext: 'Student wallpapers etc.',
+        reviewSchedule,
+        recommendedModuleId: 'ipad-jamf-workflow-basics',
+        weakTopic: 'dcs-ipad-jamf',
+        options: [
+          { id: 'a', label: 'Full student photo backgrounds okay always' },
+          { id: 'b', label: 'Prefer minimal crop showing restriction dialog text only' },
+          { id: 'c', label: 'Never screenshot even dialog' },
+          { id: 'd', label: 'Post to social media for laughs never real answer' }
+        ],
+        correctOptionId: 'b'
+      },
+      {
+        type: 'short-answer',
+        id: 'jamf-q8',
+        prompt: 'Differentiate network fault vs MDM push fault quickly.',
+        domain: 'Jamf basics',
+        difficulty: 'stretch',
+        explanation: 'Decision clarity.',
+        modelAnswer:
+          'If web browsing fails broadly on device independent of managed apps—network layer first; if online yet managed profiles/apps stale across cohort—MDM push suspicion.',
+        commonMistakes: [],
+        dcsContext: 'Layer isolation.',
+        reviewSchedule,
+        recommendedModuleId: 'ipad-jamf-workflow-basics',
+        weakTopic: 'dcs-ipad-jamf',
+        rubric: ['Layer reasoning'],
+        keywordHints: ['online', 'push']
+      }
+    ],
+    scenarioPrompts: [{ id: 'jamf-s1', title: 'Cart of iPads outdated profiles', prompt: 'Correlation escalation storyline.' }],
+    practicalOutputs: [{ id: 'jamf-p1', title: 'MDM escalation snapshot template', description: 'Minimal fields list for Jamf owners.' }]
+  }
+];

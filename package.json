@@ -1,0 +1,36 @@
+{
+  "name": "dcs-prep",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "dev:turbo": "next dev --turbo",
+    "dev:3000": "cross-env PORT=3000 next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "test": "vitest"
+  },
+  "dependencies": {
+    "lucide-react": "0.275.0",
+    "next": "14.2.35",
+    "react": "18.3.1",
+    "react-dom": "18.3.1",
+    "zod": "3.25.76",
+    "zustand": "4.5.7"
+  },
+  "devDependencies": {
+    "@testing-library/react": "14.3.1",
+    "@types/node": "18.19.130",
+    "@types/react": "18.3.28",
+    "autoprefixer": "10.5.0",
+    "cross-env": "7.0.3",
+    "eslint": "8.57.1",
+    "eslint-config-next": "14.2.35",
+    "postcss": "8.5.12",
+    "resolve-from": "5.0.0",
+    "tailwindcss": "3.4.19",
+    "typescript": "5.9.3",
+    "vitest": "1.6.1"
+  }
+}

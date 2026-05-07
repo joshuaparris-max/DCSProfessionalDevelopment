@@ -1,0 +1,1220 @@
+diff -ruN /mnt/data/dcsprep_src/DCSPrepApp/app/error-log/page.tsx /mnt/data/dcsprep_patchwork/app/error-log/page.tsx
+--- /mnt/data/dcsprep_src/DCSPrepApp/app/error-log/page.tsx	2026-04-29 23:46:20.000000000 +0000
++++ /mnt/data/dcsprep_patchwork/app/error-log/page.tsx	2026-04-30 02:29:17.634190881 +0000
+@@ -3,10 +3,11 @@
+ import Link from 'next/link';
+ import { useEffect, useState } from 'react';
+ import { weakTopicLabels } from '../../src/data/skillDomains';
++import { weakTopicCoaching } from '../../src/data/supportCoach';
+ import { getInitialProgressSnapshot, getStoredProgressSnapshot, type UserProgress } from '../../src/lib/progress';
+ 
+ type ErrorGroup = {
+-  key: string;
++  key: keyof typeof weakTopicLabels;
+   label: string;
+   attempts: UserProgress['assessmentAttempts'];
+ };
+@@ -18,7 +19,7 @@
+     setProgress(getStoredProgressSnapshot());
+   }, []);
+ 
+-  const groups: ErrorGroup[] = Object.entries(weakTopicLabels).map(([key, label]) => ({
++  const groups: ErrorGroup[] = (Object.entries(weakTopicLabels) as [keyof typeof weakTopicLabels, string][]).map(([key, label]) => ({
+     key,
+     label,
+     attempts: progress.assessmentAttempts
+@@ -35,61 +36,84 @@
+             Review recurring errors and weak areas
+           </h1>
+           <p className="mt-3 text-sm leading-7 text-slate-600">
+-            Use this log to identify repeated patterns in ports, DHCP, VLAN reasoning, offboarding, ticket quality,
+-            and risk judgement so they can be addressed systematically.
++            This error log now explains why each weak area matters at DCS, gives a next practice action, and links back
++            to the best module or workflow instead of just showing wrong answers.
+           </p>
+         </div>
+       </section>
+ 
+       <div className="space-y-5">
+-        {groups.map((group) => (
+-          <section key={group.key} className="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-sm">
+-            <div className="flex items-center justify-between">
+-              <h2 className="text-2xl font-semibold text-slate-900">{group.label}</h2>
+-              <div className="rounded-full bg-slate-100 px-4 py-2 text-sm text-slate-700">
+-                {group.attempts.length} logged
++        {groups.map((group) => {
++          const coaching = weakTopicCoaching[group.key];
++
++          return (
++            <section key={group.key} className="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-sm">
++              <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
++                <div>
++                  <h2 className="text-2xl font-semibold text-slate-900">{group.label}</h2>
++                  <p className="mt-3 max-w-3xl text-sm leading-7 text-slate-700">{coaching.dcsWhyItMatters}</p>
++                  <p className="mt-3 max-w-3xl text-sm leading-7 text-slate-700">
++                    <span className="font-semibold text-slate-900">Next practice:</span> {coaching.nextBestAction}
++                  </p>
++                </div>
++                <div className="flex flex-wrap gap-2">
++                  <div className="rounded-full bg-slate-100 px-4 py-2 text-sm text-slate-700">
++                    {group.attempts.length} logged
++                  </div>
++                  <Link href={coaching.recommendedHref} className="rounded-full bg-slate-900 px-4 py-2 text-sm text-white">
++                    Open module
++                  </Link>
++                </div>
+               </div>
+-            </div>
+ 
+-            <div className="mt-5 space-y-4">
+-              {group.attempts.length ? (
+-                group.attempts.map((attempt) => (
+-                  <div key={attempt.id} className="rounded-3xl border border-slate-200 bg-slate-50 p-5">
+-                    <div className="text-sm font-semibold text-slate-900">{attempt.prompt}</div>
+-                    <div className="mt-3 text-sm text-slate-700">
+-                      <span className="font-semibold text-slate-900">Recorded answer:</span> {attempt.answerSummary}
+-                    </div>
+-                    <div className="mt-2 text-sm text-slate-700">
+-                      <span className="font-semibold text-slate-900">Corrected concept:</span>{' '}
+-                      {attempt.feedback.correctedConcept}
+-                    </div>
+-                    <div className="mt-2 text-sm text-slate-700">
+-                      <span className="font-semibold text-slate-900">Next review:</span> {attempt.nextReviewDateIso}
+-                    </div>
+-                    <div className="mt-4 flex flex-wrap gap-3">
+-                      <Link
+-                        href={`/modules/${attempt.recommendedModuleId}`}
+-                        className="rounded-full border border-slate-200 bg-white px-4 py-2 text-sm text-slate-700"
+-                      >
+-                        Recommended module
+-                      </Link>
+-                      <Link
+-                        href={`/strict-quiz?topic=${attempt.weakTopic}`}
+-                        className="rounded-full bg-slate-900 px-4 py-2 text-sm text-white"
+-                      >
+-                        Reattempt assessment
+-                      </Link>
++              <div className="mt-5 rounded-3xl border border-amber-200 bg-amber-50 p-4 text-sm leading-7 text-amber-950">
++                <span className="font-semibold">Safe boundary:</span> {coaching.safeBoundary}
++              </div>
++
++              <div className="mt-5 space-y-4">
++                {group.attempts.length ? (
++                  group.attempts.map((attempt) => (
++                    <div key={attempt.id} className="rounded-3xl border border-slate-200 bg-slate-50 p-5">
++                      <div className="text-sm font-semibold text-slate-900">{attempt.prompt}</div>
++                      <div className="mt-3 text-sm text-slate-700">
++                        <span className="font-semibold text-slate-900">Recorded answer:</span> {attempt.answerSummary}
++                      </div>
++                      <div className="mt-2 text-sm text-slate-700">
++                        <span className="font-semibold text-slate-900">Corrected concept:</span>{' '}
++                        {attempt.feedback.correctedConcept}
++                      </div>
++                      <div className="mt-2 text-sm text-slate-700">
++                        <span className="font-semibold text-slate-900">Why it matters at DCS:</span>{' '}
++                        {coaching.dcsWhyItMatters}
++                      </div>
++                      <div className="mt-2 text-sm text-slate-700">
++                        <span className="font-semibold text-slate-900">Next review:</span> {attempt.nextReviewDateIso}
++                      </div>
++                      <div className="mt-4 flex flex-wrap gap-3">
++                        <Link
++                          href={`/modules/${attempt.recommendedModuleId}`}
++                          className="rounded-full bg-slate-900 px-4 py-2 text-sm text-white"
++                        >
++                          Open recommended module
++                        </Link>
++                        <Link
++                          href={`/strict-quiz?topic=${attempt.weakTopic}`}
++                          className="rounded-full border border-slate-200 bg-white px-4 py-2 text-sm text-slate-700"
++                        >
++                          Practise again
++                        </Link>
++                      </div>
+                     </div>
++                  ))
++                ) : (
++                  <div className="rounded-3xl bg-slate-50 p-5 text-sm text-slate-600">
++                    No active error entries for this topic yet. Use the practice prompt: {coaching.practicePrompt}
+                   </div>
+-                ))
+-              ) : (
+-                <div className="rounded-3xl bg-slate-50 p-5 text-sm text-slate-600">
+-                  No assessment items are currently logged in this category.
+-                </div>
+-              )}
+-            </div>
+-          </section>
+-        ))}
++                )}
++              </div>
++            </section>
++          );
++        })}
+       </div>
+     </div>
+   );
+diff -ruN /mnt/data/dcsprep_src/DCSPrepApp/app/next-best-action/page.tsx /mnt/data/dcsprep_patchwork/app/next-best-action/page.tsx
+--- /mnt/data/dcsprep_src/DCSPrepApp/app/next-best-action/page.tsx	1970-01-01 00:00:00.000000000 +0000
++++ /mnt/data/dcsprep_patchwork/app/next-best-action/page.tsx	2026-04-30 02:27:43.147690875 +0000
+@@ -0,0 +1,84 @@
++"use client";
++
++import Link from 'next/link';
++import { useEffect, useState } from 'react';
++import { modules } from '../../src/data/modules';
++import { getInitialProgressSnapshot, getStoredProgressSnapshot, type UserProgress } from '../../src/lib/progress';
++import { getNextBestAction, getWeakAreaSignals } from '../../src/lib/weakAreaEngine';
++
++export default function NextBestActionPage() {
++  const [progress, setProgress] = useState<UserProgress>(() => getInitialProgressSnapshot(modules));
++
++  useEffect(() => {
++    setProgress(getStoredProgressSnapshot(modules));
++  }, []);
++
++  const signals = getWeakAreaSignals(progress);
++  const nextAction = getNextBestAction(progress);
++  const topFive = signals.slice(0, 5);
++
++  return (
++    <div className="space-y-6">
++      <section className="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-sm">
++        <div className="max-w-3xl">
++          <div className="text-sm font-semibold uppercase tracking-[0.2em] text-slate-500">Next-best-action engine</div>
++          <h1 className="mt-3 text-3xl font-semibold tracking-tight text-slate-900">What should Josh study next?</h1>
++          <p className="mt-3 text-sm leading-7 text-slate-600">
++            This page ranks weak areas using assessment attempts, due reviews, revisit flags, and available evidence. It
++            favours practical DCS support judgement over vague completion percentages.
++          </p>
++        </div>
++      </section>
++
++      <section className="rounded-[2rem] border border-slate-200 bg-slate-900 p-6 text-white shadow-sm">
++        <div className="text-sm font-semibold uppercase tracking-[0.2em] text-slate-300">Recommended now</div>
++        <h2 className="mt-3 text-3xl font-semibold">{nextAction.title}</h2>
++        <p className="mt-3 max-w-3xl text-sm leading-7 text-slate-200">{nextAction.detail}</p>
++        <Link href={nextAction.href} className="mt-5 inline-flex rounded-full bg-white px-4 py-2 text-sm font-medium text-slate-900">
++          {nextAction.ctaLabel}
++        </Link>
++      </section>
++
++      <section className="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-sm">
++        <h2 className="text-2xl font-semibold text-slate-900">Top weak-area signals</h2>
++        <div className="mt-5 grid gap-4 lg:grid-cols-2">
++          {topFive.map((signal) => (
++            <article key={signal.topic} className="rounded-3xl border border-slate-200 bg-slate-50 p-5">
++              <div className="flex items-start justify-between gap-4">
++                <div>
++                  <div className="text-xs uppercase tracking-[0.2em] text-slate-500">Priority {Math.round(signal.priorityScore)} / 100</div>
++                  <h3 className="mt-2 text-xl font-semibold text-slate-900">{signal.label}</h3>
++                </div>
++                <div className="rounded-full bg-white px-3 py-1 text-xs text-slate-600">{signal.evidenceCount} evidence</div>
++              </div>
++
++              <p className="mt-4 text-sm leading-7 text-slate-700">{signal.dcsWhyItMatters}</p>
++
++              <div className="mt-4 rounded-2xl bg-white p-4 text-sm text-slate-700">
++                <div className="font-semibold text-slate-900">Why it is ranking here</div>
++                <ul className="mt-2 space-y-1">
++                  {signal.reasons.map((reason) => (
++                    <li key={reason}>- {reason}</li>
++                  ))}
++                </ul>
++              </div>
++
++              <div className="mt-4 rounded-2xl bg-white p-4 text-sm text-slate-700">
++                <div className="font-semibold text-slate-900">Practice prompt</div>
++                <p className="mt-2">{signal.practicePrompt}</p>
++              </div>
++
++              <p className="mt-4 text-sm leading-6 text-slate-600">
++                <span className="font-semibold text-slate-900">Boundary:</span> {signal.safeBoundary}
++              </p>
++
++              <Link href={signal.recommendedHref} className="mt-4 inline-flex rounded-full bg-slate-900 px-4 py-2 text-sm text-white">
++                Open recommended module
++              </Link>
++            </article>
++          ))}
++        </div>
++      </section>
++    </div>
++  );
++}
+diff -ruN /mnt/data/dcsprep_src/DCSPrepApp/app/ownership-map/page.tsx /mnt/data/dcsprep_patchwork/app/ownership-map/page.tsx
+--- /mnt/data/dcsprep_src/DCSPrepApp/app/ownership-map/page.tsx	1970-01-01 00:00:00.000000000 +0000
++++ /mnt/data/dcsprep_patchwork/app/ownership-map/page.tsx	2026-04-30 02:27:43.239475437 +0000
+@@ -0,0 +1,58 @@
++import { ownershipAreas } from '../../src/data/supportCoach';
++
++export default function OwnershipMapPage() {
++  return (
++    <div className="space-y-6">
++      <section className="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-sm">
++        <div className="max-w-3xl">
++          <div className="text-sm font-semibold uppercase tracking-[0.2em] text-slate-500">System ownership map</div>
++          <h1 className="mt-3 text-3xl font-semibold tracking-tight text-slate-900">Who owns what?</h1>
++          <p className="mt-3 text-sm leading-7 text-slate-600">
++            Use this to avoid over-owning admin systems, production settings, sensitive access, or vendor-level faults.
++            Josh&apos;s strongest Level 1 lane is triage, evidence capture, safe first checks, and clean escalation.
++          </p>
++        </div>
++      </section>
++
++      <section className="grid gap-5 lg:grid-cols-2">
++        {ownershipAreas.map((area) => (
++          <article key={area.id} className="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-sm">
++            <div className="flex flex-wrap items-center gap-2">
++              <span className="rounded-full bg-slate-900 px-3 py-1 text-xs font-medium text-white">{area.primaryOwner}</span>
++              <span className="rounded-full bg-slate-100 px-3 py-1 text-xs text-slate-600">Ownership boundary</span>
++            </div>
++            <h2 className="mt-4 text-2xl font-semibold text-slate-900">{area.title}</h2>
++            <p className="mt-3 text-sm leading-7 text-slate-700">{area.joshRole}</p>
++
++            <div className="mt-5 grid gap-4 md:grid-cols-2">
++              <div className="rounded-3xl bg-slate-50 p-4">
++                <div className="font-semibold text-slate-900">Examples</div>
++                <ul className="mt-2 space-y-1 text-sm text-slate-700">
++                  {area.examples.map((item) => <li key={item}>- {item}</li>)}
++                </ul>
++              </div>
++              <div className="rounded-3xl bg-slate-50 p-4">
++                <div className="font-semibold text-slate-900">Capture before escalation</div>
++                <ul className="mt-2 space-y-1 text-sm text-slate-700">
++                  {area.captureBeforeEscalation.map((item) => <li key={item}>- {item}</li>)}
++                </ul>
++              </div>
++            </div>
++
++            <div className="mt-4 rounded-3xl border border-amber-200 bg-amber-50 p-4">
++              <div className="font-semibold text-amber-950">Avoid</div>
++              <ul className="mt-2 space-y-1 text-sm text-amber-950">
++                {area.avoid.map((item) => <li key={item}>- {item}</li>)}
++              </ul>
++            </div>
++
++            <div className="mt-4 rounded-3xl bg-slate-900 p-4 text-sm leading-7 text-white">
++              <div className="font-semibold">Safe escalation wording</div>
++              <p className="mt-2 text-slate-100">{area.escalationWording}</p>
++            </div>
++          </article>
++        ))}
++      </section>
++    </div>
++  );
++}
+diff -ruN /mnt/data/dcsprep_src/DCSPrepApp/app/page.tsx /mnt/data/dcsprep_patchwork/app/page.tsx
+--- /mnt/data/dcsprep_src/DCSPrepApp/app/page.tsx	2026-04-29 23:46:20.000000000 +0000
++++ /mnt/data/dcsprep_patchwork/app/page.tsx	2026-04-30 02:28:58.848765675 +0000
+@@ -4,6 +4,7 @@
+ import { useEffect, useState } from 'react';
+ import { modules } from '../src/data/modules';
+ import { getDashboardRecommendation, getCurrentWeakFocus } from '../src/lib/readinessMath';
++import { getNextBestAction } from '../src/lib/weakAreaEngine';
+ import { getInitialProgressSnapshot, getStoredProgressSnapshot, type UserProgress } from '../src/lib/progress';
+ import { isDue } from '../src/lib/spacedRepetition';
+ import { getOverallProgress } from '../src/lib/moduleMath';
+@@ -30,13 +31,14 @@
+     .filter((entry) => entry.date.startsWith(getMonthKey(new Date())))
+     .reduce((sum, entry) => sum + entry.minutes, 0);
+   const recommendation = getDashboardRecommendation(progress);
++  const nextBestAction = getNextBestAction(progress);
+   const overallProgress = getOverallProgress(modules, progress);
+   const weakestFocus = getCurrentWeakFocus(progress);
+ 
+   return (
+     <div className="space-y-6">
+       <section className="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-sm">
+-        <div className="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
++        <div className="flex flex-col gap-6 xl:flex-row xl:items-start xl:justify-between">
+           <div className="max-w-3xl">
+             <div className="text-sm font-semibold uppercase tracking-[0.2em] text-slate-500">Professional development dashboard</div>
+             <h1 className="mt-3 text-4xl font-semibold tracking-tight text-slate-900">
+@@ -48,16 +50,24 @@
+             </p>
+           </div>
+ 
+-          <div className="w-full max-w-sm rounded-[2rem] bg-slate-100 p-5">
+-            <div className="text-sm font-semibold uppercase tracking-[0.2em] text-slate-500">Recommended 20-minute block</div>
+-            <h2 className="mt-3 text-2xl font-semibold text-slate-900">{recommendation.title}</h2>
+-            <p className="mt-3 text-sm leading-7 text-slate-700">{recommendation.detail}</p>
+-            <Link
+-              href={recommendation.ctaHref}
+-              className="mt-5 inline-flex rounded-full bg-slate-900 px-4 py-2 text-sm text-white"
+-            >
+-              {recommendation.ctaLabel}
+-            </Link>
++          <div className="grid w-full max-w-3xl gap-4 md:grid-cols-2">
++            <div className="rounded-[2rem] bg-slate-100 p-5">
++              <div className="text-sm font-semibold uppercase tracking-[0.2em] text-slate-500">Recommended 20-minute block</div>
++              <h2 className="mt-3 text-2xl font-semibold text-slate-900">{recommendation.title}</h2>
++              <p className="mt-3 text-sm leading-7 text-slate-700">{recommendation.detail}</p>
++              <Link href={recommendation.ctaHref} className="mt-5 inline-flex rounded-full bg-slate-900 px-4 py-2 text-sm text-white">
++                {recommendation.ctaLabel}
++              </Link>
++            </div>
++
++            <div className="rounded-[2rem] bg-emerald-50 p-5">
++              <div className="text-sm font-semibold uppercase tracking-[0.2em] text-emerald-700">Weak-area engine</div>
++              <h2 className="mt-3 text-2xl font-semibold text-slate-900">{nextBestAction.title}</h2>
++              <p className="mt-3 text-sm leading-7 text-slate-700">{nextBestAction.detail}</p>
++              <Link href={nextBestAction.href} className="mt-5 inline-flex rounded-full bg-emerald-700 px-4 py-2 text-sm text-white">
++                {nextBestAction.ctaLabel}
++              </Link>
++            </div>
+           </div>
+         </div>
+       </section>
+@@ -100,6 +110,10 @@
+             ['Start 10-question assessment', '/strict-quiz'],
+             ['Scenario Lab for situational practice', '/scenarios'],
+             ['Review flashcards due today', '/due-today'],
++            ['Next best action', '/next-best-action'],
++            ['System ownership map', '/ownership-map'],
++            ['Workflow decision trees', '/workflow-trees'],
++            ['Privacy wording trainer', '/privacy-wording'],
+             ['Add PD log entry', '/pd-log'],
+             ['View readiness profiles', '/readiness']
+           ].map(([label, href]) => (
+diff -ruN /mnt/data/dcsprep_src/DCSPrepApp/app/privacy-wording/page.tsx /mnt/data/dcsprep_patchwork/app/privacy-wording/page.tsx
+--- /mnt/data/dcsprep_src/DCSPrepApp/app/privacy-wording/page.tsx	1970-01-01 00:00:00.000000000 +0000
++++ /mnt/data/dcsprep_patchwork/app/privacy-wording/page.tsx	2026-04-30 02:27:43.251291063 +0000
+@@ -0,0 +1,87 @@
++"use client";
++
++import { useMemo, useState } from 'react';
++import { privacyWordingExamples } from '../../src/data/supportCoach';
++import { reviewPrivacyWording } from '../../src/lib/privacyWording';
++
++export default function PrivacyWordingPage() {
++  const [draft, setDraft] = useState('Sarah Smith in Year 8 cannot log in and thinks her password is wrong.');
++  const review = useMemo(() => reviewPrivacyWording(draft), [draft]);
++
++  return (
++    <div className="space-y-6">
++      <section className="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-sm">
++        <div className="max-w-3xl">
++          <div className="text-sm font-semibold uppercase tracking-[0.2em] text-slate-500">Privacy-safe wording trainer</div>
++          <h1 className="mt-3 text-3xl font-semibold tracking-tight text-slate-900">Rewrite support notes safely</h1>
++          <p className="mt-3 text-sm leading-7 text-slate-600">
++            Practise turning messy notes into professional, manager-safe wording. This is a local rule-based trainer,
++            not an AI call, and it should still avoid real DCS private details.
++          </p>
++        </div>
++      </section>
++
++      <section className="grid gap-6 lg:grid-cols-2">
++        <div className="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-sm">
++          <h2 className="text-2xl font-semibold text-slate-900">Messy note</h2>
++          <textarea
++            value={draft}
++            onChange={(event) => setDraft(event.target.value)}
++            className="mt-4 min-h-56 w-full rounded-3xl border border-slate-200 px-4 py-3 text-sm text-slate-800 outline-none focus:border-slate-900"
++          />
++          <p className="mt-3 text-xs leading-6 text-slate-500">
++            Do not paste live ticket details, student names, parent names, credentials, IP addresses, or confidential procedures.
++          </p>
++        </div>
++
++        <div className="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-sm">
++          <div className="flex items-center justify-between gap-3">
++            <h2 className="text-2xl font-semibold text-slate-900">Safer version</h2>
++            <span className={`rounded-full px-3 py-1 text-xs font-medium ${
++              review.riskLevel === 'high'
++                ? 'bg-red-100 text-red-800'
++                : review.riskLevel === 'medium'
++                ? 'bg-amber-100 text-amber-800'
++                : 'bg-emerald-100 text-emerald-800'
++            }`}>
++              {review.riskLevel} risk
++            </span>
++          </div>
++
++          <div className="mt-4 rounded-3xl bg-slate-50 p-5 text-sm leading-7 text-slate-800">{review.saferDraft}</div>
++
++          <div className="mt-5 rounded-3xl border border-slate-200 p-4">
++            <div className="font-semibold text-slate-900">Warnings</div>
++            {review.warnings.length ? (
++              <ul className="mt-2 space-y-1 text-sm text-slate-700">
++                {review.warnings.map((warning) => <li key={warning}>- {warning}</li>)}
++              </ul>
++            ) : (
++              <p className="mt-2 text-sm text-slate-600">No obvious privacy warning from the local rule set.</p>
++            )}
++          </div>
++        </div>
++      </section>
++
++      <section className="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-sm">
++        <h2 className="text-2xl font-semibold text-slate-900">Examples</h2>
++        <div className="mt-5 grid gap-4 lg:grid-cols-2">
++          {privacyWordingExamples.map((example) => (
++            <article key={example.id} className="rounded-3xl border border-slate-200 bg-slate-50 p-5">
++              <h3 className="text-lg font-semibold text-slate-900">{example.title}</h3>
++              <div className="mt-3 rounded-2xl bg-red-50 p-4 text-sm text-red-950">
++                <div className="font-semibold">Risky</div>
++                <p className="mt-1">{example.unsafe}</p>
++              </div>
++              <div className="mt-3 rounded-2xl bg-emerald-50 p-4 text-sm text-emerald-950">
++                <div className="font-semibold">Safer</div>
++                <p className="mt-1">{example.safer}</p>
++              </div>
++              <p className="mt-3 text-sm leading-6 text-slate-600">{example.why}</p>
++            </article>
++          ))}
++        </div>
++      </section>
++    </div>
++  );
++}
+diff -ruN /mnt/data/dcsprep_src/DCSPrepApp/app/workflow-trees/page.tsx /mnt/data/dcsprep_patchwork/app/workflow-trees/page.tsx
+--- /mnt/data/dcsprep_src/DCSPrepApp/app/workflow-trees/page.tsx	1970-01-01 00:00:00.000000000 +0000
++++ /mnt/data/dcsprep_patchwork/app/workflow-trees/page.tsx	2026-04-30 02:28:01.148092780 +0000
+@@ -0,0 +1,131 @@
++"use client";
++
++import { useState } from 'react';
++import { ownershipAreas, workflowTrees } from '../../src/data/supportCoach';
++import { getWorkflowStep, getWorkflowTree } from '../../src/lib/workflowTrees';
++
++export default function WorkflowTreesPage() {
++  const [treeId, setTreeId] = useState(workflowTrees[0]?.id || '');
++  const tree = getWorkflowTree(treeId);
++  const [stepId, setStepId] = useState(tree.startingStepId);
++  const [history, setHistory] = useState<string[]>([]);
++  const step = getWorkflowStep(tree.id, stepId);
++  const ownership = ownershipAreas.find((area) => area.id === tree.ownerAreaId);
++
++  function selectTree(nextTreeId: string) {
++    const nextTree = getWorkflowTree(nextTreeId);
++    setTreeId(nextTree.id);
++    setStepId(nextTree.startingStepId);
++    setHistory([]);
++  }
++
++  return (
++    <div className="space-y-6">
++      <section className="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-sm">
++        <div className="max-w-3xl">
++          <div className="text-sm font-semibold uppercase tracking-[0.2em] text-slate-500">DCS workflow decision trees</div>
++          <h1 className="mt-3 text-3xl font-semibold tracking-tight text-slate-900">Practise safe first-line flow</h1>
++          <p className="mt-3 text-sm leading-7 text-slate-600">
++            These are short interactive support flows. Each one teaches first-line triage, evidence capture,
++            ownership boundaries, and the final ticket note.
++          </p>
++        </div>
++      </section>
++
++      <div className="grid gap-6 lg:grid-cols-[320px_minmax(0,1fr)]">
++        <aside className="space-y-3">
++          {workflowTrees.map((entry) => (
++            <button
++              key={entry.id}
++              onClick={() => selectTree(entry.id)}
++              className={`w-full rounded-[2rem] border p-5 text-left shadow-sm ${
++                entry.id === tree.id ? 'border-slate-900 bg-slate-900 text-white' : 'border-slate-200 bg-white text-slate-800'
++              }`}
++            >
++              <div className="text-xs uppercase tracking-[0.2em] opacity-70">Decision tree</div>
++              <div className="mt-3 text-lg font-semibold">{entry.title}</div>
++              <p className="mt-2 text-sm leading-6 opacity-80">{entry.summary}</p>
++            </button>
++          ))}
++        </aside>
++
++        <main className="space-y-6">
++          <section className="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-sm">
++            <div className="flex flex-wrap items-center gap-2">
++              {tree.relatedWeakTopics.map((topic) => (
++                <span key={topic} className="rounded-full bg-slate-100 px-3 py-1 text-xs text-slate-600">{topic}</span>
++              ))}
++            </div>
++            <h2 className="mt-4 text-2xl font-semibold text-slate-900">{tree.title}</h2>
++            <p className="mt-3 text-sm leading-7 text-slate-600">{tree.summary}</p>
++            {ownership ? (
++              <div className="mt-4 rounded-3xl bg-amber-50 p-4 text-sm leading-7 text-amber-950">
++                <span className="font-semibold">Boundary:</span> {ownership.joshRole}
++              </div>
++            ) : null}
++          </section>
++
++          {step ? (
++            <section className="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-sm">
++              <div className="text-xs uppercase tracking-[0.2em] text-slate-500">Current step</div>
++              <h3 className="mt-3 text-2xl font-semibold text-slate-900">{step.title}</h3>
++              <p className="mt-3 text-sm leading-7 text-slate-700">{step.prompt}</p>
++
++              <div className="mt-5 space-y-3">
++                {step.choices.map((choice) => (
++                  <button
++                    key={choice.id}
++                    onClick={() => {
++                      setHistory((current) => [...current, `${choice.label}: ${choice.outcome}`]);
++                      if (choice.nextStepId) {
++                        setStepId(choice.nextStepId);
++                      }
++                    }}
++                    className={`w-full rounded-3xl border p-5 text-left ${
++                      choice.recommended ? 'border-emerald-200 bg-emerald-50 text-emerald-950' : 'border-slate-200 bg-slate-50 text-slate-800'
++                    }`}
++                  >
++                    <div className="font-semibold">{choice.label}</div>
++                    <p className="mt-2 text-sm leading-6 opacity-80">{choice.outcome}</p>
++                  </button>
++                ))}
++              </div>
++
++              {step.finalNote ? (
++                <div className="mt-5 rounded-3xl border border-slate-200 bg-slate-50 p-4 text-sm leading-7 text-slate-700">
++                  <span className="font-semibold text-slate-900">Final decision point:</span> {step.finalNote}
++                </div>
++              ) : null}
++
++              <div className="mt-5 flex flex-wrap gap-3">
++                <button
++                  onClick={() => {
++                    setStepId(tree.startingStepId);
++                    setHistory([]);
++                  }}
++                  className="rounded-full border border-slate-200 bg-white px-4 py-2 text-sm text-slate-700"
++                >
++                  Restart this tree
++                </button>
++              </div>
++            </section>
++          ) : null}
++
++          <section className="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-sm">
++            <h3 className="text-xl font-semibold text-slate-900">Model ticket note</h3>
++            <p className="mt-3 rounded-3xl bg-slate-50 p-4 text-sm leading-7 text-slate-700">{tree.modelTicketNote}</p>
++
++            <h3 className="mt-6 text-xl font-semibold text-slate-900">Your path this run</h3>
++            {history.length ? (
++              <ol className="mt-3 space-y-2 text-sm text-slate-700">
++                {history.map((item, index) => <li key={`${item}-${index}`}>{index + 1}. {item}</li>)}
++              </ol>
++            ) : (
++              <p className="mt-3 text-sm text-slate-600">No choices made yet.</p>
++            )}
++          </section>
++        </main>
++      </div>
++    </div>
++  );
++}
+diff -ruN /mnt/data/dcsprep_src/DCSPrepApp/src/components/shell/navigation.ts /mnt/data/dcsprep_patchwork/src/components/shell/navigation.ts
+--- /mnt/data/dcsprep_src/DCSPrepApp/src/components/shell/navigation.ts	2026-04-29 06:01:04.000000000 +0000
++++ /mnt/data/dcsprep_patchwork/src/components/shell/navigation.ts	2026-04-30 02:28:39.634169057 +0000
+@@ -3,6 +3,10 @@
+   { href: '/modules', label: 'Modules' },
+   { href: '/scenarios', label: 'Scenario Lab' },
+   { href: '/due-today', label: 'Due Today' },
++  { href: '/next-best-action', label: 'Next Best Action' },
++  { href: '/ownership-map', label: 'Ownership Map' },
++  { href: '/workflow-trees', label: 'Workflow Trees' },
++  { href: '/privacy-wording', label: 'Privacy Wording' },
+   { href: '/strict-quiz', label: 'Strict Quiz' },
+   { href: '/pd-log', label: 'PD Log' },
+   { href: '/error-log', label: 'Error Log' },
+diff -ruN /mnt/data/dcsprep_src/DCSPrepApp/src/data/supportCoach.ts /mnt/data/dcsprep_patchwork/src/data/supportCoach.ts
+--- /mnt/data/dcsprep_src/DCSPrepApp/src/data/supportCoach.ts	1970-01-01 00:00:00.000000000 +0000
++++ /mnt/data/dcsprep_patchwork/src/data/supportCoach.ts	2026-04-30 02:26:51.136935130 +0000
+@@ -0,0 +1,387 @@
++import type { WeakTopicKey } from '../types/assessment';
++
++export type WeakTopicCoaching = {
++  topic: WeakTopicKey;
++  dcsWhyItMatters: string;
++  nextBestAction: string;
++  recommendedHref: string;
++  practicePrompt: string;
++  safeBoundary: string;
++};
++
++export const weakTopicCoaching: Record<WeakTopicKey, WeakTopicCoaching> = {
++  'ports-protocols': {
++    topic: 'ports-protocols',
++    dcsWhyItMatters:
++      'Ports and protocols help Josh understand what service might be failing before escalating. This affects web access, printing, remote support, email, file access, and basic network conversations.',
++    nextBestAction: 'Do one ports/protocols drill, then explain where HTTP, HTTPS, DNS, DHCP, SMB, and RDP would appear in school support.',
++    recommendedHref: '/modules/ports-and-protocols',
++    practicePrompt: 'A staff device can browse websites but cannot access a shared file path. What services or protocols could be involved?',
++    safeBoundary: 'Do not change firewall, DNS, DHCP, or server settings. Capture evidence and escalate.'
++  },
++  'dns-dhcp-gateway': {
++    topic: 'dns-dhcp-gateway',
++    dcsWhyItMatters:
++      'DNS, DHCP, gateway, and APIPA reasoning is core to Level 1 Wi-Fi and classroom connectivity triage. It helps separate one-device issues from network-wide issues.',
++    nextBestAction: 'Review DHCP vs DNS vs gateway, then practise the 169.254 student laptop scenario.',
++    recommendedHref: '/modules/dns-dhcp-gateway-ip-basics',
++    practicePrompt: 'A student laptop has a 169.254.x.x address. What does that suggest, and what safe checks should come first?',
++    safeBoundary: 'Do not change scopes, reservations, VLANs, or network infrastructure. Compare devices and escalate clearly.'
++  },
++  'vlan-firewall-rules': {
++    topic: 'vlan-firewall-rules',
++    dcsWhyItMatters:
++      'VLAN and firewall rule understanding helps Josh describe guest, staff, student, printer, and server access boundaries without making unsafe network changes.',
++    nextBestAction: 'Practise explaining source, destination, service, and action in one guest Wi-Fi rule.',
++    recommendedHref: '/modules/vlans-network-segmentation',
++    practicePrompt: 'A guest Wi-Fi device should reach the internet but not internal printers. Write the rule in plain English.',
++    safeBoundary: 'Rule design is learning only unless assigned. Do not edit production network rules.'
++  },
++  'cloud-models': {
++    topic: 'cloud-models',
++    dcsWhyItMatters:
++      'Cloud model fluency helps Josh distinguish SaaS platforms like M365, Schoolbox/OurDCS, Sentral-style systems, hosted desktops, and local installs.',
++    nextBestAction: 'Make a DCS + A+ bridge card for SaaS, IaaS, PaaS, and DaaS using school examples.',
++    recommendedHref: '/modules/cloud-models-saas-paas-iaas-daas',
++    practicePrompt: 'Explain why M365 is SaaS and why that changes what Level 1 support can fix directly.',
++    safeBoundary: 'Do not claim ownership of vendor or cloud tenant admin decisions unless explicitly assigned.'
++  },
++  'offboarding-sequence': {
++    topic: 'offboarding-sequence',
++    dcsWhyItMatters:
++      'Offboarding sequence matters because identity, sessions, devices, groups, mailboxes, files, and shared resources can create privacy and access risk if handled poorly.',
++    nextBestAction: 'Review block sign-in, revoke sessions, MFA cleanup, group removal, and shared-resource handoff as concepts.',
++    recommendedHref: '/modules/m365-identity-offboarding-basics',
++    practicePrompt: 'A former staff member still appears active in Teams. What evidence should Josh capture before escalation?',
++    safeBoundary: 'Do not perform production offboarding actions unless assigned. Learn the sequence and escalate cleanly.'
++  },
++  'mdm-group-policy': {
++    topic: 'mdm-group-policy',
++    dcsWhyItMatters:
++      'MDM and Group Policy concepts explain why apps, printers, Wi-Fi profiles, restrictions, and settings may apply differently across devices and users.',
++    nextBestAction: 'Practise sorting symptoms into device policy, user policy, app deployment, network, or escalation.',
++    recommendedHref: '/modules/mdm-intune-group-policy-concepts',
++    practicePrompt: 'A managed iPad is missing an expected app. What evidence should Josh capture before escalation?',
++    safeBoundary: 'Do not wipe, retire, enrol, or change policies unless assigned. Capture device state and hand off.'
++  },
++  'printer-symptoms': {
++    topic: 'printer-symptoms',
++    dcsWhyItMatters:
++      'Printer symptom reasoning is high-frequency school IT work. It separates queue problems, release problems, device faults, toner/fuser issues, and service-call needs.',
++    nextBestAction: 'Review queue-vs-device-vs-PaperCut reasoning, then write a service-call handoff note.',
++    recommendedHref: '/modules/printer-troubleshooting',
++    practicePrompt: 'A teacher says the printer is broken, but jobs are sitting in a queue. What should Josh check first?',
++    safeBoundary: 'Avoid deep printer configuration changes unless assigned. Capture model, location, symptom, queue, and impact.'
++  },
++  'ticket-quality': {
++    topic: 'ticket-quality',
++    dcsWhyItMatters:
++      'Ticket quality is one of the highest-value Level 1 skills. Good notes reduce back-and-forth, protect privacy, and help Paul or Level 2 act quickly.',
++    nextBestAction: 'Rewrite one messy support note using who/where/device, exact symptom, scope, steps tried, urgency, and next action.',
++    recommendedHref: '/modules/ticket-notes-escalation-quality',
++    practicePrompt: 'Turn “internet not working in class” into a clear Jira-style escalation note.',
++    safeBoundary: 'Do not include passwords, student details, family details, private incident detail, or unnecessary names.'
++  },
++  'security-risk-judgement': {
++    topic: 'security-risk-judgement',
++    dcsWhyItMatters:
++      'Security judgement protects students, staff, systems, and trust. It matters for phishing, suspicious login prompts, account compromise, privacy wording, and escalation urgency.',
++    nextBestAction: 'Practise the phishing reported-by-staff workflow and write a privacy-safe escalation note.',
++    recommendedHref: '/modules/ticket-notes-escalation-quality',
++    practicePrompt: 'A staff member reports a suspicious email. What should Josh ask them not to do, and what should be captured?',
++    safeBoundary: 'Do not inspect sensitive mailbox content unnecessarily. Preserve evidence and escalate through the correct channel.'
++  }
++};
++
++export type OwnershipArea = {
++  id: string;
++  title: string;
++  primaryOwner: 'ICT' | 'Admin' | 'Leadership' | 'Teacher / Faculty' | 'Vendor / External' | 'Shared';
++  joshRole: string;
++  examples: string[];
++  captureBeforeEscalation: string[];
++  avoid: string[];
++  escalationWording: string;
++};
++
++export const ownershipAreas: OwnershipArea[] = [
++  {
++    id: 'classroom-av',
++    title: 'Classroom display, ViewBoard, audio, HDMI, USB-C',
++    primaryOwner: 'ICT',
++    joshRole: 'First-line triage: source/input, Windows + P, cable/adaptor, audio output, touch symptom, room impact, then escalate recurring or hardware faults.',
++    examples: ['ViewBoard not displaying', 'HDMI works but no audio', 'Touch not working', 'Projector thermal or lamp symptoms'],
++    captureBeforeEscalation: ['Room', 'device', 'connection type', 'input/source', 'Windows + P mode', 'one device or many', 'steps already tried'],
++    avoid: ['Opening wall plates', 'Changing room infrastructure configuration', 'Assuming the teacher caused it'],
++    escalationWording:
++      'Room/display issue captured. First-line checks completed: source/input, Windows + P, cable/adaptor, and audio path. Escalating due to recurring or hardware-level symptoms.'
++  },
++  {
++    id: 'identity-login',
++    title: 'Login, password, lockout, MFA, account access',
++    primaryOwner: 'ICT',
++    joshRole: 'Safe first-line identity triage: confirm username/context, never ask for passwords, identify lockout/MFA/reset symptoms, escalate suspicious or admin-only changes.',
++    examples: ['Password reset issue', 'MFA prompt problem', 'Self-service reset failure', 'Suspected account compromise'],
++    captureBeforeEscalation: ['User type', 'system affected', 'exact error', 'time started', 'whether other systems work', 'suspicious activity indicators'],
++    avoid: ['Recording passwords', 'Sharing reset links publicly', 'Changing identity/security settings without assignment'],
++    escalationWording:
++      'Login issue reported. User unable to authenticate to the named system. No password requested or recorded. Error/context captured and escalated for identity check.'
++  },
++  {
++    id: 'parent-portal-sentral',
++    title: 'Parent Portal and Sentral-style requests',
++    primaryOwner: 'Admin',
++    joshRole: 'Awareness and triage only unless assigned: capture symptoms, confirm system/request type, identify whether it is access, family details, markbook/reporting, or admin-owned data.',
++    examples: ['Parent access-key issue', 'Family detail update request', 'Sentral markbook visibility', 'Reporting period access problem'],
++    captureBeforeEscalation: ['System', 'request type', 'reported symptom', 'screenshots without sensitive details where appropriate', 'urgency/timing'],
++    avoid: ['Changing family data', 'Copying private parent/student details into notes', 'Acting as if Sentral admin ownership sits with Josh'],
++    escalationWording:
++      'Portal/Sentral-related request captured at symptom level. Appears admin/system-owner owned. Escalating with request type, timing, and safe non-sensitive context.'
++  },
++  {
++    id: 'files-permissions',
++    title: 'Shared files, drives, Teams, SharePoint, OneDrive permissions',
++    primaryOwner: 'Shared',
++    joshRole: 'Triage access symptoms, distinguish missing permission from sync/search/ownership issue, capture approval context, and escalate access changes where required.',
++    examples: ['Cannot find a shared file', 'OneDrive sync issue', 'Teams file missing', 'Shared drive access request'],
++    captureBeforeEscalation: ['File/location type', 'who needs access', 'role/class/team context', 'approval source', 'error shown', 'whether web access works'],
++    avoid: ['Granting least-privilege-sensitive access without approval', 'Pasting file contents into notes', 'Changing ownership without authority'],
++    escalationWording:
++      'File/access issue triaged. Captured target resource, affected role/context, error, and approval status. Escalating for permission or ownership review.'
++  },
++  {
++    id: 'web-filtering',
++    title: 'Website filtering and unblock requests',
++    primaryOwner: 'Leadership',
++    joshRole: 'Capture exact URL, learning purpose, requester, class/timeframe, block message, and approval context. Do not bypass filtering casually.',
++    examples: ['Website blocked for a lesson', 'Video resource unavailable', 'Filtering category seems wrong'],
++    captureBeforeEscalation: ['Exact URL', 'block message/category if visible', 'curriculum purpose', 'time needed', 'teacher/requester', 'class context'],
++    avoid: ['Bypassing filters without approval', 'Assuming all blocked sites should be allowed', 'Including student browsing details unnecessarily'],
++    escalationWording:
++      'Website unblock request captured with URL, curriculum purpose, timeframe, and visible block details. Escalating for approval/filtering review.'
++  },
++  {
++    id: 'printers',
++    title: 'Printers, photocopiers, PaperCut / Follow-Me printing',
++    primaryOwner: 'ICT',
++    joshRole: 'First-line triage: queue, selected printer, release step, device status, paper/toner/jam, whether one user or many, then escalate service faults.',
++    examples: ['Jobs stuck in queue', 'Follow-Me release problem', 'Toner rubs off', 'Paper jam or finishing issue'],
++    captureBeforeEscalation: ['Printer location/name', 'user/device', 'queue/release state', 'error light/message', 'one user or many', 'sample symptom if safe'],
++    avoid: ['Deep driver/server changes without assignment', 'Clearing evidence before recording it', 'Opening unsafe printer internals'],
++    escalationWording:
++      'Printer issue triaged. Queue/release/device symptoms checked and impact captured. Escalating due to likely device/service or configuration-level fault.'
++  }
++];
++
++export type PrivacyWordingExample = {
++  id: string;
++  title: string;
++  unsafe: string;
++  safer: string;
++  why: string;
++};
++
++export const privacyWordingExamples: PrivacyWordingExample[] = [
++  {
++    id: 'student-login',
++    title: 'Student login issue',
++    unsafe: 'Sarah Smith in Year 8 cannot log in and thinks her password is wrong.',
++    safer: 'Student account login issue reported. User unable to authenticate. No password was requested or recorded. Further account check/escalation required.',
++    why: 'Avoids unnecessary student identity detail and makes clear that the password was not collected.'
++  },
++  {
++    id: 'parent-family-details',
++    title: 'Parent/family details request',
++    unsafe: 'Mum says the family details for the Jones family are wrong and wants the address changed.',
++    safer: 'Parent portal family-detail update request reported. Request appears admin-owned. No private family details copied into ICT notes. Escalating to the appropriate system owner/admin workflow.',
++    why: 'Avoids storing private family details in the IT learning/support note.'
++  },
++  {
++    id: 'phishing',
++    title: 'Suspicious email',
++    unsafe: 'Teacher forwarded me a weird email from a parent with a dodgy attachment.',
++    safer: 'Suspicious email reported by staff member. User advised not to click links or open attachments. Sender/subject/evidence should be preserved through the approved security escalation path.',
++    why: 'Focuses on containment and evidence rather than repeating private content.'
++  },
++  {
++    id: 'website-block',
++    title: 'Blocked website request',
++    unsafe: 'Year 10 student needs YouTube unblocked for a video.',
++    safer: 'Website access request received for curriculum use. Exact URL, learning purpose, timeframe, and visible block message should be captured for filtering/approval review.',
++    why: 'Keeps the note about the request and approval pathway, not the student.'
++  }
++];
++
++export type WorkflowChoice = {
++  id: string;
++  label: string;
++  outcome: string;
++  nextStepId?: string;
++  recommended?: boolean;
++};
++
++export type WorkflowStep = {
++  id: string;
++  title: string;
++  prompt: string;
++  choices: WorkflowChoice[];
++  finalNote?: string;
++};
++
++export type WorkflowTree = {
++  id: string;
++  title: string;
++  summary: string;
++  ownerAreaId: string;
++  relatedWeakTopics: WeakTopicKey[];
++  startingStepId: string;
++  steps: WorkflowStep[];
++  modelTicketNote: string;
++};
++
++export const workflowTrees: WorkflowTree[] = [
++  {
++    id: 'teacher-laptop-no-display',
++    title: 'Teacher laptop will not display on ViewBoard',
++    summary: 'Safely narrows a classroom display issue without over-adjusting room infrastructure.',
++    ownerAreaId: 'classroom-av',
++    relatedWeakTopics: ['ticket-quality'],
++    startingStepId: 'start',
++    steps: [
++      {
++        id: 'start',
++        title: 'First check',
++        prompt: 'The teacher says the laptop is plugged in but nothing appears on the ViewBoard. What first check gives the most signal?',
++        choices: [
++          { id: 'source', label: 'Check ViewBoard input/source and whether the laptop detects a display.', outcome: 'Good. This separates input/source from laptop display mode.', nextStepId: 'windows-p', recommended: true },
++          { id: 'restart', label: 'Restart the laptop immediately.', outcome: 'Sometimes helps, but it loses time before checking the visible classroom path.', nextStepId: 'windows-p' },
++          { id: 'escalate', label: 'Escalate immediately without checking anything.', outcome: 'Too early unless there are safety or repeated hardware signs.', nextStepId: 'windows-p' }
++        ]
++      },
++      {
++        id: 'windows-p',
++        title: 'Display mode',
++        prompt: 'The ViewBoard input is correct. What next?',
++        choices: [
++          { id: 'duplicate', label: 'Press Windows + P and check Duplicate/Extend.', outcome: 'Good. Wrong display mode is common and safe to check.', nextStepId: 'scope', recommended: true },
++          { id: 'settings', label: 'Open advanced display settings and change resolution randomly.', outcome: 'Too broad and may create more confusion.', nextStepId: 'scope' },
++          { id: 'cable-only', label: 'Only swap the HDMI cable without checking Windows + P.', outcome: 'Cable can matter, but display mode is a fast safe check first.', nextStepId: 'scope' }
++        ]
++      },
++      {
++        id: 'scope',
++        title: 'Scope',
++        prompt: 'Windows + P does not fix it. What must be captured before escalation?',
++        choices: [
++          { id: 'scope-good', label: 'Room, device, cable/adaptor, source, whether another laptop works, and impact on learning.', outcome: 'Good escalation evidence.', recommended: true },
++          { id: 'scope-poor', label: 'Only write “ViewBoard broken”.', outcome: 'Too vague. Level 2 will need to ask the same questions again.' }
++        ],
++        finalNote: 'Escalate recurring room faults, suspected damaged ports, touch failure, or multiple-device failure.'
++      }
++    ],
++    modelTicketNote:
++      'Room display issue: teacher laptop connected to ViewBoard but no image. Checked input/source and Windows + P. Issue persists after safe first-line checks. Need review of cable/adaptor/room hardware path. Learning impact: current lesson display unavailable.'
++  },
++  {
++    id: 'student-laptop-169-254',
++    title: 'Student laptop has 169.254 IP address',
++    summary: 'Connects DHCP/APIPA knowledge to safe one-device vs many-device network triage.',
++    ownerAreaId: 'identity-login',
++    relatedWeakTopics: ['dns-dhcp-gateway', 'ticket-quality'],
++    startingStepId: 'start',
++    steps: [
++      {
++        id: 'start',
++        title: 'Interpret the symptom',
++        prompt: 'A student laptop has a 169.254.x.x address. What does that usually suggest?',
++        choices: [
++          { id: 'dhcp', label: 'The device did not receive a usable DHCP lease.', outcome: 'Correct. This is APIPA-style addressing.', nextStepId: 'safe-checks', recommended: true },
++          { id: 'dns', label: 'DNS is definitely broken.', outcome: 'Not necessarily. DNS may be fine; the device may not have a usable network config.', nextStepId: 'safe-checks' },
++          { id: 'blocked-site', label: 'The website is blocked.', outcome: 'Too narrow. The IP address problem comes before website filtering.', nextStepId: 'safe-checks' }
++        ]
++      },
++      {
++        id: 'safe-checks',
++        title: 'Safe checks',
++        prompt: 'What safe Level 1 checks come next?',
++        choices: [
++          { id: 'safe', label: 'Correct SSID, forget/rejoin if appropriate, compare another device in the same room, capture scope.', outcome: 'Good. This narrows device vs area/network issue.', recommended: true },
++          { id: 'scope-change', label: 'Change DHCP scope settings.', outcome: 'Unsafe and not Level 1 unless explicitly assigned.' },
++          { id: 'ignore', label: 'Tell the student to wait and do nothing else.', outcome: 'Too passive. Basic evidence capture is useful.' }
++        ],
++        finalNote: 'Escalate if multiple devices in the same area fail to obtain usable addressing.'
++      }
++    ],
++    modelTicketNote:
++      'Student device network issue: laptop showing 169.254.x.x address and cannot access network. Checked SSID and compared with another device/location where possible. Appears DHCP/connectivity related. Escalating with room/device/scope details.'
++  },
++  {
++    id: 'website-unblock-request',
++    title: 'Teacher requests a blocked website be unblocked',
++    summary: 'Keeps website access requests safe, specific, and approval-aware.',
++    ownerAreaId: 'web-filtering',
++    relatedWeakTopics: ['security-risk-judgement', 'ticket-quality'],
++    startingStepId: 'start',
++    steps: [
++      {
++        id: 'start',
++        title: 'Capture the request',
++        prompt: 'A teacher says a site needed for class is blocked. What do you capture first?',
++        choices: [
++          { id: 'capture', label: 'Exact URL, block message/category, learning purpose, class/timeframe, and requester.', outcome: 'Good. This gives the approval/filtering reviewer enough context.', recommended: true },
++          { id: 'unblock', label: 'Immediately bypass the filter.', outcome: 'Unsafe. Filtering changes need the right approval/workflow.' },
++          { id: 'vague', label: 'Write “YouTube blocked”.', outcome: 'Too vague; exact URL and purpose matter.' }
++        ],
++        finalNote: 'Escalate with approval context. Do not copy student browsing detail unnecessarily.'
++      }
++    ],
++    modelTicketNote:
++      'Website unblock request: staff member reports curriculum resource blocked. Exact URL, visible block details, learning purpose, and timeframe captured. Request needs filtering/approval review before access change.'
++  },
++  {
++    id: 'printer-jobs-stuck',
++    title: 'Printer jobs stuck in queue',
++    summary: 'Distinguishes queue, release, device, and service-call issues.',
++    ownerAreaId: 'printers',
++    relatedWeakTopics: ['printer-symptoms', 'ticket-quality'],
++    startingStepId: 'start',
++    steps: [
++      {
++        id: 'start',
++        title: 'Separate queue from device',
++        prompt: 'A staff member says the printer is broken, but jobs are stuck in the queue. What do you check first?',
++        choices: [
++          { id: 'queue-release', label: 'Correct printer/queue, Follow-Me release step, device status, and whether others are affected.', outcome: 'Good. This separates user workflow from device fault.', recommended: true },
++          { id: 'toner', label: 'Replace toner immediately.', outcome: 'Wrong starting point if jobs have not reached/released to the device.' },
++          { id: 'server', label: 'Change print server settings.', outcome: 'Not safe Level 1 unless assigned.' }
++        ],
++        finalNote: 'Escalate if many users are affected, queue behaviour is abnormal, or physical device/service symptoms remain.'
++      }
++    ],
++    modelTicketNote:
++      'Printer issue: staff print jobs stuck in queue/release path. Checked selected printer/queue, release step, and device status. Scope captured as one user/multiple users. Escalating if queue or device fault persists.'
++  },
++  {
++    id: 'phishing-report',
++    title: 'Staff member reports suspicious email',
++    summary: 'Builds safe first response for phishing/security reports.',
++    ownerAreaId: 'identity-login',
++    relatedWeakTopics: ['security-risk-judgement', 'ticket-quality'],
++    startingStepId: 'start',
++    steps: [
++      {
++        id: 'start',
++        title: 'Containment first',
++        prompt: 'A staff member reports a suspicious email. What should happen first?',
++        choices: [
++          { id: 'contain', label: 'Advise them not to click links/open attachments and preserve the email for the approved escalation path.', outcome: 'Good. Containment and evidence preservation come first.', recommended: true },
++          { id: 'open', label: 'Open the attachment to see what it does.', outcome: 'Unsafe.' },
++          { id: 'delete', label: 'Delete it immediately without recording anything.', outcome: 'May lose useful evidence before escalation.' }
++        ],
++        finalNote: 'Escalate suspicious email reports through the approved security process.'
++      }
++    ],
++    modelTicketNote:
++      'Suspicious email reported by staff member. User advised not to click links or open attachments. Evidence preserved for approved security escalation. No sensitive message content copied into general notes.'
++  }
++];
+diff -ruN /mnt/data/dcsprep_src/DCSPrepApp/src/lib/privacyWording.ts /mnt/data/dcsprep_patchwork/src/lib/privacyWording.ts
+--- /mnt/data/dcsprep_src/DCSPrepApp/src/lib/privacyWording.ts	1970-01-01 00:00:00.000000000 +0000
++++ /mnt/data/dcsprep_patchwork/src/lib/privacyWording.ts	2026-04-30 02:29:30.273178236 +0000
+@@ -0,0 +1,78 @@
++const sensitivePatterns = [
++  /password\s*(is|=|:)/i,
++  /passcode\s*(is|=|:)/i,
++  /student\s+name/i,
++  /parent\s+name/i,
++  /\b\d{1,3}(?:\.\d{1,3}){3}\b/,
++  /serial\s*(number|no\.?|#)/i,
++  /\b[A-Z][a-z]+\s+[A-Z][a-z]+\b
++];
++
++export type PrivacyWordingReview = {
++  riskLevel: 'low' | 'medium' | 'high';
++  warnings: string[];
++  saferDraft: string;
++};
++
++export function findPrivacyWarnings(text: string): string[] {
++  const warnings: string[] = [];
++
++  if (/password|passcode/i.test(text)) {
++    warnings.push('Do not request, record, or repeat passwords/passcodes.');
++  }
++
++  if (/student|parent|family|medical|diagnosis/i.test(text)) {
++    warnings.push('Check whether student, parent, family, or sensitive wellbeing details are actually needed.');
++  }
++
++  if (/\b\d{1,3}(?:\.\d{1,3}){3}\b/.test(text)) {
++    warnings.push('Avoid recording internal IP addresses in manager-safe or training notes unless there is an approved operational reason.');
++  }
++
++  if (/serial\s*(number|no\.?|#)/i.test(text)) {
++    warnings.push('Device serials can be sensitive inventory data. Include only in the proper operational system.');
++  }
++
++  if (/clicked|attachment|phishing|suspicious/i.test(text)) {
++    warnings.push('For suspicious email/security issues, preserve evidence and avoid copying message contents into general notes.');
++  }
++
++  return warnings;
++}
++
++export function makePrivacySafeDraft(text: string): string {
++  const lower = text.toLowerCase();
++
++  if (lower.includes('password') || lower.includes('login') || lower.includes('log in')) {
++    return 'Account login issue reported. User unable to authenticate to the named system. No password was requested or recorded. Error/context captured and escalation required if first-line checks do not resolve it.';
++  }
++
++  if (lower.includes('parent') || lower.includes('family') || lower.includes('portal')) {
++    return 'Parent portal or family-detail related request reported. Symptom/request type captured without private family details. Escalating to the appropriate admin or system-owner workflow.';
++  }
++
++  if (lower.includes('blocked') || lower.includes('website') || lower.includes('youtube')) {
++    return 'Website access request received for curriculum use. Exact URL, visible block message, learning purpose, requester, and timeframe should be captured for filtering/approval review.';
++  }
++
++  if (lower.includes('phishing') || lower.includes('suspicious') || lower.includes('attachment')) {
++    return 'Suspicious email reported by staff member. User advised not to click links or open attachments. Evidence should be preserved through the approved security escalation path.';
++  }
++
++  if (lower.includes('printer') || lower.includes('print')) {
++    return 'Printer issue reported. Queue/release/device symptoms checked where appropriate. Location, printer name, scope, and impact captured for follow-up or escalation.';
++  }
++
++  return 'Support issue reported. Capture only the minimum necessary operational details: user type, system, location if relevant, exact symptom, scope, safe steps tried, urgency/impact, and next action. Avoid unnecessary personal, student, parent, credential, or confidential details.';
++}
++
++export function reviewPrivacyWording(text: string): PrivacyWordingReview {
++  const warnings = findPrivacyWarnings(text);
++  const hasHighRiskPattern = sensitivePatterns.some((pattern) => pattern.test(text));
++
++  return {
++    riskLevel: hasHighRiskPattern ? 'high' : warnings.length ? 'medium' : 'low',
++    warnings,
++    saferDraft: makePrivacySafeDraft(text)
++  };
++}
+diff -ruN /mnt/data/dcsprep_src/DCSPrepApp/src/lib/weakAreaEngine.ts /mnt/data/dcsprep_patchwork/src/lib/weakAreaEngine.ts
+--- /mnt/data/dcsprep_src/DCSPrepApp/src/lib/weakAreaEngine.ts	1970-01-01 00:00:00.000000000 +0000
++++ /mnt/data/dcsprep_patchwork/src/lib/weakAreaEngine.ts	2026-04-30 02:27:13.732078228 +0000
+@@ -0,0 +1,110 @@
++import { weakTopicLabels } from '../data/skillDomains';
++import { weakTopicCoaching } from '../data/supportCoach';
++import type { WeakTopicKey } from '../types/assessment';
++import type { UserProgress } from './progress';
++import { isDue } from './spacedRepetition';
++
++export type WeakAreaSignal = {
++  topic: WeakTopicKey;
++  label: string;
++  priorityScore: number;
++  evidenceCount: number;
++  reasons: string[];
++  dcsWhyItMatters: string;
++  nextBestAction: string;
++  recommendedHref: string;
++  practicePrompt: string;
++  safeBoundary: string;
++};
++
++const ALL_TOPICS = Object.keys(weakTopicLabels) as WeakTopicKey[];
++
++function average(values: number[]) {
++  if (!values.length) return 0;
++  return values.reduce((sum, value) => sum + value, 0) / values.length;
++}
++
++function topicScoreFromAttempts(progress: UserProgress, topic: WeakTopicKey) {
++  const attempts = progress.assessmentAttempts.filter((attempt) => attempt.weakTopic === topic).slice(0, 10);
++  const averagePercent = average(attempts.map((attempt) => attempt.scoreBreakdown.total * 100));
++  const dueCount = attempts.filter((attempt) => isDue(attempt.nextReviewDateIso)).length;
++  const revisitCount = attempts.filter((attempt) => attempt.shouldRevisit).length;
++
++  return {
++    attempts,
++    averagePercent,
++    dueCount,
++    revisitCount
++  };
++}
++
++export function getWeakAreaSignals(progress: UserProgress): WeakAreaSignal[] {
++  return ALL_TOPICS.map((topic) => {
++    const review = progress.weakTopicReviews[topic];
++    const attemptSignal = topicScoreFromAttempts(progress, topic);
++    const coaching = weakTopicCoaching[topic];
++    const reasons: string[] = [];
++
++    const evidenceCount = attemptSignal.attempts.length + (review ? review.reviewCount : 0);
++    const reviewAverage = review?.averageScore ?? attemptSignal.averagePercent;
++    const knownAverage = reviewAverage || attemptSignal.averagePercent;
++    const weaknessFromScore = evidenceCount ? Math.max(0, 100 - knownAverage) : 15;
++    const duePressure = attemptSignal.dueCount * 8;
++    const revisitPressure = attemptSignal.revisitCount * 5;
++    const lowEvidencePressure = evidenceCount < 2 ? 8 : 0;
++
++    if (!evidenceCount) {
++      reasons.push('No real practice evidence recorded yet.');
++    }
++
++    if (knownAverage && knownAverage < 75) {
++      reasons.push(`Average evidence score is ${Math.round(knownAverage)}%.`);
++    }
++
++    if (attemptSignal.dueCount) {
++      reasons.push(`${attemptSignal.dueCount} due review item${attemptSignal.dueCount === 1 ? '' : 's'} waiting.`);
++    }
++
++    if (attemptSignal.revisitCount) {
++      reasons.push(`${attemptSignal.revisitCount} answer${attemptSignal.revisitCount === 1 ? '' : 's'} marked for revisit.`);
++    }
++
++    const priorityScore = Number(
++      Math.min(100, weaknessFromScore + duePressure + revisitPressure + lowEvidencePressure).toFixed(1)
++    );
++
++    return {
++      topic,
++      label: weakTopicLabels[topic],
++      priorityScore,
++      evidenceCount,
++      reasons: reasons.length ? reasons : ['Current evidence looks stable, but this remains part of the DCS support skill map.'],
++      dcsWhyItMatters: coaching.dcsWhyItMatters,
++      nextBestAction: coaching.nextBestAction,
++      recommendedHref: coaching.recommendedHref,
++      practicePrompt: coaching.practicePrompt,
++      safeBoundary: coaching.safeBoundary
++    };
++  }).sort((left, right) => right.priorityScore - left.priorityScore);
++}
++
++export function getNextBestAction(progress: UserProgress) {
++  const [top] = getWeakAreaSignals(progress);
++
++  if (!top) {
++    return {
++      title: 'Start with one strict quiz',
++      detail: 'No weak-area evidence exists yet. Complete one assessment session so the app can recommend a sharper next action.',
++      href: '/strict-quiz',
++      ctaLabel: 'Start assessment'
++    };
++  }
++
++  return {
++    title: `Focus on ${top.label}`,
++    detail: `${top.nextBestAction} ${top.reasons[0]}`,
++    href: top.recommendedHref,
++    ctaLabel: 'Start recommended practice',
++    signal: top
++  };
++}
+diff -ruN /mnt/data/dcsprep_src/DCSPrepApp/src/lib/workflowTrees.ts /mnt/data/dcsprep_patchwork/src/lib/workflowTrees.ts
+--- /mnt/data/dcsprep_src/DCSPrepApp/src/lib/workflowTrees.ts	1970-01-01 00:00:00.000000000 +0000
++++ /mnt/data/dcsprep_patchwork/src/lib/workflowTrees.ts	2026-04-30 02:27:13.757079604 +0000
+@@ -0,0 +1,10 @@
++import { workflowTrees } from '../data/supportCoach';
++
++export function getWorkflowTree(treeId: string) {
++  return workflowTrees.find((tree) => tree.id === treeId) || workflowTrees[0];
++}
++
++export function getWorkflowStep(treeId: string, stepId: string) {
++  const tree = getWorkflowTree(treeId);
++  return tree.steps.find((step) => step.id === stepId) || tree.steps.find((step) => step.id === tree.startingStepId);
++}
