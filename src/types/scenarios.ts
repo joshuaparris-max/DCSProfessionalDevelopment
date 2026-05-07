@@ -26,6 +26,11 @@ export type ScenarioRun = {
   startedAtIso: string;
   completedAtIso: string;
   stepChoices: ScenarioRunChoice[];
+  noteRubricChecks?: Record<string, boolean>;
+  noteScore?: number;
+  revisitDueDateIso?: string;
+  recommendedModuleId?: string;
+  weakTopic?: string;
   completed: boolean;
 };
 

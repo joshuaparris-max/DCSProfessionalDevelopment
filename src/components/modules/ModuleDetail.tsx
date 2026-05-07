@@ -2,7 +2,14 @@
 
 import dynamic from 'next/dynamic';
 import Link from 'next/link';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { getModuleCompletion } from '../../lib/moduleMath';
+import {
+  getStoredProgressSnapshot,
+  saveProgress,
+  type UserProgress,
+  updateModulePracticalOutput
+} from '../../lib/progress';
 import type { AssessmentQuestion } from '../../types/assessment';
 import type { TrainingModule } from '../../types/training';
 
@@ -33,9 +40,75 @@ export default function ModuleDetail({
   const [activeTab, setActiveTab] = useState<'Start Here' | 'Learn' | 'Review' | 'Assessment'>('Start Here');
   const [diagnosticResponses, setDiagnosticResponses] = useState<Record<string, string>>({});
   const [revealedDiagnostics, setRevealedDiagnostics] = useState<Record<string, boolean>>({});
+  const [activeRecallRevealed, setActiveRecallRevealed] = useState(false);
+  const [feynmanRubric, setFeynmanRubric] = useState({ clarity: 0, correctness: 0, relevance: 0 });
+  const [progress, setProgress] = useState<UserProgress>(() => getStoredProgressSnapshot([moduleData]));
+  const [hasHydratedProgress, setHasHydratedProgress] = useState(false);
   const questions = quizQuestions;
+
+  useEffect(() => {
+    setProgress(getStoredProgressSnapshot([moduleData]));
+    setHasHydratedProgress(true);
+  }, [moduleData]);
+
+  useEffect(() => {
+    if (!hasHydratedProgress) {
+      return;
+    }
+
+    saveProgress(progress);
+  }, [hasHydratedProgress, progress]);
+
+  const moduleProgress = progress.modules[moduleData.id] ?? {
+    sectionsRead: {},
+    flashcards: {},
+    practicalOutputs: {}
+  };
+
+  const moduleCompletion = Math.round(getModuleCompletion(moduleData.id, progress, moduleData));
+
+  function togglePracticalOutput(outputId: string) {
+    setProgress((current) => {
+      const currentCompleted = Boolean(current.modules[moduleData.id]?.practicalOutputs?.[outputId]);
+      return updateModulePracticalOutput(current, moduleData.id, outputId, !currentCompleted);
+    });
+  }
+
   const hasAssessment = questions.length > 0;
   const diagnosticQuestions = questions.slice(0, Math.min(2, questions.length));
+
+  useEffect(() => {
+    if (typeof window === 'undefined') {
+      return;
+    }
+    const key = `module-study-technique:${moduleData.id}`;
+    const raw = window.localStorage.getItem(key);
+    if (!raw) {
+      return;
+    }
+    try {
+      const parsed = JSON.parse(raw) as { feynmanRubric?: { clarity: number; correctness: number; relevance: number } };
+      if (parsed.feynmanRubric) {
+        setFeynmanRubric(parsed.feynmanRubric);
+      }
+    } catch {
+      // ignore invalid cache entries
+    }
+  }, [moduleData.id]);
+
+  useEffect(() => {
+    if (typeof window === 'undefined') {
+      return;
+    }
+    const key = `module-study-technique:${moduleData.id}`;
+    window.localStorage.setItem(
+      key,
+      JSON.stringify({
+        feynmanRubric,
+        updatedAtIso: new Date().toISOString()
+      })
+    );
+  }, [feynmanRubric, moduleData.id]);
 
   return (
     <div className="space-y-6">
@@ -58,7 +131,7 @@ export default function ModuleDetail({
             </div>
           </div>
           <div className="rounded-3xl bg-slate-100 px-5 py-4 text-sm text-slate-700">
-            Estimated {moduleData.estimatedMinutes} minutes
+            Estimated {moduleData.estimatedMinutes} minutes · {moduleCompletion}% complete
           </div>
         </div>
       </section>
@@ -312,13 +385,34 @@ export default function ModuleDetail({
 
             <div className="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-sm">
               <h2 className="text-2xl font-semibold text-slate-900">Practical outputs</h2>
+              <p className="mt-2 text-sm text-slate-600">
+                Mark each practical output when you have completed the task or drafted the evidence artifact.
+              </p>
               <ul className="mt-4 space-y-3 text-sm text-slate-700">
-                {moduleData.practicalOutputs.map((output) => (
-                  <li key={output.id} className="rounded-3xl bg-slate-50 p-4">
-                    <div className="font-semibold text-slate-900">{output.title}</div>
-                    <div className="mt-2 text-slate-600">{output.description}</div>
-                  </li>
-                ))}
+                {moduleData.practicalOutputs.map((output) => {
+                  const completed = Boolean(moduleProgress.practicalOutputs?.[output.id]);
+                  return (
+                    <li key={output.id} className="rounded-3xl bg-slate-50 p-4">
+                      <div className="flex flex-wrap items-center justify-between gap-3">
+                        <div>
+                          <div className="font-semibold text-slate-900">{output.title}</div>
+                          <div className="mt-2 text-slate-600">{output.description}</div>
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => togglePracticalOutput(output.id)}
+                          className={`rounded-full px-4 py-2 text-sm ${
+                            completed
+                              ? 'bg-emerald-900 text-white'
+                              : 'border border-slate-200 bg-white text-slate-700'
+                          }`}
+                        >
+                          {completed ? 'Completed' : 'Mark completed'}
+                        </button>
+                      </div>
+                    </li>
+                  );
+                })}
               </ul>
             </div>
           </aside>
@@ -378,6 +472,47 @@ export default function ModuleDetail({
               <div className="mt-4 rounded-3xl bg-slate-50 p-4 text-sm text-slate-700">
                 Prompt: “If {moduleData.title} fails during class time, what are the first safe checks, what evidence
                 should be captured, and when should you escalate?”
+              </div>
+              <div className="mt-4 flex flex-wrap gap-3">
+                <button
+                  type="button"
+                  onClick={() => setActiveRecallRevealed((current) => !current)}
+                  className="rounded-full bg-slate-900 px-4 py-2 text-sm text-white"
+                >
+                  {activeRecallRevealed ? 'Hide rubric hints' : 'Reveal rubric hints'}
+                </button>
+              </div>
+              {activeRecallRevealed ? (
+                <div className="mt-4 rounded-3xl bg-emerald-50 p-4 text-sm text-emerald-900">
+                  Active Recall mode: keep hints hidden until after your first attempt, then score your response.
+                </div>
+              ) : null}
+              <div className="mt-4 grid gap-3 md:grid-cols-3">
+                {(
+                  [
+                    ['clarity', 'Clarity'],
+                    ['correctness', 'Correctness'],
+                    ['relevance', 'Practical relevance']
+                  ] as const
+                ).map(([key, label]) => (
+                  <label key={key} className="rounded-2xl bg-slate-50 p-4 text-sm text-slate-700">
+                    <div className="font-semibold text-slate-900">{label}</div>
+                    <select
+                      value={feynmanRubric[key]}
+                      onChange={(event) =>
+                        setFeynmanRubric((current) => ({
+                          ...current,
+                          [key]: Number(event.target.value)
+                        }))
+                      }
+                      className="mt-2 w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm"
+                    >
+                      <option value={0}>Needs work</option>
+                      <option value={1}>Developing</option>
+                      <option value={2}>Strong</option>
+                    </select>
+                  </label>
+                ))}
               </div>
             </div>
 

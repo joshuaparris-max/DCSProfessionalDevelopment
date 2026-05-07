@@ -78,24 +78,24 @@ These are the modules I’d build first.
 
 ## 1. Login, Password, Lockout, MFA, and Account Basics
 
-* username format checks
-* password reset boundaries
-* account locked / expired password
-* MFA prompt basics
-* suspicious account compromise
-* when to escalate
+* [X] username format checks
+* [X] password reset boundaries
+* [X] account locked / expired password
+* [X] MFA prompt basics
+* [X] suspicious account compromise
+* [X] when to escalate
 
 **Very high relevance.**
 
 ## 2. Classroom Display and ViewBoard Troubleshooting
 
-* Windows + P
-* duplicate vs extend
-* HDMI / USB-C / adapters
-* no audio
-* touch not working
-* board input/source
-* when to escalate room faults
+* [X] Windows + P
+* [X] duplicate vs extend
+* [X] HDMI / USB-C / adapters
+* [X] no audio
+* [X] touch not working
+* [X] board input/source
+* [X] when to escalate room faults
 
 **Very high relevance.**
 
@@ -429,14 +429,14 @@ Each scenario must end with a **Jira-style note**.
 
 Once scenarios exist, make the app help you create useful artefacts.
 
-* [ ] Printer symptom-to-cause matrix
-* [ ] ViewBoard quick-fix flow
-* [ ] Wi-Fi triage checklist
-* [ ] Login/password support checklist
-* [ ] New user access checklist
-* [ ] Website unblock request checklist
-* [ ] Teams/SharePoint/OneDrive triage guide
-* [ ] Escalation note examples
+* [X] Printer symptom-to-cause matrix
+* [X] ViewBoard quick-fix flow
+* [X] Wi-Fi triage checklist
+* [X] Login/password support checklist
+* [X] New user access checklist
+* [X] Website unblock request checklist
+* [X] Teams/SharePoint/OneDrive triage guide
+* [X] Escalation note examples
 * [ ] “What system owns this issue?” decision tree
 
 **Why:** These create visible value without demanding more permissions.

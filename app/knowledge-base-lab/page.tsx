@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 
 const templates = [
@@ -30,6 +30,7 @@ export default function KnowledgeBaseLabPage() {
   const [draftTitle, setDraftTitle] = useState('');
   const [draftBody, setDraftBody] = useState(templates[0].body);
   const [checklist, setChecklist] = useState<Record<number, boolean>>({});
+  const storageKey = 'dcsPrep:knowledgeBaseDraft';
 
   const markdownExport = useMemo(() => {
     const checks = rubric.map((item, idx) => `- [${checklist[idx] ? 'x' : ' '}] ${item}`).join('\n');
@@ -44,6 +45,43 @@ export default function KnowledgeBaseLabPage() {
   function copyMarkdown() {
     void navigator.clipboard.writeText(markdownExport);
   }
+
+  useEffect(() => {
+    if (typeof window === 'undefined') {
+      return;
+    }
+    const raw = window.localStorage.getItem(storageKey);
+    if (!raw) {
+      return;
+    }
+    try {
+      const parsed = JSON.parse(raw) as {
+        draftTitle?: string;
+        draftBody?: string;
+        checklist?: Record<number, boolean>;
+      };
+      setDraftTitle(parsed.draftTitle ?? '');
+      setDraftBody(parsed.draftBody ?? templates[0].body);
+      setChecklist(parsed.checklist ?? {});
+    } catch {
+      // ignore corrupt draft cache
+    }
+  }, []);
+
+  useEffect(() => {
+    if (typeof window === 'undefined') {
+      return;
+    }
+    window.localStorage.setItem(
+      storageKey,
+      JSON.stringify({
+        draftTitle,
+        draftBody,
+        checklist,
+        updatedAtIso: new Date().toISOString()
+      })
+    );
+  }, [checklist, draftBody, draftTitle]);
 
   return (
     <div className="space-y-6">

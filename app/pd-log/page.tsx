@@ -1,6 +1,8 @@
 "use client";
 
 import { useEffect, useState } from 'react';
+import { modules } from '../../src/data/modules';
+import { scenarios } from '../../src/data/scenarios';
 import { weakTopicLabels } from '../../src/data/skillDomains';
 import { buildMonthlyPdMarkdown } from '../../src/lib/exportMarkdown';
 import { getCurrentWeakFocus } from '../../src/lib/readinessMath';
@@ -78,6 +80,10 @@ export default function PdLogPage() {
     learned: '',
     nextStep: '',
     evidenceLink: '',
+    moduleIds: [],
+    scenarioIds: [],
+    weakTopicsTouched: [],
+    weakTopicsImproved: [],
     templateId: undefined,
     sensitiveConfirmed: false
   });
@@ -145,6 +151,10 @@ export default function PdLogPage() {
       learned: '',
       nextStep: '',
       evidenceLink: '',
+      moduleIds: [],
+      scenarioIds: [],
+      weakTopicsTouched: [],
+      weakTopicsImproved: [],
       templateId: undefined,
       sensitiveConfirmed: false
     });
@@ -282,6 +292,94 @@ export default function PdLogPage() {
                 className="mt-2 w-full rounded-2xl border border-slate-200 px-4 py-3"
                 placeholder="Optional: certificate, note file, or resource URL"
               />
+            </label>
+            <label className="text-sm text-slate-700 md:col-span-2">
+              Linked modules
+              <div className="mt-2 grid gap-2 md:grid-cols-2">
+                {modules.slice(0, 16).map((module) => (
+                  <label key={module.id} className="flex items-start gap-2 rounded-2xl bg-slate-50 p-3 text-xs">
+                    <input
+                      type="checkbox"
+                      checked={Boolean(form.moduleIds?.includes(module.id))}
+                      onChange={(event) =>
+                        setForm((current) => ({
+                          ...current,
+                          moduleIds: event.target.checked
+                            ? [...(current.moduleIds ?? []), module.id]
+                            : (current.moduleIds ?? []).filter((id) => id !== module.id)
+                        }))
+                      }
+                    />
+                    <span>{module.title}</span>
+                  </label>
+                ))}
+              </div>
+            </label>
+            <label className="text-sm text-slate-700 md:col-span-2">
+              Linked scenarios
+              <div className="mt-2 grid gap-2 md:grid-cols-2">
+                {scenarios.slice(0, 10).map((scenario) => (
+                  <label key={scenario.id} className="flex items-start gap-2 rounded-2xl bg-slate-50 p-3 text-xs">
+                    <input
+                      type="checkbox"
+                      checked={Boolean(form.scenarioIds?.includes(scenario.id))}
+                      onChange={(event) =>
+                        setForm((current) => ({
+                          ...current,
+                          scenarioIds: event.target.checked
+                            ? [...(current.scenarioIds ?? []), scenario.id]
+                            : (current.scenarioIds ?? []).filter((id) => id !== scenario.id)
+                        }))
+                      }
+                    />
+                    <span>{scenario.title}</span>
+                  </label>
+                ))}
+              </div>
+            </label>
+            <label className="text-sm text-slate-700 md:col-span-2">
+              Weak topics touched
+              <div className="mt-2 grid gap-2 md:grid-cols-2">
+                {Object.entries(weakTopicLabels).slice(0, 16).map(([key, label]) => (
+                  <label key={key} className="flex items-start gap-2 rounded-2xl bg-slate-50 p-3 text-xs">
+                    <input
+                      type="checkbox"
+                      checked={Boolean(form.weakTopicsTouched?.includes(key))}
+                      onChange={(event) =>
+                        setForm((current) => ({
+                          ...current,
+                          weakTopicsTouched: event.target.checked
+                            ? [...(current.weakTopicsTouched ?? []), key]
+                            : (current.weakTopicsTouched ?? []).filter((id) => id !== key)
+                        }))
+                      }
+                    />
+                    <span>{label}</span>
+                  </label>
+                ))}
+              </div>
+            </label>
+            <label className="text-sm text-slate-700 md:col-span-2">
+              Weak topics improved
+              <div className="mt-2 grid gap-2 md:grid-cols-2">
+                {Object.entries(weakTopicLabels).slice(0, 16).map(([key, label]) => (
+                  <label key={key} className="flex items-start gap-2 rounded-2xl bg-slate-50 p-3 text-xs">
+                    <input
+                      type="checkbox"
+                      checked={Boolean(form.weakTopicsImproved?.includes(key))}
+                      onChange={(event) =>
+                        setForm((current) => ({
+                          ...current,
+                          weakTopicsImproved: event.target.checked
+                            ? [...(current.weakTopicsImproved ?? []), key]
+                            : (current.weakTopicsImproved ?? []).filter((id) => id !== key)
+                        }))
+                      }
+                    />
+                    <span>{label}</span>
+                  </label>
+                ))}
+              </div>
             </label>
           </div>
 

@@ -1123,5 +1123,137 @@ export const scenarios: Scenario[] = [
     riskNote: 'Do not bulk-edit privileged groups.',
     ticketNoteExample:
       'New starter missing Teams/SharePoint artefacts vs peer baseline after confirmed start date; captured screenshots + gap list for identity provisioning review.'
+  },
+  {
+    id: 'camera-windows-hello-accessibility-triage',
+    title: 'Camera or Windows Hello fails during class support',
+    summary: 'Triage camera and Windows Hello symptoms with accessibility-aware escalation notes.',
+    estimatedMinutes: 10,
+    initialReport: 'Teacher reports camera fails in class app and Windows Hello sign-in intermittently disappears.',
+    contextBullets: [
+      'Class starts in minutes, so low-risk checks come first.',
+      'Device has privacy controls and policy-managed identity settings.',
+      'User also relies on accessibility-related camera workflows.'
+    ],
+    steps: [
+      {
+        id: 'cv-step-1',
+        title: 'First bucket',
+        prompt: 'What should you test first?',
+        choices: [
+          {
+            id: 'cv-choice-1',
+            label: 'Check app permissions and selected camera, then test in a known-good app',
+            outcome: 'You learn whether this is app-path or broader device path.',
+            riskNote: 'Low-risk checks before hardware assumptions.',
+            correct: true
+          },
+          {
+            id: 'cv-choice-2',
+            label: 'Replace the laptop camera hardware immediately',
+            outcome: 'Premature and potentially disruptive.',
+            riskNote: 'Avoid hardware swaps before permission/path checks.',
+            correct: false
+          }
+        ]
+      },
+      {
+        id: 'cv-step-2',
+        title: 'Windows Hello context',
+        prompt: 'If camera works in one app but Hello still fails, what next?',
+        choices: [
+          {
+            id: 'cv-choice-3',
+            label: 'Capture enrollment/policy indicators and escalate identity-endpoint path with evidence',
+            outcome: 'Routes to correct owner with useful evidence.',
+            riskNote: 'Do not force policy or enrollment changes as Level 1.',
+            correct: true
+          },
+          {
+            id: 'cv-choice-4',
+            label: 'Disable all identity protections to restore convenience',
+            outcome: 'Unsafe and unauthorized.',
+            riskNote: 'Security controls are not optional workarounds.',
+            correct: false
+          }
+        ]
+      }
+    ],
+    idealTroubleshootingPath: [
+      'Check permissions, selected camera, and known-good app behavior',
+      'Confirm privacy shutter/switch state',
+      'Differentiate app issue vs Hello enrollment/policy issue',
+      'Escalate with accessibility-aware impact notes'
+    ],
+    escalationPoint: 'Escalate when app checks pass but Hello/policy path still fails or recurring accessibility impact remains.',
+    riskNote: 'Avoid exposing personal accessibility details beyond functional impact required for support routing.',
+    ticketNoteExample:
+      'Camera works in app X but fails in class app Y; Hello intermittently unavailable. Permission/device checks complete, privacy switch clear, recurring class impact documented. Escalating identity-endpoint policy/enrollment path.'
+  },
+  {
+    id: 'dashboard-log-interpretation-trend-triage',
+    title: 'Dashboard and log trend interpretation',
+    summary: 'Turn noisy telemetry into a clear evidence-first escalation note.',
+    estimatedMinutes: 9,
+    initialReport: 'A dashboard spike suggests login latency, but classroom complaints are mixed.',
+    contextBullets: [
+      'Telemetry can be noisy and incomplete.',
+      'You need a note that is useful without over-claiming root cause.',
+      'Known-good comparisons are available from another campus.'
+    ],
+    steps: [
+      {
+        id: 'dl-step-1',
+        title: 'Interpret signal',
+        prompt: 'Best first statement?',
+        choices: [
+          {
+            id: 'dl-choice-1',
+            label: 'Observed spike in time window; validating affected scope before root-cause claim',
+            outcome: 'Accurate and evidence-oriented posture.',
+            riskNote: 'Avoid absolute claims from one chart.',
+            correct: true
+          },
+          {
+            id: 'dl-choice-2',
+            label: 'Definite whole-school outage confirmed',
+            outcome: 'Overstates certainty and can misroute response.',
+            riskNote: 'Do not over-claim with partial telemetry.',
+            correct: false
+          }
+        ]
+      },
+      {
+        id: 'dl-step-2',
+        title: 'Escalation note quality',
+        prompt: 'What should be included?',
+        choices: [
+          {
+            id: 'dl-choice-3',
+            label: 'Trend window, sample scope, known-good comparison, impact summary, and explicit uncertainty',
+            outcome: 'Provides owner-ready evidence.',
+            riskNote: 'Include uncertainty language where data is incomplete.',
+            correct: true
+          },
+          {
+            id: 'dl-choice-4',
+            label: 'Raw logs only with no summary',
+            outcome: 'Hard to triage quickly.',
+            riskNote: 'Summarize before attaching raw evidence.',
+            correct: false
+          }
+        ]
+      }
+    ],
+    idealTroubleshootingPath: [
+      'State observed trend and timeframe',
+      'Validate affected scope',
+      'Compare with known-good baseline',
+      'Escalate with concise uncertainty-aware evidence'
+    ],
+    escalationPoint: 'Escalate once trend + scope + comparison data are collected and impact remains.',
+    riskNote: 'Telemetry summaries should avoid sensitive identifiers unless required for authorized troubleshooting.',
+    ticketNoteExample:
+      'Observed login latency spike 08:15-08:40 for cohort A; known-good comparison from campus B remains normal. Impact limited to specific roles; root cause unconfirmed. Escalating with trend + scope evidence.'
   }
 ];

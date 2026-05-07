@@ -12,12 +12,19 @@ import {
 import type { ScenarioChoice, ScenarioRunChoice } from '../../src/types/scenarios';
 
 const noteRubric = [
-  { id: 'symptom', label: 'Symptom clarity (exact observable behaviour)' },
-  { id: 'scope', label: 'Scope (who/where/device counts)' },
-  { id: 'steps', label: 'Steps tried + results captured' },
-  { id: 'urgency', label: 'Urgency / learning impact stated' },
-  { id: 'privacy', label: 'Privacy-safe wording (no secrets or unnecessary identifiers)' }
+  { id: 'symptom', label: 'Symptom clarity (exact observable behaviour)', weight: 0.25 },
+  { id: 'scope', label: 'Scope (who/where/device counts)', weight: 0.2 },
+  { id: 'steps', label: 'Steps tried + results captured', weight: 0.2 },
+  { id: 'urgency', label: 'Urgency / learning impact stated', weight: 0.2 },
+  { id: 'privacy', label: 'Privacy-safe wording (no secrets or unnecessary identifiers)', weight: 0.15 }
 ];
+
+const scenarioRevisitModuleMap: Record<string, string> = {
+  'display-black-screen': 'classroom-display-viewboard-troubleshooting',
+  'classroom-wifi-no-internet': 'dns-dhcp-gateway-ip-basics',
+  'staff-offboarding-m365-visibility': 'm365-identity-offboarding-basics',
+  'printer-jobs-stuck': 'printer-troubleshooting'
+};
 
 export default function ScenariosPage() {
   const [progress, setProgress] = useState<UserProgress>(() => getInitialProgressSnapshot());
@@ -45,6 +52,11 @@ export default function ScenariosPage() {
 
   const currentStep = scenario?.steps[stepIndex];
   const completedScenarios = progress.scenarioRuns.filter((run) => run.completed).length;
+  const currentNoteScore = noteRubric.reduce(
+    (sum, item) => sum + (rubricSelfCheck[item.id] ? item.weight : 0),
+    0
+  );
+  const currentNoteScorePercent = Math.round(currentNoteScore * 100);
 
   function restartScenario(nextScenarioId = scenario.id) {
     setSelectedScenarioId(nextScenarioId);
@@ -73,6 +85,9 @@ export default function ScenariosPage() {
     ];
 
     if (stepIndex === scenario.steps.length - 1) {
+      const noteScore = noteRubric.reduce((sum, item) => sum + (rubricSelfCheck[item.id] ? item.weight : 0), 0);
+      const revisitDueDateIso =
+        noteScore < 0.85 ? new Date(Date.now() + 2 * 24 * 60 * 60 * 1000).toISOString() : undefined;
       setProgress((current) =>
         saveScenarioRun(current, {
           id: `${scenario.id}-${Date.now()}`,
@@ -80,6 +95,11 @@ export default function ScenariosPage() {
           startedAtIso: new Date().toISOString(),
           completedAtIso: new Date().toISOString(),
           stepChoices: nextChoices,
+          noteRubricChecks: rubricSelfCheck,
+          noteScore: Number(noteScore.toFixed(2)),
+          revisitDueDateIso,
+          recommendedModuleId: scenarioRevisitModuleMap[scenario.id],
+          weakTopic: 'scenario-note-quality',
           completed: true
         })
       );
@@ -236,6 +256,13 @@ export default function ScenariosPage() {
                 <p className="mt-2 text-sm leading-7 text-emerald-900">
                   Tick what your own draft note covered—this stays local and trains escalation muscle memory.
                 </p>
+                <div className="mt-3 rounded-2xl bg-white p-4 text-sm text-slate-700">
+                  <div className="font-semibold text-slate-900">Weighted note score</div>
+                  <p className="mt-2">{currentNoteScorePercent}% of note quality criteria met.</p>
+                  <p className="mt-2 text-slate-600">
+                    A strong escalation note should score 85% or higher. Lower scores suggest a second pass to add clarity, scope, or safe wording.
+                  </p>
+                </div>
                 <div className="mt-4 space-y-3">
                   {noteRubric.map((item) => (
                     <label key={item.id} className="flex items-start gap-3 text-sm text-emerald-950">

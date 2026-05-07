@@ -3,6 +3,7 @@ import type { ReviewRating } from './spacedRepetition';
 import type { ScenarioRun, ScenarioRunChoice } from '../types/scenarios';
 
 const STORAGE_KEY = 'dcsPrepProgress';
+export const STORAGE_VERSION = 2;
 
 export type FlashcardState = 'new' | 'learning' | 'reviewing' | 'mastered';
 
@@ -83,20 +84,33 @@ export type PDLogEntry = {
 };
 
 export type UserProgress = {
+  schemaVersion: number;
   modules: Record<string, ModuleProgress>;
   assessmentAttempts: AssessmentAttempt[];
   weakTopicReviews: Record<string, WeakTopicReview>;
   scenarioRuns: ScenarioRun[];
   pdLogEntries: PDLogEntry[];
+  dueReviewState: Record<string, string>;
+  practicalOutputReviews: Record<string, { dueDateIso: string; reviewCount: number; completed: boolean }>;
+  knowledgeBaseDrafts: Record<string, { title: string; body: string; updatedAtIso: string }>;
+  evidencePackSettings: {
+    includeCertificates: boolean;
+    includeLinks: boolean;
+    privacyReminderAccepted: boolean;
+  };
 };
 
-function safeParseProgress(value: string | null): UserProgress | null {
+type PersistedProgress = Partial<UserProgress> & {
+  schemaVersion?: number;
+};
+
+function safeParseProgress(value: string | null): PersistedProgress | null {
   if (!value) {
     return null;
   }
 
   try {
-    return JSON.parse(value) as UserProgress;
+    return JSON.parse(value) as PersistedProgress;
   } catch {
     return null;
   }
@@ -115,12 +129,58 @@ function getDefaultModuleProgress(module: ModuleData): ModuleProgress {
 
 export function getInitialProgressSnapshot(modules: ModuleData[] = []): UserProgress {
   return {
+    schemaVersion: STORAGE_VERSION,
     modules: Object.fromEntries(modules.map((module) => [module.id, getDefaultModuleProgress(module)])),
     assessmentAttempts: [],
     weakTopicReviews: {},
     scenarioRuns: [],
-    pdLogEntries: []
+    pdLogEntries: [],
+    dueReviewState: {},
+    practicalOutputReviews: {},
+    knowledgeBaseDrafts: {},
+    evidencePackSettings: {
+      includeCertificates: true,
+      includeLinks: true,
+      privacyReminderAccepted: false
+    }
   };
+}
+
+function migrateProgress(raw: PersistedProgress, modules: ModuleData[]): UserProgress {
+  const base = getInitialProgressSnapshot(modules);
+  const fromVersion = raw.schemaVersion ?? 1;
+
+  const migrated: UserProgress = {
+    ...base,
+    ...raw,
+    schemaVersion: STORAGE_VERSION,
+    modules: raw.modules ?? base.modules,
+    assessmentAttempts: raw.assessmentAttempts ?? base.assessmentAttempts,
+    weakTopicReviews: raw.weakTopicReviews ?? base.weakTopicReviews,
+    scenarioRuns: (raw.scenarioRuns ?? base.scenarioRuns).map((run) => {
+      if (fromVersion >= 2) {
+        return run;
+      }
+      const correctCount = run.stepChoices.filter((step) => step.correct).length;
+      const score = run.stepChoices.length ? correctCount / run.stepChoices.length : 0;
+      return {
+        ...run,
+        noteRubricChecks: {},
+        noteScore: Number(score.toFixed(2)),
+        revisitDueDateIso: score < 0.75 ? new Date(Date.now() + 2 * 24 * 60 * 60 * 1000).toISOString() : undefined
+      };
+    }),
+    pdLogEntries: raw.pdLogEntries ?? base.pdLogEntries,
+    dueReviewState: raw.dueReviewState ?? {},
+    practicalOutputReviews: raw.practicalOutputReviews ?? {},
+    knowledgeBaseDrafts: raw.knowledgeBaseDrafts ?? {},
+    evidencePackSettings: {
+      ...base.evidencePackSettings,
+      ...raw.evidencePackSettings
+    }
+  };
+
+  return migrated;
 }
 
 export function getStoredProgressSnapshot(modules: ModuleData[] = []): UserProgress {
@@ -133,11 +193,13 @@ export function getStoredProgressSnapshot(modules: ModuleData[] = []): UserProgr
     return getInitialProgressSnapshot(modules);
   }
 
+  const migrated = migrateProgress(stored, modules);
+
   if (modules.length === 0) {
-    return stored;
+    return migrated;
   }
 
-  const normalizedModules = { ...stored.modules };
+  const normalizedModules = { ...migrated.modules };
   modules.forEach((module) => {
     const existing = normalizedModules[module.id];
     const defaults = getDefaultModuleProgress(module);
@@ -176,7 +238,7 @@ export function getStoredProgressSnapshot(modules: ModuleData[] = []): UserProgr
   });
 
   return {
-    ...stored,
+    ...migrated,
     modules: normalizedModules
   };
 }
@@ -186,7 +248,13 @@ export function saveProgress(progress: UserProgress) {
     return;
   }
 
-  window.localStorage.setItem(STORAGE_KEY, JSON.stringify(progress));
+  window.localStorage.setItem(
+    STORAGE_KEY,
+    JSON.stringify({
+      ...progress,
+      schemaVersion: STORAGE_VERSION
+    })
+  );
 }
 
 export function resetProgress() {
@@ -277,5 +345,76 @@ export function savePdLogEntry(progress: UserProgress, entry: PDLogEntry): UserP
   return {
     ...progress,
     pdLogEntries: [entry, ...progress.pdLogEntries]
+  };
+}
+
+export function saveKnowledgeBaseDraft(
+  progress: UserProgress,
+  draftId: string,
+  draft: { title: string; body: string }
+): UserProgress {
+  return {
+    ...progress,
+    knowledgeBaseDrafts: {
+      ...progress.knowledgeBaseDrafts,
+      [draftId]: {
+        ...draft,
+        updatedAtIso: new Date().toISOString()
+      }
+    }
+  };
+}
+
+export function recordPracticalOutputReview(
+  progress: UserProgress,
+  moduleId: string,
+  outputId: string,
+  completed: boolean
+): UserProgress {
+  const key = `${moduleId}:${outputId}`;
+  const existing = progress.practicalOutputReviews[key] ?? {
+    reviewCount: 0,
+    completed: false,
+    dueDateIso: new Date().toISOString()
+  };
+  const now = new Date();
+  now.setDate(now.getDate() + (completed ? 7 : 1));
+  return {
+    ...progress,
+    practicalOutputReviews: {
+      ...progress.practicalOutputReviews,
+      [key]: {
+        completed,
+        reviewCount: existing.reviewCount + 1,
+        dueDateIso: now.toISOString()
+      }
+    }
+  };
+}
+
+export function updateModulePracticalOutput(
+  progress: UserProgress,
+  moduleId: string,
+  outputId: string,
+  completed: boolean
+): UserProgress {
+  const moduleProgress = progress.modules[moduleId] ?? {
+    sectionsRead: {},
+    flashcards: {},
+    practicalOutputs: {}
+  };
+
+  return {
+    ...progress,
+    modules: {
+      ...progress.modules,
+      [moduleId]: {
+        ...moduleProgress,
+        practicalOutputs: {
+          ...moduleProgress.practicalOutputs,
+          [outputId]: completed
+        }
+      }
+    }
   };
 }

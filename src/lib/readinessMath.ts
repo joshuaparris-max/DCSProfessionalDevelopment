@@ -30,6 +30,17 @@ function getWeakTopicAverage(progress: UserProgress): number | null {
   return reviews.reduce((sum, review) => sum + review.averageScore, 0) / reviews.length;
 }
 
+function getScenarioNoteAverage(progress: UserProgress): number | null {
+  const scores = progress.scenarioRuns
+    .map((run) => run.noteScore)
+    .filter((score): score is number => typeof score === 'number')
+    .map((score) => score * 100);
+  if (!scores.length) {
+    return null;
+  }
+  return scores.reduce((sum, value) => sum + value, 0) / scores.length;
+}
+
 export type DashboardRecommendation = {
   title: string;
   detail: string;
@@ -79,17 +90,20 @@ export function getCurrentWeakFocus(progress: UserProgress) {
 export function getReadinessProfile(category: 'aPlus' | 'level2' | 'schoolItManager', progress: UserProgress) {
   const assessmentAverage = getAssessmentAverage(progress);
   const weakAverage = getWeakTopicAverage(progress);
+  const scenarioNoteAverage = getScenarioNoteAverage(progress);
   const assessmentEvidence = progress.assessmentAttempts.length >= 5;
   const weakEvidence = Object.keys(progress.weakTopicReviews).length >= 2;
-  const evidenceBacked = assessmentEvidence && weakEvidence;
+  const scenarioEvidence = progress.scenarioRuns.some((run) => typeof run.noteScore === 'number');
+  const evidenceBacked = assessmentEvidence && weakEvidence && scenarioEvidence;
 
   const blendedAssessment = assessmentAverage ?? 48;
   const blendedWeak = weakAverage ?? 52;
-  const base = (blendedAssessment + blendedWeak) / 2;
+  const blendedScenario = scenarioNoteAverage ?? 50;
+  const base = blendedAssessment * 0.45 + blendedWeak * 0.3 + blendedScenario * 0.25;
 
   const evidenceNote = evidenceBacked
-    ? 'Grounded in recorded quiz attempts (≥5) and weak-topic reviews (≥2).'
-    : 'Estimate until more quiz attempts and weak-topic reviews exist—scores blend conservative placeholders where data is missing.';
+    ? 'Grounded in recorded quiz attempts, weak-topic reviews, and scenario note-quality scores.'
+    : 'Estimate until more quiz attempts, weak-topic reviews, and scenario note-quality scores exist—scores blend conservative placeholders where data is missing.';
 
   if (category === 'aPlus') {
     return [

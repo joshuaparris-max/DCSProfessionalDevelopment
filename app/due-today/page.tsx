@@ -8,9 +8,11 @@ import {
   getInitialProgressSnapshot,
   getStoredProgressSnapshot,
   recordFlashcardReview,
+  recordPracticalOutputReview,
   saveProgress,
   type UserProgress
 } from '../../src/lib/progress';
+import { getDueReviewItems } from '../../src/lib/dueReview';
 import { isDue, type ReviewRating } from '../../src/lib/spacedRepetition';
 
 const ratings: ReviewRating[] = ['again', 'hard', 'good', 'easy'];
@@ -127,6 +129,9 @@ export default function DueTodayPage({ searchParams }: { searchParams?: { mode?:
 
   const dueQuestions = [...latestAttemptsByQuestion.values()].filter((attempt) => isDue(attempt.nextReviewDateIso));
   const dueWeakTopics = Object.values(progress.weakTopicReviews).filter((review) => isDue(review.dueDateIso));
+  const dueReviewItems = getDueReviewItems(progress);
+  const dueScenarioNotes = dueReviewItems.filter((item) => item.type === 'scenario-note');
+  const duePracticalOutputs = dueReviewItems.filter((item) => item.type === 'practical-output');
 
   const firstDueFlashcard = dueFlashcards[0];
   const firstDueQuestion = dueQuestions[0];
@@ -355,6 +360,82 @@ export default function DueTodayPage({ searchParams }: { searchParams?: { mode?:
             ))
           ) : (
             <div className="rounded-3xl bg-slate-50 p-5 text-sm text-slate-600">No weak-topic reviews are due right now.</div>
+          )}
+        </div>
+      </section>
+
+      <section className="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-sm">
+        <div className="flex items-center justify-between">
+          <h2 className="text-2xl font-semibold text-slate-900">Scenario note reviews due</h2>
+          <div className="rounded-full bg-slate-100 px-4 py-2 text-sm text-slate-700">{dueScenarioNotes.length} due</div>
+        </div>
+        <div className="mt-5 space-y-4">
+          {dueScenarioNotes.length ? (
+            dueScenarioNotes.map((item) => (
+              <div key={item.id} className="rounded-3xl border border-slate-200 bg-slate-50 p-5">
+                <div className="text-xs uppercase tracking-[0.2em] text-slate-500">{item.moduleTitle}</div>
+                <div className="mt-2 text-lg font-semibold text-slate-900">{item.prompt}</div>
+                <div className="mt-3 text-sm text-slate-700">Due: {item.dueDateIso}</div>
+                <div className="mt-4 flex flex-wrap gap-3">
+                  <Link href="/scenarios" className="rounded-full bg-slate-900 px-4 py-2 text-sm text-white">
+                    Re-run scenario
+                  </Link>
+                  {item.moduleId ? (
+                    <Link
+                      href={`/modules/${item.moduleId}`}
+                      className="rounded-full border border-slate-200 bg-white px-4 py-2 text-sm text-slate-700"
+                    >
+                      Open module
+                    </Link>
+                  ) : null}
+                </div>
+              </div>
+            ))
+          ) : (
+            <div className="rounded-3xl bg-slate-50 p-5 text-sm text-slate-600">
+              No scenario-note reviews are due right now.
+            </div>
+          )}
+        </div>
+      </section>
+
+      <section className="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-sm">
+        <div className="flex items-center justify-between">
+          <h2 className="text-2xl font-semibold text-slate-900">Practical outputs due</h2>
+          <div className="rounded-full bg-slate-100 px-4 py-2 text-sm text-slate-700">{duePracticalOutputs.length} due</div>
+        </div>
+        <div className="mt-5 space-y-4">
+          {duePracticalOutputs.length ? (
+            duePracticalOutputs.map((item) => {
+              const outputId = item.id.split(':')[2] ?? '';
+              return (
+                <div key={item.id} className="rounded-3xl border border-slate-200 bg-slate-50 p-5">
+                  <div className="text-xs uppercase tracking-[0.2em] text-slate-500">{item.moduleTitle}</div>
+                  <div className="mt-2 text-lg font-semibold text-slate-900">{item.prompt}</div>
+                  <div className="mt-3 text-sm text-slate-700">Due: {item.dueDateIso}</div>
+                  <div className="mt-4 flex flex-wrap gap-3">
+                    <Link
+                      href={`/modules/${item.moduleId}`}
+                      className="rounded-full border border-slate-200 bg-white px-4 py-2 text-sm text-slate-700"
+                    >
+                      Open module
+                    </Link>
+                    <button
+                      onClick={() =>
+                        setProgress((current) => recordPracticalOutputReview(current, item.moduleId, outputId, true))
+                      }
+                      className="rounded-full bg-slate-900 px-4 py-2 text-sm text-white"
+                    >
+                      Mark reviewed
+                    </button>
+                  </div>
+                </div>
+              );
+            })
+          ) : (
+            <div className="rounded-3xl bg-slate-50 p-5 text-sm text-slate-600">
+              No practical-output reviews are due right now.
+            </div>
           )}
         </div>
       </section>

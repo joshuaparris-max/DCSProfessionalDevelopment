@@ -42,4 +42,21 @@ describe('module catalogue', () => {
     expect(question?.dcsContext).toBeTruthy();
     expect(question?.reviewSchedule).toBeTruthy();
   });
+
+  it('exposes Professor Messer Core 2 video topics as individual modules', () => {
+    const core2TopicModules = modules.filter((module) => module.id.startsWith('messer-core2-topic-'));
+
+    expect(core2TopicModules.length).toBe(74);
+    expect(modules.map((module) => module.id)).toEqual(
+      expect.arrayContaining(['messer-core2-topic-file-systems', 'messer-core2-topic-scripting-use-cases'])
+    );
+    expect(modules.map((module) => module.title)).toEqual(
+      expect.arrayContaining(['A+ Core 2: File Systems', 'A+ Core 2: Scripting Use Cases'])
+    );
+
+    const scriptingUseCases = modules.find((module) => module.id === 'messer-core2-topic-scripting-use-cases');
+    expect(scriptingUseCases?.sections.length).toBeGreaterThanOrEqual(3);
+    expect(scriptingUseCases?.flashcards.length).toBeGreaterThanOrEqual(8);
+    expect(scriptingUseCases?.quiz.length).toBeGreaterThanOrEqual(4);
+  });
 });

@@ -9,6 +9,7 @@ describe('moduleMath', () => {
 
   it('returns zero when nothing is completed', () => {
     const progress: UserProgress = {
+      schemaVersion: 2,
       modules: {
         [trainingModule.id]: {
           sectionsRead: Object.fromEntries(trainingModule.sections.map((section) => [section.id, false])),
@@ -31,7 +32,15 @@ describe('moduleMath', () => {
       assessmentAttempts: [],
       scenarioRuns: [],
       pdLogEntries: [],
-      weakTopicReviews: {}
+      weakTopicReviews: {},
+      dueReviewState: {},
+      practicalOutputReviews: {},
+      knowledgeBaseDrafts: {},
+      evidencePackSettings: {
+        includeCertificates: true,
+        includeLinks: true,
+        privacyReminderAccepted: false
+      }
     };
 
     expect(getModuleCompletion(trainingModule.id, progress, trainingModule)).toBe(0);
@@ -39,6 +48,7 @@ describe('moduleMath', () => {
 
   it('scores a partially completed module', () => {
     const progress: UserProgress = {
+      schemaVersion: 2,
       modules: {
         [trainingModule.id]: {
           sectionsRead: Object.fromEntries(
@@ -70,7 +80,15 @@ describe('moduleMath', () => {
       assessmentAttempts: [],
       scenarioRuns: [],
       pdLogEntries: [],
-      weakTopicReviews: {}
+      weakTopicReviews: {},
+      dueReviewState: {},
+      practicalOutputReviews: {},
+      knowledgeBaseDrafts: {},
+      evidencePackSettings: {
+        includeCertificates: true,
+        includeLinks: true,
+        privacyReminderAccepted: false
+      }
     };
 
     const completion = getModuleCompletion(trainingModule.id, progress, trainingModule);

@@ -1,6 +1,7 @@
 ﻿import type { AssessmentQuestion, AssessmentSource } from '../types/assessment';
 import type { TrainingModule } from '../types/training';
 import { dcsWorkflowModules } from './dcsWorkflowModules';
+import { messerCore2Modules } from './messerCore2Modules';
 
 export type ModuleData = TrainingModule;
 
@@ -4501,6 +4502,378 @@ These are the building blocks of almost every script or automation task.`
       }
     ]
   },
+  {
+    id: 'login-password-lockout-mfa-account-basics',
+    title: 'Login, Password, Lockout, MFA, and Account Basics',
+    description: 'Level 1 triage for login issues, password resets, lockouts, MFA prompts, and account compromise suspicion with clear escalation boundaries.',
+    domain: 'Identity and Access',
+    level: 'L1',
+    estimatedMinutes: 20,
+    tags: ['login', 'password', 'lockout', 'MFA', 'account'],
+    learningObjectives: [
+      'Verify username formats and common login errors.',
+      'Understand password reset boundaries and self-service options.',
+      'Recognize account lockout and expired password symptoms.',
+      'Handle MFA prompt basics and common issues.',
+      'Identify suspicious account compromise signs and escalate appropriately.',
+      'Know when to escalate login issues beyond Level 1 scope.'
+    ],
+    dcsRelevance: [
+      'Login issues are frequent in school environments with shared accounts.',
+      'Proper triage prevents unnecessary escalations and protects account security.',
+      'Clear boundaries keep Level 1 support safe and effective.'
+    ],
+    sections: [
+      {
+        id: 'login-1',
+        title: 'Username format checks',
+        bodyMarkdown: `Common username formats in DCS include firstname.lastname, student IDs, or email addresses. Verify the format matches the system (e.g., Windows login vs web portal). Check for typos, case sensitivity, and whether the account exists. If unsure, confirm with the user or escalate to admin.`
+      },
+      {
+        id: 'login-2',
+        title: 'Password reset boundaries',
+        bodyMarkdown: `Level 1 can guide users to self-service reset options (e.g., forgot password links, reset portals). Do not request or store passwords. If self-service fails or account is locked, escalate to admin. Note the reset method attempted and any error messages.`
+      },
+      {
+        id: 'login-3',
+        title: 'Account locked / expired password',
+        bodyMarkdown: `Locked accounts often show "account locked" or "too many attempts" messages. Expired passwords prompt for change. Guide to self-service if available, otherwise escalate with lock reason and attempts. Do not unlock accounts yourself.`
+      },
+      {
+        id: 'login-4',
+        title: 'MFA prompt basics',
+        bodyMarkdown: `MFA requires a second factor (app code, SMS, hardware key). Common issues: app not synced, expired codes, wrong time zone. Guide user to verify app/time, try alternative method if available. Escalate if MFA is misconfigured or device lost.`
+      },
+      {
+        id: 'login-5',
+        title: 'Suspicious account compromise',
+        bodyMarkdown: `Signs include unexpected MFA prompts, login from unknown locations, password changes without user action. Do not reset passwords yourself. Escalate immediately to security team with evidence. Advise user to change password via approved self-service after escalation.`
+      },
+      {
+        id: 'login-6',
+        title: 'When to escalate',
+        bodyMarkdown: `Escalate if: account doesn't exist, self-service fails repeatedly, lockout persists, MFA issues are config-related, or compromise suspected. Provide clear notes with symptoms, steps tried, and urgency.`
+      }
+    ],
+    flashcards: [
+      { id: 'login-f1', front: 'Common DCS username formats?', back: 'firstname.lastname, student IDs, email addresses.' },
+      { id: 'login-f2', front: 'What to check for username issues?', back: 'Format, typos, case sensitivity, account existence.' },
+      { id: 'login-f3', front: 'Level 1 role in password resets?', back: 'Guide to self-service; do not request/store passwords.' },
+      { id: 'login-f4', front: 'Symptoms of locked account?', back: '"Account locked" or "too many attempts" messages.' },
+      { id: 'login-f5', front: 'Common MFA issues?', back: 'App not synced, expired codes, wrong time zone.' },
+      { id: 'login-f6', front: 'Signs of account compromise?', back: 'Unexpected MFA prompts, unknown logins, unauthorized changes.' },
+      { id: 'login-f7', front: 'When to escalate login issues?', back: 'Account not found, self-service fails, lockout, MFA config, compromise.' },
+      { id: 'login-f8', front: 'What to include in login escalation notes?', back: 'Symptoms, steps tried, error messages, urgency.' },
+      { id: 'login-f9', front: 'Safe handling of suspected compromise?', back: 'Escalate to security, advise self-service password change.' },
+      { id: 'login-f10', front: 'Why avoid storing passwords?', back: 'Security risk; use self-service flows.' }
+    ],
+    quiz: [
+      mcq({
+        id: 'login-q1',
+        prompt: 'A user says "wrong username". What is the best first check?',
+        domain: 'Login basics',
+        difficulty: 'foundation',
+        explanation: 'Verify format and existence before assuming error.',
+        modelAnswer: 'Confirm the username format (e.g., firstname.lastname) and whether the account exists in the system.',
+        commonMistakes: ['Guessing the username', 'Resetting password immediately'],
+        dcsContext: 'DCS uses consistent formats but typos are common.',
+        reviewSchedule,
+        recommendedModuleId: 'login-password-lockout-mfa-account-basics',
+        weakTopic: 'dcs-login-password',
+        options: [
+          { id: 'a', label: 'Reset the password' },
+          { id: 'b', label: 'Confirm username format and account existence' },
+          { id: 'c', label: 'Ask for the password to test' },
+          { id: 'd', label: 'Create a new account' }
+        ],
+        correctOptionId: 'b'
+      }),
+      shortAnswer({
+        id: 'login-q2',
+        prompt: 'List three safe actions for Level 1 on password reset requests.',
+        domain: 'Login basics',
+        difficulty: 'foundation',
+        explanation: 'Stay within boundaries and guide to self-service.',
+        modelAnswer: 'Guide to self-service reset portal, confirm reset method attempted, escalate if self-service fails.',
+        commonMistakes: ['Requesting passwords', 'Resetting manually'],
+        dcsContext: 'Self-service protects security and reduces admin load.',
+        reviewSchedule,
+        recommendedModuleId: 'login-password-lockout-mfa-account-basics',
+        weakTopic: 'dcs-login-password',
+        rubric: ['Guides to self-service', 'Does not handle passwords', 'Escalates when needed'],
+        keywordHints: ['self-service', 'guide', 'escalate']
+      }),
+      orderSteps({
+        id: 'login-q3',
+        prompt: 'Order safe response to "account locked".',
+        domain: 'Login basics',
+        difficulty: 'stretch',
+        explanation: 'Verify before escalating.',
+        modelAnswer: 'Confirm lock reason, guide to self-service unlock if available, escalate with evidence if persists.',
+        commonMistakes: ['Unlocking manually', 'Skipping confirmation'],
+        dcsContext: 'Locks protect accounts but need proper handling.',
+        reviewSchedule,
+        recommendedModuleId: 'login-password-lockout-mfa-account-basics',
+        weakTopic: 'dcs-login-password',
+        steps: [
+          { id: 'confirm', label: 'Confirm lock reason and attempts' },
+          { id: 'guide', label: 'Guide to self-service unlock if available' },
+          { id: 'escalate', label: 'Escalate if self-service fails' }
+        ],
+        correctOrder: ['confirm', 'guide', 'escalate'],
+        rubric: ['Confirms first', 'Uses self-service', 'Escalates cleanly']
+      }),
+      scenarioResponse({
+        id: 'login-q4',
+        prompt: 'User reports unexpected MFA prompt. Explain your response and reasoning.',
+        domain: 'Login basics',
+        difficulty: 'stretch',
+        explanation: 'Compromise suspicion requires security escalation.',
+        modelAnswer: 'Treat as potential compromise, escalate to security team immediately, advise user to change password via self-service after escalation. Do not reset or investigate further.',
+        commonMistakes: ['Resetting password yourself', 'Ignoring as normal'],
+        dcsContext: 'Unexpected MFA can indicate unauthorized access.',
+        reviewSchedule,
+        recommendedModuleId: 'login-password-lockout-mfa-account-basics',
+        weakTopic: 'dcs-login-password',
+        rubric: ['Escalates to security', 'Advises safe password change', 'Does not handle directly']
+      }),
+      mcq({
+        id: 'login-q5',
+        prompt: 'MFA code expired. What is the safest first advice?',
+        domain: 'Login basics',
+        difficulty: 'foundation',
+        explanation: 'Check basics before escalating.',
+        modelAnswer: 'Verify app time sync and try generating a new code.',
+        commonMistakes: ['Resetting MFA', 'Asking for backup codes'],
+        dcsContext: 'Time sync issues are common and fixable.',
+        reviewSchedule,
+        recommendedModuleId: 'login-password-lockout-mfa-account-basics',
+        weakTopic: 'dcs-login-password',
+        options: [
+          { id: 'a', label: 'Disable MFA for the account' },
+          { id: 'b', label: 'Check app time sync and generate new code' },
+          { id: 'c', label: 'Ask for the backup codes' },
+          { id: 'd', label: 'Reset the password instead' }
+        ],
+        correctOptionId: 'b'
+      }),
+      explainItSimply({
+        id: 'login-q6',
+        prompt: 'Explain why Level 1 should not reset passwords directly.',
+        domain: 'Login basics',
+        difficulty: 'foundation',
+        explanation: 'Security and boundaries matter.',
+        modelAnswer: 'Direct resets can expose secrets or bypass security policies; self-service keeps control with the user and reduces risk.',
+        commonMistakes: ['Saying it\'s too hard', 'Ignoring security'],
+        dcsContext: 'School accounts need protection.',
+        reviewSchedule,
+        recommendedModuleId: 'login-password-lockout-mfa-account-basics',
+        weakTopic: 'dcs-login-password',
+        rubric: ['Mentions security', 'Mentions self-service', 'Explains boundaries'],
+        keywordHints: ['security', 'self-service', 'risk']
+      })
+    ],
+    scenarioPrompts: [
+      {
+        id: 'login-s1',
+        title: 'Login failure triage',
+        prompt: 'Triage a login failure by checking username, password, lockout, MFA, and escalation needs.'
+      }
+    ],
+    practicalOutputs: [
+      {
+        id: 'login-p1',
+        title: 'Login issue checklist',
+        description: 'Create a checklist for verifying username, guiding password reset, checking lockouts, and escalating appropriately.'
+      }
+    ]
+  },
+  {
+    id: 'rbc-data-literacy-dashboard-log-reasoning',
+    title: 'RBC Data Literacy and Dashboard/Log Reasoning',
+    description: 'Use STA1DCT-style data literacy to read support dashboards and logs without over-claiming root cause.',
+    domain: 'Data and AI',
+    level: 'RBC',
+    estimatedMinutes: 22,
+    tags: ['RBC', 'STA1DCT', 'dashboard', 'logs', 'data literacy'],
+    learningObjectives: [
+      'Separate signal from noise in support dashboards.',
+      'Summarize trend evidence in plain language for escalation.',
+      'Avoid claims that exceed available evidence.'
+    ],
+    dcsRelevance: [
+      'First-line support often relies on partial telemetry.',
+      'Good notes should include trend evidence without overreach.'
+    ],
+    sections: [
+      { id: 'data-lit-1', title: 'What a dashboard can and cannot prove', bodyMarkdown: 'Dashboards show patterns, not absolute truth. Use them to form a hypothesis and pair with scope checks.' },
+      { id: 'data-lit-2', title: 'Log interpretation basics', bodyMarkdown: 'Logs are timestamps and events. Confirm sequence, affected scope, and whether events correlate with user reports.' },
+      { id: 'data-lit-3', title: 'Evidence-first escalation notes', bodyMarkdown: 'Escalation should include trend window, sample size, and uncertainty language.' }
+    ],
+    flashcards: [
+      { id: 'data-lit-f1', front: 'What does a dashboard prove?', back: 'Patterns and trends, not absolute root cause by itself.' },
+      { id: 'data-lit-f2', front: 'Why include sample size?', back: 'To avoid overstating conclusions from a tiny dataset.' },
+      { id: 'data-lit-f3', front: 'Best language for uncertainty?', back: 'Likely/suggests/observed pattern rather than definitive claim.' },
+      { id: 'data-lit-f4', front: 'First check before trend claim?', back: 'Confirm scope and timeframe match user-reported symptoms.' },
+      { id: 'data-lit-f5', front: 'What to capture from logs?', back: 'Timestamp, event type, affected service/user/device scope.' },
+      { id: 'data-lit-f6', front: 'Why avoid root-cause certainty at L1?', back: 'Limited evidence and authority can misroute escalations.' },
+      { id: 'data-lit-f7', front: 'Trend plus what makes stronger note?', back: 'Known-good comparison and impact statement.' },
+      { id: 'data-lit-f8', front: 'What helps Level 2 fastest?', back: 'Concise evidence window, scope, and attempted safe checks.' }
+    ],
+    quiz: [
+      mcq({ id: 'data-lit-q1', prompt: 'A dashboard spike appears for one service. Best first statement?', domain: 'Data literacy', difficulty: 'foundation', explanation: 'Describe observed signal without overclaiming.', modelAnswer: 'State that a spike is observed in the selected window and requires correlation with user impact/scope.', commonMistakes: ['Claiming confirmed outage immediately'], dcsContext: 'School support needs evidence-backed communication.', reviewSchedule, recommendedModuleId: 'rbc-data-literacy-dashboard-log-reasoning', weakTopic: 'rbc-data-literacy', options: [{ id: 'a', label: 'Service is definitely down everywhere.' }, { id: 'b', label: 'We observe a spike and are confirming scope/impact.' }, { id: 'c', label: 'Ignore it because dashboards are noisy.' }, { id: 'd', label: 'Reboot systems first.' }], correctOptionId: 'b' }),
+      shortAnswer({ id: 'data-lit-q2', prompt: 'List three items from logs that make escalation cleaner.', domain: 'Data literacy', difficulty: 'foundation', explanation: 'Evidence structure matters.', modelAnswer: 'Timestamp range, event/error identifier, and affected scope (users/devices/services).', commonMistakes: ['Copying raw logs with no summary'], dcsContext: 'Escalations must be actionable.', reviewSchedule, recommendedModuleId: 'rbc-data-literacy-dashboard-log-reasoning', weakTopic: 'rbc-data-literacy', rubric: ['Includes timeframe', 'Includes event identity', 'Includes scope'], keywordHints: ['time', 'event', 'scope'] }),
+      orderSteps({ id: 'data-lit-q3', prompt: 'Order dashboard triage flow.', domain: 'Data literacy', difficulty: 'stretch', explanation: 'Sequence prevents overreaction.', modelAnswer: 'Observe trend, verify scope, compare known-good, then escalate with evidence.', commonMistakes: ['Escalating before scope'], dcsContext: 'Faster and safer communication.', reviewSchedule, recommendedModuleId: 'rbc-data-literacy-dashboard-log-reasoning', weakTopic: 'rbc-data-literacy', steps: [{ id: 'observe', label: 'Observe trend window' }, { id: 'scope', label: 'Verify affected scope' }, { id: 'compare', label: 'Compare known-good baseline' }, { id: 'escalate', label: 'Escalate with evidence note' }], correctOrder: ['observe', 'scope', 'compare', 'escalate'], rubric: ['Starts with observation', 'Validates scope', 'Escalates with evidence'] }),
+      scenarioResponse({ id: 'data-lit-q4', prompt: 'Write a one-paragraph evidence-first note for repeated login latency from logs.', domain: 'Data literacy', difficulty: 'challenge', explanation: 'Clear communication under uncertainty.', modelAnswer: 'Include trend window, affected cohort/scope, what still works, safe checks completed, and escalation ask.', commonMistakes: ['No impact statement', 'No uncertainty language'], dcsContext: 'Leadership needs concise operational clarity.', reviewSchedule, recommendedModuleId: 'rbc-data-literacy-dashboard-log-reasoning', weakTopic: 'rbc-data-literacy', rubric: ['Includes window', 'Includes scope/impact', 'Includes explicit ask'] })
+    ],
+    scenarioPrompts: [{ id: 'data-lit-s1', title: 'Dashboard trend triage', prompt: 'Translate a noisy chart into a precise escalation note.' }],
+    practicalOutputs: [{ id: 'data-lit-p1', title: 'Evidence-first trend note template', description: 'Create a one-page template for dashboard/log trend escalations.' }],
+    sourceSubjects: [{ code: 'STA1DCT', title: 'Data Analysis and Statistics', course: 'RBC', silos: ['Data interpretation'], alignmentNote: 'Applies data reasoning to school IT telemetry and escalation writing.', slgCurrency: 'Source reference map; verify current delivery before formal claims.' }]
+  },
+  {
+    id: 'rbc-information-systems-sdlc-support-context',
+    title: 'RBC Information Systems and SDLC Support Context',
+    description: 'Use CSE1IS concepts to improve requirement clarity, workflow boundaries, and secure-by-default support thinking.',
+    domain: 'Operations',
+    level: 'RBC',
+    estimatedMinutes: 20,
+    tags: ['RBC', 'CSE1IS', 'SDLC', 'requirements'],
+    learningObjectives: ['Identify requirement ambiguity in support requests.', 'Map issues to owner boundaries and workflow stages.', 'Capture privacy/security requirements in ticket notes.'],
+    dcsRelevance: ['Better requirement capture reduces rework.', 'Security requirements should be captured early, not added later.'],
+    sections: [
+      { id: 'is-1', title: 'Requirements clarity', bodyMarkdown: 'Translate broad requests into specific observable outcomes and constraints.' },
+      { id: 'is-2', title: 'Workflow and owner boundaries', bodyMarkdown: 'Identify which owner/system controls each stage of a request.' },
+      { id: 'is-3', title: 'Security and privacy requirements', bodyMarkdown: 'Capture data sensitivity and access constraints before making changes.' }
+    ],
+    flashcards: [
+      { id: 'is-f1', front: 'What is a requirement?', back: 'A testable statement of desired outcome and constraints.' },
+      { id: 'is-f2', front: 'Why owner boundaries matter?', back: 'They prevent unsafe or unauthorized changes.' },
+      { id: 'is-f3', front: 'Early security capture means?', back: 'Identify data sensitivity/access needs at request intake.' },
+      { id: 'is-f4', front: 'Ambiguous request example?', back: '"Fix portal" without feature/error/scope details.' },
+      { id: 'is-f5', front: 'Good requirement check?', back: 'Who needs what by when, with what constraints.' },
+      { id: 'is-f6', front: 'Why avoid silent assumptions?', back: 'Assumptions cause rework and bad escalation paths.' },
+      { id: 'is-f7', front: 'Workflow stage in notes?', back: 'Intake/triage/check/escalate/resolution helps traceability.' },
+      { id: 'is-f8', front: 'Privacy requirement in ticket?', back: 'Minimize personal data and include only necessary identifiers.' }
+    ],
+    quiz: [
+      mcq({ id: 'is-q1', prompt: 'Best way to rewrite “Portal broken” into requirement language?', domain: 'Information systems', difficulty: 'foundation', explanation: 'Specific outcomes are actionable.', modelAnswer: 'Capture role, feature path, exact error, scope, and urgency.', commonMistakes: ['Keeping request vague'], dcsContext: 'Faster routing for admin-owned systems.', reviewSchedule, recommendedModuleId: 'rbc-information-systems-sdlc-support-context', weakTopic: 'rbc-information-systems', options: [{ id: 'a', label: 'Fix portal now' }, { id: 'b', label: 'Capture role, path, error, scope, urgency' }, { id: 'c', label: 'Escalate with no details' }, { id: 'd', label: 'Wait for more complaints' }], correctOptionId: 'b' }),
+      shortAnswer({ id: 'is-q2', prompt: 'List two security/privacy requirements to capture in a support ticket.', domain: 'Information systems', difficulty: 'foundation', explanation: 'Requirements should include safeguards.', modelAnswer: 'Data sensitivity level and minimum-required identifiers/access scope.', commonMistakes: ['Including full sensitive data'], dcsContext: 'Privacy-safe support records matter.', reviewSchedule, recommendedModuleId: 'rbc-information-systems-sdlc-support-context', weakTopic: 'rbc-information-systems', rubric: ['Mentions sensitivity', 'Mentions minimization'], keywordHints: ['sensitive', 'minimum'] }),
+      orderSteps({ id: 'is-q3', prompt: 'Order requirement-to-escalation flow.', domain: 'Information systems', difficulty: 'stretch', explanation: 'Order improves quality.', modelAnswer: 'Clarify outcome, capture constraints, verify scope, escalate to owner.', commonMistakes: ['Escalating before constraints'], dcsContext: 'Structured handoff reduces churn.', reviewSchedule, recommendedModuleId: 'rbc-information-systems-sdlc-support-context', weakTopic: 'rbc-information-systems', steps: [{ id: 'outcome', label: 'Clarify outcome' }, { id: 'constraints', label: 'Capture constraints/security' }, { id: 'scope', label: 'Verify scope' }, { id: 'owner', label: 'Escalate to owner' }], correctOrder: ['outcome', 'constraints', 'scope', 'owner'], rubric: ['Outcome first', 'Constraints included', 'Owner-aware escalation'] }),
+      scenarioResponse({ id: 'is-q4', prompt: 'Explain how SDLC thinking helps with repeated support defects.', domain: 'Information systems', difficulty: 'challenge', explanation: 'Patterns inform process improvements.', modelAnswer: 'Use repeated incidents to improve requirements, validation steps, and owner handoffs.', commonMistakes: ['Treating each incident as isolated'], dcsContext: 'Operational maturity from repeated theme analysis.', reviewSchedule, recommendedModuleId: 'rbc-information-systems-sdlc-support-context', weakTopic: 'rbc-information-systems', rubric: ['Mentions repetition', 'Mentions process change', 'Mentions owner handoff'] })
+    ],
+    scenarioPrompts: [{ id: 'is-s1', title: 'Requirement ambiguity triage', prompt: 'Convert a vague system complaint into owner-ready requirements.' }],
+    practicalOutputs: [{ id: 'is-p1', title: 'Requirement capture template', description: 'Create a template for role, feature, scope, constraints, and escalation owner.' }],
+    sourceSubjects: [{ code: 'CSE1IS', title: 'Information Systems', course: 'RBC', silos: ['Requirements', 'SDLC'], alignmentNote: 'Maps systems-analysis concepts to first-line intake and escalation quality.', slgCurrency: 'Source reference map; verify current delivery before formal claims.' }]
+  },
+  {
+    id: 'smitb-big-data-cloud-context-school-it',
+    title: 'SMITB Big-Data and Cloud Context for School IT',
+    description: 'Translate CSE5BDC concepts into practical support judgement for cloud dependencies and service observability.',
+    domain: 'Cloud and Platforms',
+    level: 'SMITB',
+    estimatedMinutes: 22,
+    tags: ['SMITB', 'CSE5BDC', 'cloud', 'observability'],
+    learningObjectives: ['Describe common cloud dependency chains.', 'Distinguish feature outage vs full-service outage.', 'Escalate with dependency-aware evidence.'],
+    dcsRelevance: ['School services often rely on chained cloud dependencies.', 'Dependency-aware notes help faster vendor/owner triage.'],
+    sections: [
+      { id: 'bdc-1', title: 'Dependency maps for support', bodyMarkdown: 'A single symptom may originate in storage, auth, API, or network paths.' },
+      { id: 'bdc-2', title: 'Partial vs total outage reasoning', bodyMarkdown: 'If one feature fails and login works, classify as partial service degradation.' },
+      { id: 'bdc-3', title: 'Escalation evidence fields', bodyMarkdown: 'Capture feature, scope, start time, and known-good checks before escalation.' }
+    ],
+    flashcards: [
+      { id: 'bdc-f1', front: 'Dependency map in support?', back: 'A simple chain of components that must work for a feature.' },
+      { id: 'bdc-f2', front: 'Login works but upload fails means?', back: 'Likely partial feature degradation, not full outage.' },
+      { id: 'bdc-f3', front: 'Why capture start time?', back: 'Correlates with service events and change windows.' },
+      { id: 'bdc-f4', front: 'Scope capture includes?', back: 'Users, campuses, roles, devices, and affected feature.' },
+      { id: 'bdc-f5', front: 'What is known-good check?', back: 'A baseline feature or account still working.' },
+      { id: 'bdc-f6', front: 'Avoid what in outage notes?', back: 'Absolute claims without dependency evidence.' },
+      { id: 'bdc-f7', front: 'Best first escalation ask?', back: 'Confirm service health and dependency status for affected feature path.' },
+      { id: 'bdc-f8', front: 'Why this matters at L1?', back: 'Better routing and less rework for Level 2/vendors.' }
+    ],
+    quiz: [
+      mcq({ id: 'bdc-q1', prompt: 'Login success but file sync fails for many staff. Best classification?', domain: 'Big data/cloud context', difficulty: 'foundation', explanation: 'Classify symptom before action.', modelAnswer: 'Partial service degradation affecting specific feature path.', commonMistakes: ['Calling full outage'], dcsContext: 'Precise scope improves escalation speed.', reviewSchedule, recommendedModuleId: 'smitb-big-data-cloud-context-school-it', weakTopic: 'smitb-cloud-ai', options: [{ id: 'a', label: 'Full platform outage' }, { id: 'b', label: 'Partial feature degradation' }, { id: 'c', label: 'Single user misconfig' }, { id: 'd', label: 'No issue' }], correctOptionId: 'b' }),
+      shortAnswer({ id: 'bdc-q2', prompt: 'List four fields for a dependency-aware outage note.', domain: 'Big data/cloud context', difficulty: 'foundation', explanation: 'Evidence shape matters.', modelAnswer: 'Feature affected, scope, start time, known-good checks.', commonMistakes: ['No feature-level detail'], dcsContext: 'Service owners need structured inputs.', reviewSchedule, recommendedModuleId: 'smitb-big-data-cloud-context-school-it', weakTopic: 'smitb-cloud-ai', rubric: ['Feature', 'Scope', 'Time', 'Known-good'], keywordHints: ['feature', 'scope', 'time', 'baseline'] }),
+      orderSteps({ id: 'bdc-q3', prompt: 'Order cloud-feature triage sequence.', domain: 'Big data/cloud context', difficulty: 'stretch', explanation: 'Sequence avoids panic changes.', modelAnswer: 'Confirm symptom, scope, known-good check, escalate with dependency note.', commonMistakes: ['Escalating before scope'], dcsContext: 'School operations need calm triage flow.', reviewSchedule, recommendedModuleId: 'smitb-big-data-cloud-context-school-it', weakTopic: 'smitb-cloud-ai', steps: [{ id: 'symptom', label: 'Confirm symptom' }, { id: 'scope', label: 'Confirm scope' }, { id: 'baseline', label: 'Check known-good baseline' }, { id: 'escalate', label: 'Escalate with dependency note' }], correctOrder: ['symptom', 'scope', 'baseline', 'escalate'], rubric: ['Structured sequence', 'Dependency language', 'Escalation clarity'] }),
+      scenarioResponse({ id: 'bdc-q4', prompt: 'Write a concise cloud dependency escalation for “upload fails, login works.”', domain: 'Big data/cloud context', difficulty: 'challenge', explanation: 'Clear notes drive faster owner action.', modelAnswer: 'State partial outage, affected feature/scope/time, known-good login path, and escalation request.', commonMistakes: ['No known-good path'], dcsContext: 'Dependency-aware notes reduce triage loops.', reviewSchedule, recommendedModuleId: 'smitb-big-data-cloud-context-school-it', weakTopic: 'smitb-cloud-ai', rubric: ['Partial outage classification', 'Feature+scope+time', 'Clear escalation ask'] })
+    ],
+    scenarioPrompts: [{ id: 'bdc-s1', title: 'Partial cloud feature outage', prompt: 'Differentiate feature-level degradation from total outage and escalate with evidence.' }],
+    practicalOutputs: [{ id: 'bdc-p1', title: 'Cloud dependency map template', description: 'Draft a simple dependency map for a school-facing cloud feature.' }],
+    sourceSubjects: [{ code: 'CSE5BDC', title: 'Big Data in Cloud', course: 'SMITB', silos: ['Cloud services', 'Data platforms'], alignmentNote: 'Uses big-data/cloud architecture awareness to improve first-line outage triage notes.', slgCurrency: 'Source reference map; verify current delivery before formal claims.' }]
+  },
+  {
+    id: 'smitb-ml-dl-evaluation-support-context',
+    title: 'SMITB ML/DL Evaluation in Support Context',
+    description: 'Apply CSE5ML and CSE5DL concepts to evaluate AI outputs, confidence, and risk in school IT workflows.',
+    domain: 'Data and AI',
+    level: 'SMITB',
+    estimatedMinutes: 20,
+    tags: ['SMITB', 'CSE5ML', 'CSE5DL', 'evaluation', 'risk'],
+    learningObjectives: ['Explain confidence vs correctness in AI outputs.', 'Use safe checks before acting on model suggestions.', 'Capture model-risk notes in escalation writing.'],
+    dcsRelevance: ['AI-assisted workflows require verification, especially with sensitive school context.', 'Confidence labels should not replace evidence.'],
+    sections: [
+      { id: 'ml-dl-1', title: 'Confidence is not correctness', bodyMarkdown: 'A model can be confidently wrong. Verify against known-good sources and policy boundaries.' },
+      { id: 'ml-dl-2', title: 'Safe validation sequence', bodyMarkdown: 'Check source, cross-check with approved docs, test with low-risk examples.' },
+      { id: 'ml-dl-3', title: 'Risk notes for AI suggestions', bodyMarkdown: 'Capture what was suggested, what was verified, and what was rejected.' }
+    ],
+    flashcards: [
+      { id: 'ml-dl-f1', front: 'Confident AI answer means?', back: 'High certainty in output style, not guaranteed correctness.' },
+      { id: 'ml-dl-f2', front: 'First validation step?', back: 'Cross-check with approved source or known-good workflow.' },
+      { id: 'ml-dl-f3', front: 'Why low-risk examples first?', back: 'Avoid impacting real users while testing suggestion quality.' },
+      { id: 'ml-dl-f4', front: 'What to log after AI suggestion?', back: 'Suggested action, verification result, and escalation outcome.' },
+      { id: 'ml-dl-f5', front: 'When to reject AI advice?', back: 'If it conflicts with policy, privacy, or verified operational guidance.' },
+      { id: 'ml-dl-f6', front: 'AI hallucination practical risk?', back: 'Plausible but incorrect steps may increase incident scope.' },
+      { id: 'ml-dl-f7', front: 'Best escalation phrase?', back: '“AI suggestion reviewed; verified against approved workflow with mismatch noted.”' },
+      { id: 'ml-dl-f8', front: 'Why this matters in schools?', back: 'Sensitive data and operational continuity demand safer judgement.' }
+    ],
+    quiz: [
+      mcq({ id: 'ml-dl-q1', prompt: 'AI tool gives a confident fix not found in approved docs. Best response?', domain: 'ML/DL support context', difficulty: 'foundation', explanation: 'Verification beats confidence language.', modelAnswer: 'Do not apply directly; verify against approved workflow and escalate mismatch.', commonMistakes: ['Following confident output blindly'], dcsContext: 'Policy and safety boundaries come first.', reviewSchedule, recommendedModuleId: 'smitb-ml-dl-evaluation-support-context', weakTopic: 'smitb-cloud-ai', options: [{ id: 'a', label: 'Apply immediately' }, { id: 'b', label: 'Verify and escalate mismatch' }, { id: 'c', label: 'Ignore and close ticket' }, { id: 'd', label: 'Paste sensitive logs into AI for confidence' }], correctOptionId: 'b' }),
+      shortAnswer({ id: 'ml-dl-q2', prompt: 'Write two lines that document safe AI suggestion handling.', domain: 'ML/DL support context', difficulty: 'foundation', explanation: 'Documentation quality matters.', modelAnswer: 'Record suggestion summary, verification source, and outcome decision.', commonMistakes: ['No verification source'], dcsContext: 'Traceability for support decisions.', reviewSchedule, recommendedModuleId: 'smitb-ml-dl-evaluation-support-context', weakTopic: 'smitb-cloud-ai', rubric: ['Captures suggestion', 'Captures verification', 'Captures decision'], keywordHints: ['suggestion', 'verified', 'decision'] }),
+      orderSteps({ id: 'ml-dl-q3', prompt: 'Order AI suggestion safety flow.', domain: 'ML/DL support context', difficulty: 'stretch', explanation: 'Order reduces risk.', modelAnswer: 'Capture suggestion, verify with approved source, test low-risk path, then escalate/act.', commonMistakes: ['Acting before verification'], dcsContext: 'Safer first-line AI handling.', reviewSchedule, recommendedModuleId: 'smitb-ml-dl-evaluation-support-context', weakTopic: 'smitb-cloud-ai', steps: [{ id: 'capture', label: 'Capture suggestion' }, { id: 'verify', label: 'Verify with approved source' }, { id: 'test', label: 'Test low-risk path' }, { id: 'decide', label: 'Escalate or act with note' }], correctOrder: ['capture', 'verify', 'test', 'decide'], rubric: ['Verification before action', 'Low-risk test', 'Documented decision'] }),
+      scenarioResponse({ id: 'ml-dl-q4', prompt: 'Teacher asks if AI summary can replace official notes. Respond safely.', domain: 'ML/DL support context', difficulty: 'challenge', explanation: 'Governance and data handling matter.', modelAnswer: 'AI summary can assist drafting but official notes must follow approved channels, verification, and privacy constraints.', commonMistakes: ['Treating AI as authoritative record'], dcsContext: 'Formal records require approved process.', reviewSchedule, recommendedModuleId: 'smitb-ml-dl-evaluation-support-context', weakTopic: 'smitb-cloud-ai', rubric: ['Mentions approved channel', 'Mentions verification', 'Mentions privacy'] })
+    ],
+    scenarioPrompts: [{ id: 'ml-dl-s1', title: 'Risky AI recommendation', prompt: 'Assess a confident but unverified AI recommendation and write a safe response.' }],
+    practicalOutputs: [{ id: 'ml-dl-p1', title: 'AI suggestion review log template', description: 'Create a template for tracking AI suggestions, evidence checks, and final decision.' }],
+    sourceSubjects: [
+      { code: 'CSE5ML', title: 'Machine Learning', course: 'SMITB', silos: ['Model evaluation'], alignmentNote: 'Applies model-evaluation thinking to operational support judgement.', slgCurrency: 'Source reference map; verify current delivery before formal claims.' },
+      { code: 'CSE5DL', title: 'Deep Learning', course: 'SMITB', silos: ['Model behaviour'], alignmentNote: 'Connects deep-learning confidence/limitations to safer support decisions.', slgCurrency: 'Source reference map; verify current delivery before formal claims.' }
+    ]
+  },
+  {
+    id: 'smitb-computer-vision-accessibility-support',
+    title: 'SMITB Computer Vision, Windows Hello, and Accessibility Support',
+    description: 'Use CSE5CV context for first-line camera/Windows Hello/accessibility triage and escalation evidence.',
+    domain: 'Endpoint Support',
+    level: 'SMITB',
+    estimatedMinutes: 18,
+    tags: ['SMITB', 'CSE5CV', 'camera', 'Windows Hello', 'accessibility'],
+    learningObjectives: ['Triage camera/Hello issues safely.', 'Differentiate permission vs hardware vs policy symptoms.', 'Capture accessibility-sensitive escalation notes.'],
+    dcsRelevance: ['Camera and sign-in issues impact classroom delivery and inclusion workflows.', 'Accessibility-aware notes improve support quality.'],
+    sections: [
+      { id: 'cv-1', title: 'Camera path triage', bodyMarkdown: 'Check app permissions, selected camera, privacy shutter/switch, and test in known-good app.' },
+      { id: 'cv-2', title: 'Windows Hello troubleshooting boundaries', bodyMarkdown: 'Confirm enrollment status, camera availability, and policy constraints before escalation.' },
+      { id: 'cv-3', title: 'Accessibility-safe support language', bodyMarkdown: 'Describe functional impact and required accommodations without exposing sensitive details.' }
+    ],
+    flashcards: [
+      { id: 'cv-f1', front: 'First camera check?', back: 'Confirm app permission and selected camera device.' },
+      { id: 'cv-f2', front: 'Common false hardware fault?', back: 'Privacy shutter or disabled permission setting.' },
+      { id: 'cv-f3', front: 'Windows Hello requires?', back: 'Supported hardware, enrollment, and policy allowance.' },
+      { id: 'cv-f4', front: 'When to escalate camera issue?', back: 'After permission/device checks fail across known-good apps.' },
+      { id: 'cv-f5', front: 'Accessibility note should include?', back: 'Functional impact and urgency, not personal sensitive history.' },
+      { id: 'cv-f6', front: 'Known-good comparison means?', back: 'Test in another approved app/device context.' },
+      { id: 'cv-f7', front: 'Hello enrollment mismatch symptom?', back: 'Camera works but biometric sign-in unavailable or reset.' },
+      { id: 'cv-f8', front: 'Best escalation evidence?', back: 'Apps tested, permission state, camera path result, policy indicators.' }
+    ],
+    quiz: [
+      mcq({ id: 'cv-q1', prompt: 'Camera fails in one app but works in another. Most likely bucket?', domain: 'Computer vision support', difficulty: 'foundation', explanation: 'Scope points to app configuration path.', modelAnswer: 'App-specific permission or configuration issue.', commonMistakes: ['Assuming immediate hardware replacement'], dcsContext: 'Avoid unnecessary hardware actions.', reviewSchedule, recommendedModuleId: 'smitb-computer-vision-accessibility-support', weakTopic: 'hardware-network-web', options: [{ id: 'a', label: 'Hardware dead' }, { id: 'b', label: 'App permission/config issue' }, { id: 'c', label: 'Network outage' }, { id: 'd', label: 'Printer spooler issue' }], correctOptionId: 'b' }),
+      shortAnswer({ id: 'cv-q2', prompt: 'List three checks before escalating Windows Hello sign-in failure.', domain: 'Computer vision support', difficulty: 'foundation', explanation: 'Structured checks improve handoff quality.', modelAnswer: 'Camera availability, Hello enrollment status, and policy restrictions/device compliance.', commonMistakes: ['No enrollment check'], dcsContext: 'Identity and endpoint paths intersect.', reviewSchedule, recommendedModuleId: 'smitb-computer-vision-accessibility-support', weakTopic: 'hardware-network-web', rubric: ['Camera path', 'Enrollment', 'Policy/compliance'], keywordHints: ['camera', 'enrollment', 'policy'] }),
+      orderSteps({ id: 'cv-q3', prompt: 'Order camera triage flow.', domain: 'Computer vision support', difficulty: 'stretch', explanation: 'Sequence saves time.', modelAnswer: 'Check permissions/device selection, test known-good app, check hardware/privacy switch, then escalate.', commonMistakes: ['Escalating before app-level check'], dcsContext: 'Better first-line triage quality.', reviewSchedule, recommendedModuleId: 'smitb-computer-vision-accessibility-support', weakTopic: 'hardware-network-web', steps: [{ id: 'permissions', label: 'Check permissions/device selection' }, { id: 'known-good', label: 'Test known-good app' }, { id: 'hardware', label: 'Check hardware/privacy switch' }, { id: 'escalate', label: 'Escalate with evidence' }], correctOrder: ['permissions', 'known-good', 'hardware', 'escalate'], rubric: ['Starts with app checks', 'Uses known-good test', 'Escalates with evidence'] }),
+      scenarioResponse({ id: 'cv-q4', prompt: 'Write an accessibility-aware escalation note for recurring camera failure in class support.', domain: 'Computer vision support', difficulty: 'challenge', explanation: 'Respectful, functional notes matter.', modelAnswer: 'Describe classroom impact, checks performed, and requested timeframe/accommodation without sensitive details.', commonMistakes: ['Including unnecessary personal detail'], dcsContext: 'Support communication quality affects inclusion and urgency handling.', reviewSchedule, recommendedModuleId: 'smitb-computer-vision-accessibility-support', weakTopic: 'professional-practice', rubric: ['Functional impact clear', 'Checks captured', 'Privacy-safe language'] })
+    ],
+    scenarioPrompts: [{ id: 'cv-s1', title: 'Camera/Hello triage drill', prompt: 'Handle a camera + Windows Hello support request with accessibility-aware escalation notes.' }],
+    practicalOutputs: [{ id: 'cv-p1', title: 'Camera/Hello triage checklist', description: 'Build a quick checklist for permissions, hardware, enrollment, and escalation evidence.' }],
+    sourceSubjects: [{ code: 'CSE5CV', title: 'Computer Vision', course: 'SMITB', silos: ['Vision workflows'], alignmentNote: 'Applies CV context to practical first-line camera and Hello troubleshooting.', slgCurrency: 'Source reference map; verify current delivery before formal claims.' }]
+  },
+  ...messerCore2Modules,
   ...dcsWorkflowModules
 ];
 

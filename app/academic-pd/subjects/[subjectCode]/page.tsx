@@ -52,7 +52,8 @@ function getFallbackWeeklyModules(subject: AcademicSubject): AcademicWeeklyModul
 }
 
 export default function AcademicSubjectPage({ params }: { params: Params }) {
-  const subject = getAcademicSubjectByCode(params.subjectCode);
+  const normalizedCode = params.subjectCode.trim().toLowerCase();
+  const subject = getAcademicSubjectByCode(normalizedCode);
 
   if (!subject) {
     notFound();

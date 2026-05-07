@@ -3,7 +3,7 @@ import { academicSubjects } from '../data/academicSubjects';
 import { modules } from '../data/modules';
 import { scenarios } from '../data/scenarios';
 
-export type SearchResultKind = 'Route' | 'Module' | 'Scenario' | 'Academic Subject';
+export type SearchResultKind = 'Route' | 'Module' | 'Module Section' | 'Scenario' | 'Academic Subject';
 
 export type SearchResult = {
   id: string;
@@ -47,6 +47,17 @@ function buildSearchEntries(): SearchEntry[] {
     };
   });
 
+  const moduleSectionEntries: SearchEntry[] = modules.flatMap((module) =>
+    module.sections.map((section) => ({
+      id: `module-section-${module.id}-${section.id}`,
+      kind: 'Module Section' as const,
+      title: `${module.title}: ${section.title}`,
+      href: `/modules/${module.id}`,
+      snippet: section.bodyMarkdown.replace(/\s+/g, ' ').slice(0, 260),
+      haystack: `${module.title} ${module.description} ${module.tags.join(' ')} ${section.title} ${section.bodyMarkdown}`
+    }))
+  );
+
   const scenarioEntries: SearchEntry[] = scenarios.map((scenario) => ({
     id: `scenario-${scenario.id}`,
     kind: 'Scenario',
@@ -67,7 +78,7 @@ function buildSearchEntries(): SearchEntry[] {
       .join(' ')}`
   }));
 
-  return [...routeEntries, ...moduleEntries, ...scenarioEntries, ...subjectEntries];
+  return [...routeEntries, ...moduleEntries, ...moduleSectionEntries, ...scenarioEntries, ...subjectEntries];
 }
 
 const SEARCH_ENTRIES = buildSearchEntries();
