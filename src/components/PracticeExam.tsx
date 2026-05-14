@@ -87,19 +87,27 @@ export function PracticeExam({ questions, title }: PracticeExamProps) {
   return (
     <div className="rounded-[2rem] border border-slate-200 bg-white p-8 shadow-sm">
       <div className="flex justify-between items-center mb-6">
-        <h2 className="text-xl font-semibold text-slate-900">{title}</h2>
+        <h2 className="text-xl font-semibold text-slate-900">{title} (Internal Study Mode)</h2>
         <span className="text-sm text-slate-500">Question {currentIndex + 1} of {questions.length}</span>
       </div>
 
-      <div className="mb-8">
+      <div className="mb-4 p-4 rounded-2xl bg-amber-50 border border-amber-200 text-xs text-amber-800" role="note">
+        <strong>Notice:</strong> This is a free internal study tool for professional development. It is NOT an official certification exam. Completing this does not grant a CompTIA or ITIL credential.
+        <div className="mt-2 text-[10px] text-amber-600 italic">
+          Privacy Note: Study area only. Do not enter real student, staff, or school-sensitive information.
+        </div>
+      </div>
+
+      <div className="mb-8" aria-live="polite">
         <h3 className="text-2xl font-medium text-slate-900 mb-6">{currentQuestion.prompt}</h3>
         {currentQuestion.type === 'mcq' && (
-          <div className="space-y-4">
+          <div className="space-y-4" role="radiogroup" aria-label={currentQuestion.prompt}>
             {currentQuestion.options.map(option => (
               <button
                 key={option.id}
                 onClick={() => setSelectedOptionId(option.id)}
-                className={`w-full p-4 rounded-2xl border text-left transition-all ${
+                aria-pressed={selectedOptionId === option.id}
+                className={`w-full p-4 rounded-2xl border text-left transition-all outline-none focus:ring-2 focus:ring-slate-900 ${
                   selectedOptionId === option.id 
                     ? 'border-slate-900 bg-slate-900 text-white' 
                     : 'border-slate-200 bg-white text-slate-700 hover:border-slate-400'

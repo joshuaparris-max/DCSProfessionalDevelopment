@@ -243,6 +243,10 @@ export function saveProgress(progress: UserProgress) {
       schemaVersion: STORAGE_VERSION
     })
   );
+
+  if (typeof window !== 'undefined') {
+    window.localStorage.setItem('dcsPrepLastSaved', new Date().toISOString());
+  }
 }
 
 export function resetProgress() {

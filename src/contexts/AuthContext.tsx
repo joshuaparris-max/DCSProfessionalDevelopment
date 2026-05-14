@@ -2,6 +2,11 @@
 
 import React, { createContext, useContext, useState, useEffect } from 'react';
 
+/**
+ * WARNING: This is a LOCAL-ONLY UI simulation of Role-Based Access Control (RBAC).
+ * It does NOT provide security for sensitive data. It is intended to help 
+ * simulate how the UI adapts for different staff roles at DCS.
+ */
 export type UserRole = 'admin' | 'educator' | 'learner';
 
 type User = {

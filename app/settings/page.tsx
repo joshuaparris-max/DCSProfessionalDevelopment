@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { requestNotificationPermission, showNotification } from '../../src/lib/notifications';
 import { useAuth, type UserRole } from '../../src/contexts/AuthContext';
+import { ProgressBackup } from '../../src/components/ProgressBackup';
 import {
   defaultSchedulerSettings,
   loadSchedulerSettings,
@@ -11,7 +12,12 @@ import {
   type SchedulerBlockTemplate,
   type SchedulerSettings
 } from '../../src/hooks/useScheduler';
-import { resetProgress } from '../../src/lib/progress';
+import {
+  resetProgress,
+  saveProgress,
+  getStoredProgressSnapshot,
+  type UserProgress
+} from '../../src/lib/progress';
 import {
   clearUsageEvents,
   exportUsageEvents,
@@ -19,6 +25,7 @@ import {
   getUsageTrackingEnabled,
   setUsageTrackingEnabled
 } from '../../src/lib/usageAnalytics';
+import { modules } from '../../src/data/modules';
 
 export default function SettingsPage() {
   const [schedulerSettings, setSchedulerSettings] = useState<SchedulerSettings>(defaultSchedulerSettings);
@@ -27,11 +34,13 @@ export default function SettingsPage() {
   const [usageEventCount, setUsageEventCount] = useState(0);
   const [notificationPermission, setNotificationPermission] = useState<NotificationPermission | 'unsupported'>('default');
   const { user, role, login, logout } = useAuth();
+  const [progress, setProgress] = useState<UserProgress | null>(null);
 
   useEffect(() => {
     setSchedulerSettings(loadSchedulerSettings());
     setUsageTrackingState(getUsageTrackingEnabled());
     setUsageEventCount(getUsageEvents().length);
+    setProgress(getStoredProgressSnapshot(modules));
     if (!('Notification' in window)) {
       setNotificationPermission('unsupported');
     } else {
@@ -53,6 +62,12 @@ export default function SettingsPage() {
       body: 'This is a test notification from DCSPrep.',
       tag: 'test-notification'
     });
+  }
+
+  function handleRestore(newProgress: UserProgress) {
+    saveProgress(newProgress);
+    setProgress(newProgress);
+    window.location.reload(); // Refresh to apply restored state globally
   }
 
   function handleReset() {
@@ -129,13 +144,14 @@ export default function SettingsPage() {
       <section className="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-sm">
         <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
           <div>
-            <div className="text-sm font-semibold uppercase tracking-[0.2em] text-slate-500">Identity & Roles</div>
-            <h2 className="mt-3 text-2xl font-semibold text-slate-900">User Role (Mock RBAC)</h2>
+            <div className="text-sm font-semibold uppercase tracking-[0.2em] text-slate-500">Identity & Demo Roles</div>
+            <h2 className="mt-3 text-2xl font-semibold text-slate-900">Local Role Simulation</h2>
             <p className="mt-2 max-w-3xl text-sm leading-7 text-slate-600">
-              Select a role to see how the app adapts (e.g., restricted content or admin-only tools).
+              Select a role to simulate UI behavior (e.g., restricted content or educator views). 
+              <span className="block mt-1 font-bold text-rose-600">WARNING: This is a local-only simulation. Roles are stored in LocalStorage and do not provide security for sensitive data.</span>
             </p>
             <p className="mt-2 text-sm text-slate-600">
-              Current Role: <span className="font-semibold text-slate-900 capitalize">{role}</span>
+              Current Simulated Role: <span className="font-semibold text-slate-900 capitalize">{role}</span>
             </p>
           </div>
           <div className="flex flex-wrap gap-3">
@@ -149,12 +165,27 @@ export default function SettingsPage() {
                     : 'border border-slate-200 bg-white text-slate-700'
                 }`}
               >
-                {r.charAt(0).toUpperCase() + r.slice(1)}
+                {r.charAt(0).toUpperCase() + r.slice(1)} (Simulated)
               </button>
             ))}
           </div>
         </div>
       </section>
+
+      <section className="rounded-[2rem] border border-rose-200 bg-rose-50 p-6 shadow-sm">
+        <div className="flex items-start gap-4">
+          <div className="text-2xl">⚠️</div>
+          <div>
+            <h2 className="text-lg font-bold text-rose-900">Privacy & Data Security Notice</h2>
+            <p className="mt-2 text-sm text-rose-800 leading-relaxed">
+              DCSPrep is a client-side learning tool. All data is stored locally in your browser. 
+              <strong>NEVER</strong> enter real student names, staff credentials, parent contact details, or sensitive school network configurations into this application.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      {progress && <ProgressBackup progress={progress} onRestore={handleRestore} />}
 
       <section className="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-sm">
         <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">

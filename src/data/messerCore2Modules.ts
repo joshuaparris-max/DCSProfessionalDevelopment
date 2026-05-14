@@ -261,6 +261,68 @@ function createCore2TopicModule(topic: string, group: Core2TopicGroup): Training
       { id: `${slug}-f7`, front: 'Why use a known-good comparison?', back: 'It narrows whether the issue is local, account-based, service-wide, network-related, or policy-related.' },
       { id: `${slug}-f8`, front: 'What makes the assessment useful?', back: 'It checks judgement, not just whether the video title was recognised.' }
     ],
+    interactiveLabs: [
+      {
+        id: 'lab-student-169-ip',
+        title: 'Student Laptop 169.254 IP',
+        scenario: 'A student says their internet is "broken". You run ipconfig and see an IPv4 address starting with 169.254.',
+        decisionPoints: [
+          {
+            id: 'd0',
+            question: 'What is the FIRST question Josh should ask the student?',
+            options: [
+              { id: 'o1', label: 'Does your laptop say "Connected" to the Wi-Fi?', feedback: 'Good. Distinguishes between adapter issues and IP lease issues.', isCorrect: true },
+              { id: 'o2', label: 'Have you tried restarting Chrome?', feedback: 'Likely won\'t fix an APIPA address.', isCorrect: false }
+            ]
+          },
+          {
+            id: 'd1',
+            question: 'What does this IP address immediately tell you?',
+            options: [
+              { id: 'o1', label: 'The DNS server is down.', feedback: 'Incorrect. 169.254 is an APIPA address meaning DHCP failed.', isCorrect: false },
+              { id: 'o2', label: 'The laptop failed to get a DHCP lease.', feedback: 'Correct. This narrows the issue to Wi-Fi connectivity or DHCP server reachability.', isCorrect: true }
+            ]
+          },
+          {
+            id: 'd2',
+            question: 'What is a safe first check?',
+            options: [
+              { id: 'o1', label: 'Toggle Wi-Fi off and back on.', feedback: 'Good. A simple re-association can often trigger a successful DHCP request.', isCorrect: true },
+              { id: 'o2', label: 'Assign a static IP address.', feedback: 'NEVER do this on a student laptop. It will break when they move to another room or home.', isCorrect: false }
+            ]
+          }
+        ],
+        dcsApplication: 'At DCS, check if other students in the same room are affected. If it is just one, focus on that laptop adapter/profile.',
+        retrievalQuestion: 'What does 169.254 stand for in networking terms?',
+        reflectionPrompt: 'How do you explain to a student that "bars" on Wi-Fi don\'t always mean "internet"?'
+      },
+      {
+        id: 'lab-hdmi-audio',
+        title: 'HDMI Audio Troubleshooting',
+        scenario: 'A teacher has connected their laptop to the ViewBoard via HDMI. The video is clear, but the audio is still coming out of the tiny laptop speakers.',
+        decisionPoints: [
+          {
+            id: 'd1',
+            question: 'What is a safe first check in Windows?',
+            options: [
+              { id: 'o1', label: 'Check the Sound Output device in the Taskbar.', feedback: 'Correct. Often Windows doesn\'t automatically switch the default playback device to HDMI.', isCorrect: true },
+              { id: 'o2', label: 'Reinstall the graphics driver.', feedback: 'Too early. Audio switching is usually a configuration issue, not a driver failure.', isCorrect: false }
+            ]
+          },
+          {
+            id: 'd2',
+            question: 'The output is set to "ViewBoard", but there is still no sound. What should Josh ask next?',
+            options: [
+              { id: 'o1', label: 'Is the ViewBoard itself muted or at 0 volume?', feedback: 'Practical. Simple hardware volume checks save time.', isCorrect: true },
+              { id: 'o2', label: 'Is your laptop plugged into power?', feedback: 'Unlikely to affect HDMI audio routing.', isCorrect: false }
+            ]
+          }
+        ],
+        dcsApplication: 'At DCS, ViewBoards have their own remote and side-panel volume buttons. Always check both.',
+        retrievalQuestion: 'Does HDMI carry both video and audio signals?',
+        reflectionPrompt: 'How do you test audio without playing something loud that disrupts the class?'
+      }
+    ],
     quiz: [
       mcq({
         id: `${slug}-q1`,
@@ -452,6 +514,34 @@ export const messerCore2Modules: TrainingModule[] = [
       { id: 'messer-os-f8', front: 'What is the first-line value of Linux command literacy?', back: 'It helps gather evidence and understand basic file, process, and network state.' },
       { id: 'messer-os-f9', front: 'What should Josh avoid with Windows Firewall?', back: 'Unapproved production firewall rule changes.' },
       { id: 'messer-os-f10', front: 'What extra dependency do cloud productivity tools add?', back: 'Identity, browser, sync, and service-health dependencies.' }
+    ],
+    interactiveLabs: [
+      {
+        id: 'lab-student-169-ip',
+        title: 'Student Laptop 169.254 IP',
+        scenario: 'A student says their internet is "broken". You run ipconfig and see an IPv4 address starting with 169.254.',
+        decisionPoints: [
+          {
+            id: 'd1',
+            question: 'What does this IP address immediately tell you?',
+            options: [
+              { id: 'o1', label: 'The DNS server is down.', feedback: 'Incorrect. 169.254 is an APIPA address meaning DHCP failed.', isCorrect: false },
+              { id: 'o2', label: 'The laptop failed to get a DHCP lease.', feedback: 'Correct. This narrows the issue to Wi-Fi connectivity or DHCP server reachability.', isCorrect: true }
+            ]
+          },
+          {
+            id: 'd2',
+            question: 'What is a safe first check?',
+            options: [
+              { id: 'o1', label: 'Toggle Wi-Fi off and back on.', feedback: 'Good. A simple re-association can often trigger a successful DHCP request.', isCorrect: true },
+              { id: 'o2', label: 'Assign a static IP address.', feedback: 'NEVER do this on a student laptop. It will break when they move to another room or home.', isCorrect: false }
+            ]
+          }
+        ],
+        dcsApplication: 'At DCS, check if other students in the same room are affected. If it is just one, focus on that laptop adapter/profile.',
+        retrievalQuestion: 'What does 169.254 stand for in networking terms?',
+        reflectionPrompt: 'How do you explain to a student that "bars" on Wi-Fi don\'t always mean "internet"?'
+      }
     ],
     quiz: [
       mcq({

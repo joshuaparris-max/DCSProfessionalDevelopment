@@ -420,6 +420,9 @@ export default function AssessmentSession({
         </div>
       </div>
 
+      <div className="text-[10px] text-slate-400 italic mt-2">
+        Privacy Note: Practice area only. Do not enter real student, staff, or school-sensitive information.
+      </div>
       <div className="grid gap-4">
         {question.type === 'mcq' ? (
           <div className="grid gap-3">

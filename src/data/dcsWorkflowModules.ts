@@ -41,6 +41,191 @@ export const dcsWorkflowModules: TrainingModule[] = [
           'ICT validates obvious technical blockers and captures evidence; authoritative enrolment or demographic corrections usually belong with administration. Escalate with who/when/what tried and privacy-safe wording.'
       }
     ],
+    interactiveLabs: [
+      {
+        id: 'lab-offboarding-sequence',
+        title: 'Identity Offboarding Logic',
+        scenario: 'A staff member left DCS on Friday. Today is Monday, and their former team says "They are still showing up as Available in Teams!"',
+        decisionPoints: [
+          {
+            id: 'd1',
+            question: 'What is the FIRST question Josh should ask to clarify the situation?',
+            options: [
+              { id: 'o1', label: 'Have you tried messaging them to see if they reply?', feedback: 'Risky. If they are still logged in, you might be leaking school info.', isCorrect: false },
+              { id: 'o2', label: 'Is this just in the search bar, or can you see their status icon?', feedback: 'Good. Search results are often cached longer than real-time status.', isCorrect: true },
+              { id: 'o3', label: 'Did they take their laptop with them?', feedback: 'Important later, but status visibility is the immediate concern.', isCorrect: false }
+            ]
+          },
+          {
+            id: 'd2',
+            question: 'Which safe first check should you perform (if you have read-only access)?',
+            options: [
+              { id: 'o1', label: 'Check the "Account Enabled" status in the Entra ID portal.', feedback: 'Correct. This is the source of truth for the account state.', isCorrect: true },
+              { id: 'o2', label: 'Delete the user from the Teams Admin Center.', feedback: 'Too early and too invasive. Follow the sequence.', isCorrect: false }
+            ]
+          }
+        ],
+        dcsApplication: 'Offboarding at DCS involves Paul, the Business Office, and specific M365 checklists. Level 1 captures the "Available" symptom as evidence.',
+        retrievalQuestion: 'Why do Microsoft services sometimes show different account states?',
+        reflectionPrompt: 'How do you explain "service lag" to a staff member who is worried about security?'
+      },
+      {
+        id: 'lab-parent-portal-reg',
+        title: 'Parent Portal Registration',
+        scenario: 'A parent calls saying the registration code from the letter "doesn\'t work". They sound frustrated.',
+        decisionPoints: [
+          {
+            id: 'd1',
+            question: 'What is the FIRST question Josh should ask?',
+            options: [
+              { id: 'o1', label: 'Are you getting a specific error message?', feedback: 'Correct. Knowing if it is "Invalid Code", "Expired", or "Already Used" changes the triage.', isCorrect: true },
+              { id: 'o2', label: 'Are you sure you typed it correctly?', feedback: 'Risky. Can sound condescending. Ask for the error first.', isCorrect: false }
+            ]
+          },
+          {
+            id: 'd2',
+            question: 'What should you NOT change too early?',
+            options: [
+              { id: 'o1', label: 'Generate a new code in Sentral.', feedback: 'Correct. If the parent is on the wrong URL, a new code won\'t help and might invalidate the old one.', isCorrect: true },
+              { id: 'o2', label: 'The parent\'s browser cache.', feedback: 'Safe but usually not the issue for registration codes.', isCorrect: false }
+            ]
+          }
+        ],
+        dcsApplication: 'Sentral Parent Portal is the DCS source of truth for parent comms. Verify the URL they are using first (DCS specific Sentral URL).',
+        retrievalQuestion: 'What are the three main symptom buckets for portal registration?',
+        reflectionPrompt: 'How do you balance "security verification" with being "helpfully welcoming" to a new parent?'
+      },
+      {
+        id: 'lab-student-169-ip',
+        title: 'Student Laptop 169.254 IP',
+        scenario: 'A student says their internet is "broken". You run ipconfig and see an IPv4 address starting with 169.254.',
+        decisionPoints: [
+          {
+            id: 'd1',
+            question: 'What does this IP address immediately tell you?',
+            options: [
+              { id: 'o1', label: 'The DNS server is down.', feedback: 'Incorrect. 169.254 is an APIPA address meaning DHCP failed.', isCorrect: false },
+              { id: 'o2', label: 'The laptop failed to get a DHCP lease.', feedback: 'Correct. This narrows the issue to Wi-Fi connectivity or DHCP server reachability.', isCorrect: true }
+            ]
+          },
+          {
+            id: 'd2',
+            question: 'What is a safe first check?',
+            options: [
+              { id: 'o1', label: 'Toggle Wi-Fi off and back on.', feedback: 'Good. A simple re-association can often trigger a successful DHCP request.', isCorrect: true },
+              { id: 'o2', label: 'Assign a static IP address.', feedback: 'NEVER do this on a student laptop. It will break when they move to another room or home.', isCorrect: false }
+            ]
+          }
+        ],
+        dcsApplication: 'At DCS, check if other students in the same room are affected. If it is just one, focus on that laptop adapter/profile.',
+        retrievalQuestion: 'What does 169.254 stand for in networking terms?',
+        reflectionPrompt: 'How do you explain to a student that "bars" on Wi-Fi don\'t always mean "internet"?'
+      },
+      {
+        id: 'lab-slow-laptop-triage',
+        title: 'Slow Laptop Triage',
+        scenario: 'A staff member says their laptop is "unusable" and "taking forever to do anything".',
+        decisionPoints: [
+          {
+            id: 'd1',
+            question: 'What is the FIRST question Josh should ask?',
+            options: [
+              { id: 'o1', label: 'When did you last restart?', feedback: 'Classic but essential. Uptime often explains "slowness".', isCorrect: true },
+              { id: 'o2', label: 'How many Chrome tabs do you have open?', feedback: 'Good, but restart is a more comprehensive first check.', isCorrect: false }
+            ]
+          },
+          {
+            id: 'd2',
+            question: 'You check Task Manager. Disk usage is at 100% but CPU is 5%. What does this suggest?',
+            options: [
+              { id: 'o1', label: 'The hard drive is failing or a Windows Update is indexing.', feedback: 'Correct. High disk with low CPU usually points to I/O bottlenecks.', isCorrect: true },
+              { id: 'o2', label: 'The RAM is full.', feedback: 'Incorrect. Full RAM usually causes high "Memory" usage and CPU paging, not just disk.', isCorrect: false }
+            ]
+          }
+        ],
+        dcsApplication: 'At DCS, slow laptops might be running a background BitLocker encryption or a large OneDrive sync. Check the taskbar icons.',
+        retrievalQuestion: 'What is the "uptime" command in CMD/PowerShell?',
+        reflectionPrompt: 'How do you handle a teacher who wants a new laptop immediately because their current one is "slow"?'
+      },
+      {
+        id: 'lab-new-staff-access',
+        title: 'New Staff Access Triage',
+        scenario: 'A new staff member can log in to their laptop but says they "can\'t see the shared drive" and "Teams is empty".',
+        decisionPoints: [
+          {
+            id: 'd1',
+            question: 'What is the FIRST question Josh should ask?',
+            options: [
+              { id: 'o1', label: 'Which shared drive specifically are you looking for?', feedback: 'Good. We need to know which security group they might be missing.', isCorrect: true },
+              { id: 'o2', label: 'What is your password?', feedback: 'NEVER ask for a password. DCS policy.', isCorrect: false }
+            ]
+          },
+          {
+            id: 'd2',
+            question: 'Which safe first check should you perform?',
+            options: [
+              { id: 'o1', label: 'Check their group memberships in the Entra ID portal.', feedback: 'Correct. Most access at DCS is group-based.', isCorrect: true },
+              { id: 'o2', label: 'Manually map the drive on their laptop using your own credentials.', feedback: 'BAD. This creates a security risk and doesn\'t fix the underlying permission issue.', isCorrect: false }
+            ]
+          }
+        ],
+        dcsApplication: 'At DCS, new staff onboarding is a coordinated process. Check if the HR/Business office request was completed fully.',
+        retrievalQuestion: 'What is RBAC?',
+        reflectionPrompt: 'How do you handle a new staff member who is feeling "forgotten" because their access isn\'t ready yet?'
+      },
+      {
+        id: 'lab-suspicious-email',
+        title: 'Suspicious Email Triage',
+        scenario: 'A staff member says "I got this weird email from the Principal asking for my mobile number, but it looks a bit off."',
+        decisionPoints: [
+          {
+            id: 'd1',
+            question: 'What is the FIRST question Josh should ask?',
+            options: [
+              { id: 'o1', label: 'Did you click any links or download any attachments?', feedback: 'Critical. This determines if we are in "Report" mode or "Incident Response" mode.', isCorrect: true },
+              { id: 'o2', label: 'What is the sender\'s email address?', feedback: 'Good, but click-status is the immediate priority for containment.', isCorrect: false }
+            ]
+          },
+          {
+            id: 'd2',
+            question: 'The sender address is "principal.dcs@gmail.com". What does this tell you?',
+            options: [
+              { id: 'o1', label: 'It is a phishing attempt. DCS staff use @dcs.edu.au.', feedback: 'Correct. External domains impersonating staff is a common tactic.', isCorrect: true },
+              { id: 'o2', label: 'The Principal is just using their personal email today.', feedback: 'NEVER assume this. Treat as suspicious.', isCorrect: false }
+            ]
+          }
+        ],
+        dcsApplication: 'At DCS, phishing should be reported via the "Report Message" button in Outlook and Paul should be notified if it looks like a targeted campaign.',
+        retrievalQuestion: 'What is "Spear Phishing"?',
+        reflectionPrompt: 'How do you praise the staff member for reporting the email without making them feel silly for being "almost" tricked?'
+      },
+      {
+        id: 'lab-wireless-casting-lag',
+        title: 'Wireless Casting Lag',
+        scenario: 'A teacher is using the ViewBoard wireless casting (e.g. vCast or AirPlay) and says "It\'s so laggy and blurry, I can\'t teach like this."',
+        decisionPoints: [
+          {
+            id: 'd1',
+            question: 'What is a safe first check?',
+            options: [
+              { id: 'o1', label: 'Check if the laptop and ViewBoard are on the same Wi-Fi frequency (e.g. 5GHz).', feedback: 'Good. Mixed frequencies or weak signals cause high latency in casting.', isCorrect: true },
+              { id: 'o2', label: 'Reboot the entire school network.', feedback: 'Extremely invasive. Do not do this for one classroom issue.', isCorrect: false }
+            ]
+          },
+          {
+            id: 'd2',
+            question: 'What is the "DCS fallback" advice if wireless remains unstable?',
+            options: [
+              { id: 'o1', label: 'Switch to a physical HDMI cable.', feedback: 'Correct. For high-bandwidth tasks like video, HDMI is the reliable DCS standard.', isCorrect: true },
+              { id: 'o2', label: 'Tell the teacher to stop using video in class.', feedback: 'Unhelpful. Provide a technical alternative instead.', isCorrect: false }
+            ]
+          }
+        ],
+        dcsApplication: 'Wireless casting at DCS depends on signal density in the room. HDMI is always the recommended "Plan B" for important lessons.',
+        retrievalQuestion: 'Why is HDMI preferred over wireless for video playback?',
+        reflectionPrompt: 'How do you set expectations for wireless technology without sounding like you are making excuses?'
+      }
+    ],
     flashcards: [
       { id: 'ppr-f1', front: 'What three symptom buckets help Parent Portal registration triage?', back: 'Cannot start flow, code or link rejected, or login fails after apparent success.' },
       { id: 'ppr-f2', front: 'Why avoid collecting passwords in chat?', back: 'Passwords are secrets; use safer flows and escalate compromise suspicion properly.' },
@@ -2291,6 +2476,68 @@ export const dcsWorkflowModules: TrainingModule[] = [
         title: 'Deployment readiness evidence card',
         description: 'Create a one-page checklist for asset, model, build, apps, drivers, policy status, scope, and class impact.'
       }
+    ],
+    interactiveLabs: [
+      {
+        id: 'lab-imaging-decision',
+        title: 'Deployment Strategy',
+        scenario: 'A batch of 30 brand new identical laptops just arrived from the supplier. They already have Windows 11 Pro installed.',
+        decisionPoints: [
+          {
+            id: 'd0',
+            question: 'What is a safe first check before deciding on a deployment method?',
+            options: [
+              { id: 'o1', label: 'Check if the serial numbers are already in the Autopilot portal.', feedback: 'Correct. If they are already registered, provisioning is the natural choice.', isCorrect: true },
+              { id: 'o2', label: 'Boot one up and start installing Chrome manually.', feedback: 'Inefficient. We want an automated process.', isCorrect: false }
+            ]
+          },
+          {
+            id: 'd1',
+            question: 'Which method is more efficient for modern school deployment?',
+            options: [
+              { id: 'o1', label: 'Wipe and re-image via WDS', feedback: 'Traditional but slow. Requires capturing and maintaining a heavy base image.', isCorrect: false },
+              { id: 'o2', label: 'Provision via Autopilot', feedback: 'Correct. Since they have a clean OS, we only need to apply DCS-specific configurations and apps.', isCorrect: true }
+            ]
+          }
+        ],
+        dcsApplication: 'Autopilot provisioning saves hours of technician time compared to manual imaging for new hardware.',
+        retrievalQuestion: 'When would you still choose Imaging over Provisioning?',
+        reflectionPrompt: 'How does modern provisioning change the way you prepare for a new term?'
+      },
+      {
+        id: 'lab-viewboard-no-display',
+        title: 'ViewBoard Display Triage',
+        scenario: 'A teacher is frustrated in class because their laptop "won\'t connect" to the ViewBoard.',
+        decisionPoints: [
+          {
+            id: 'd1',
+            question: 'What is the FIRST question Josh should ask?',
+            options: [
+              { id: 'o1', label: 'Are you using HDMI or wireless casting?', feedback: 'Essential. Triage steps differ completely between physical and wireless connections.', isCorrect: true },
+              { id: 'o2', label: 'When did you last restart your laptop?', feedback: 'Good general check, but identifying the connection type is more urgent.', isCorrect: false }
+            ]
+          },
+          {
+            id: 'd2',
+            question: 'The teacher says "HDMI". Audio works but no video. What is a safe first check?',
+            options: [
+              { id: 'o1', label: 'Try a different HDMI cable and port on the ViewBoard.', feedback: 'Correct. Rule out the simplest hardware failure first.', isCorrect: true },
+              { id: 'o2', label: 'Update the ViewBoard firmware.', feedback: 'Too invasive mid-class.', isCorrect: false }
+            ]
+          },
+          {
+            id: 'd3',
+            question: 'What should you NOT change too early?',
+            options: [
+              { id: 'o1', label: 'The display resolution or graphics drivers.', feedback: 'Correct. This can make the laptop screen itself unreadable if wrong.', isCorrect: true },
+              { id: 'o2', label: 'The HDMI cable.', feedback: 'Cables are safe and easy to swap.', isCorrect: false }
+            ]
+          }
+        ],
+        dcsApplication: 'ViewBoards at DCS are critical for teaching. Always carry a known-good HDMI cable for fast testing.',
+        retrievalQuestion: 'What should you NOT change too early during a display fault?',
+        reflectionPrompt: 'How do you keep the teacher calm while you are crawling under the desk to check cables?'
+      }
     ]
   },
   {
@@ -2511,6 +2758,44 @@ export const dcsWorkflowModules: TrainingModule[] = [
         bodyMarkdown: 'Intune allows for remote actions such as Restart, Remote Wipe (erases all data), and Fresh Start (removes pre-installed apps and reinstalls Windows).'
       }
     ],
+    interactiveLabs: [
+      {
+        id: 'lab-intune-wipe',
+        title: 'Stolen Device Triage',
+        scenario: 'A teacher calls to report their school-issued Windows laptop was stolen from their car an hour ago. It contains sensitive student reports.',
+        decisionPoints: [
+          {
+            id: 'd1',
+            question: 'What is the FIRST question Josh should ask the teacher?',
+            options: [
+              { id: 'o1', label: 'Did you have student data saved locally or in OneDrive?', feedback: 'Good. We need to know the scope of potential data loss beyond just the hardware.', isCorrect: true },
+              { id: 'o2', label: 'What color was the laptop bag?', feedback: 'Not critical for technical triage.', isCorrect: false },
+              { id: 'o3', label: 'Have you called the police yet?', feedback: 'Important for them, but we need to secure the data first.', isCorrect: false }
+            ]
+          },
+          {
+            id: 'd2',
+            question: 'Which safe first check should you perform in the Intune portal?',
+            options: [
+              { id: 'o1', label: 'Check "Last check-in" time and device location if enabled.', feedback: 'Correct. This tells us if the device has been online since the theft.', isCorrect: true },
+              { id: 'o2', label: 'Change the teachers password immediately.', feedback: 'Wait. Changing the password might block our own remote wipe command if the device needs to sync.', isCorrect: false }
+            ]
+          },
+          {
+            id: 'd3',
+            question: 'What is the immediate best action in the Intune portal?',
+            options: [
+              { id: 'o1', label: 'Retire the device', feedback: 'Incorrect. Retire only removes school data/management, leaving personal files and potential cached credentials.', isCorrect: false },
+              { id: 'o2', label: 'Remote Wipe', feedback: 'Correct. Wipe erases all data on the drive to ensure no sensitive files are recoverable.', isCorrect: true },
+              { id: 'o3', label: 'Fresh Start', feedback: 'Incorrect. Fresh Start is for performance resets, not immediate security containment.', isCorrect: false }
+            ]
+          }
+        ],
+        dcsApplication: 'In DCS, any theft must also be reported to Paul and the business office immediately for insurance and legal compliance.',
+        retrievalQuestion: 'What is the difference between Wipe and Retire?',
+        reflectionPrompt: 'How would you handle the teachers anxiety while performing these technical steps?'
+      }
+    ],
     flashcards: [
       { id: 'int-f1', front: 'What is MDM?', back: 'Mobile Device Management—software that secures and manages mobile devices.' },
       { id: 'int-f2', front: 'What is Autopilot?', back: 'A collection of technologies used to set up and pre-configure new devices.' },
@@ -2608,6 +2893,27 @@ export const dcsWorkflowModules: TrainingModule[] = [
         bodyMarkdown: 'Phishing uses deceptive emails to steal credentials. Social engineering manipulates people into performing actions or divesting confidential information.'
       }
     ],
+    interactiveLabs: [
+      {
+        id: 'lab-nist-containment',
+        title: 'Ransomware Containment',
+        scenario: 'A student mentions they clicked a "cool link" on a school PC, and now the screen is flashing red and files are disappearing.',
+        decisionPoints: [
+          {
+            id: 'd1',
+            question: 'What is the FIRST action to contain the threat?',
+            options: [
+              { id: 'o1', label: 'Run a full virus scan', feedback: 'Too slow. Ransomware spreads through the network in minutes.', isCorrect: false },
+              { id: 'o2', label: 'Unplug the ethernet cable / Disable Wi-Fi', feedback: 'Correct. Physically isolating the device prevents the malware from reaching school servers or other PCs.', isCorrect: true },
+              { id: 'o3', label: 'Call the student parent', feedback: 'Incorrect priority. Secure the network first.', isCorrect: false }
+            ]
+          }
+        ],
+        dcsApplication: 'At DCS, isolating the machine immediately protects the shared drives and SLG data from being encrypted.',
+        retrievalQuestion: 'What are the 4 phases of the NIST incident response lifecycle?',
+        reflectionPrompt: 'How would you explain the students mistake without making them feel blamed?'
+      }
+    ],
     flashcards: [
       { id: 'nist-f1', front: 'NIST 800-61?', back: 'Computer Security Incident Handling Guide.' },
       { id: 'nist-f2', front: 'Containment goal?', back: 'Stop the incident from spreading and causing more damage.' },
@@ -2683,6 +2989,35 @@ export const dcsWorkflowModules: TrainingModule[] = [
         bodyMarkdown: 'Alt-text provides a text description for images for screen readers. Color contrast ensures that text is readable against its background.'
       }
     ],
+    interactiveLabs: [
+      {
+        id: 'lab-a11y-audit',
+        title: 'Classroom Resource Audit',
+        scenario: 'A teacher shows you a slide deck they created. It uses light yellow text on a white background and has many images without descriptions.',
+        decisionPoints: [
+          {
+            id: 'd0',
+            question: 'What is the FIRST question Josh should ask the teacher?',
+            options: [
+              { id: 'o1', label: 'Do you have any students with identified vision impairments in this class?', feedback: 'Good. This contextualizes the need for accessibility immediately.', isCorrect: true },
+              { id: 'o2', label: 'Which version of PowerPoint did you use?', feedback: 'Not the priority for accessibility triage.', isCorrect: false }
+            ]
+          },
+          {
+            id: 'd1',
+            question: 'Which WCAG principle is most directly violated by the yellow-on-white text?',
+            options: [
+              { id: 'o1', label: 'Operable', feedback: 'Incorrect. Operable refers to navigation and interface interaction.', isCorrect: false },
+              { id: 'o2', label: 'Perceivable', feedback: 'Correct. Low contrast makes the information difficult or impossible to perceive for many users.', isCorrect: true },
+              { id: 'o3', label: 'Understandable', feedback: 'Incorrect. Understandable refers to clear language and predictable behavior.', isCorrect: false }
+            ]
+          }
+        ],
+        dcsApplication: 'Ensuring classroom slides are perceivable helps students with vision impairments participate fully in the lesson.',
+        retrievalQuestion: 'What does the acronym POUR stand for?',
+        reflectionPrompt: 'How can you suggest these changes to a teacher without sounding like you are critiquing their teaching style?'
+      }
+    ],
     flashcards: [
       { id: 'a11y-f1', front: 'WCAG?', back: 'Web Content Accessibility Guidelines.' },
       { id: 'a11y-f2', front: 'POUR?', back: 'Perceivable, Operable, Understandable, Robust.' },
@@ -2754,6 +3089,147 @@ export const dcsWorkflowModules: TrainingModule[] = [
         id: 'itil-3',
         title: 'Change Management',
         bodyMarkdown: 'Change management ensures that standardized methods and procedures are used for efficient and prompt handling of all changes to IT infrastructure.'
+      }
+    ],
+    interactiveLabs: [
+      {
+        id: 'lab-itil-triage',
+        title: 'Helpdesk Intake Triage',
+        scenario: 'A staff member emails: "I want to install a new specialized music software on my laptop for next term."',
+        decisionPoints: [
+          {
+            id: 'd0',
+            question: 'What is the FIRST question Josh should ask the staff member?',
+            options: [
+              { id: 'o1', label: 'Do you have a license or budget code for this?', feedback: 'Practical. Software requires licensing verification at DCS.', isCorrect: true },
+              { id: 'o2', label: 'Is your laptop slow?', feedback: 'Irrelevant to the request.', isCorrect: false }
+            ]
+          },
+          {
+            id: 'd1',
+            question: 'According to ITIL foundations, what is this request?',
+            options: [
+              { id: 'o1', label: 'Incident', feedback: 'Incorrect. An incident is an unplanned interruption to service.', isCorrect: false },
+              { id: 'o2', label: 'Service Request', feedback: 'Correct. This is a request for a new service or provision of a standard item.', isCorrect: true },
+              { id: 'o3', label: 'Problem', feedback: 'Incorrect. A problem is the underlying cause of one or more incidents.', isCorrect: false }
+            ]
+          }
+        ],
+        dcsApplication: 'At DCS, keeping requests separate from incidents helps Paul report on team workload and plan for software licensing.',
+        retrievalQuestion: 'What is the primary goal of Change Management?',
+        reflectionPrompt: 'Why might a staff member get frustrated if you call their request a "Service Request" instead of just "fixing" it?'
+      },
+      {
+        id: 'lab-papercut-stuck',
+        title: 'PaperCut Printer Triage',
+        scenario: 'A teacher is at the copier and says "My print job just isn\'t coming out, but I have plenty of credit."',
+        decisionPoints: [
+          {
+            id: 'd0',
+            question: 'What is the FIRST question Josh should ask?',
+            options: [
+              { id: 'o1', label: 'Did you swipe your card and select the job on the screen?', feedback: 'Good. Many "stuck" jobs are just waiting for manual release.', isCorrect: true },
+              { id: 'o2', label: 'What are you trying to print?', feedback: 'Less relevant than the release process.', isCorrect: false }
+            ]
+          },
+          {
+            id: 'd1',
+            question: 'What is a safe first check?',
+            options: [
+              { id: 'o1', label: 'Check the PaperCut dashboard for the job status.', feedback: 'Correct. This tells you if the server received the job or if it\'s stuck in the queue.', isCorrect: true },
+              { id: 'o2', label: 'Reinstall the printer driver on the laptop.', feedback: 'Too early. This is an invasive change.', isCorrect: false }
+            ]
+          },
+          {
+            id: 'd2',
+            question: 'What should you NOT change too early?',
+            options: [
+              { id: 'o1', label: 'The IP address of the printer.', feedback: 'Correct. Changing the IP will break printing for everyone else.', isCorrect: true },
+              { id: 'o2', label: 'The PaperCut client on the laptop.', feedback: 'Also too early, but less damaging than the IP.', isCorrect: false }
+            ]
+          }
+        ],
+        dcsApplication: 'Printer issues at DCS often relate to VLAN routing or PaperCut server sync. Check the server first.',
+        retrievalQuestion: 'Where do you check for a stuck print job at DCS?',
+        reflectionPrompt: 'How do you handle the line of people forming behind the teacher at the copier?'
+      },
+      {
+        id: 'lab-local-vs-microsoft-account',
+        title: 'Local vs Microsoft Account Setup',
+        scenario: 'A staff member is setting up a new laptop at home and says "It\'s asking me to sign in with a Microsoft account, but I just want a local one like my old PC."',
+        decisionPoints: [
+          {
+            id: 'd1',
+            question: 'What is the FIRST question Josh should ask?',
+            options: [
+              { id: 'o1', label: 'Are you using a personal laptop or a school-issued one?', feedback: 'Critical. School laptops MUST use the @dcs.edu.au account for management and security.', isCorrect: true },
+              { id: 'o2', label: 'Do you have internet access right now?', feedback: 'Relevant for the setup flow, but account type is the priority.', isCorrect: false }
+            ]
+          },
+          {
+            id: 'd2',
+            question: 'The laptop is school-issued. What is the safe first check/action?',
+            options: [
+              { id: 'o1', label: 'Explain that the @dcs.edu.au account is required for Intune and school apps.', feedback: 'Correct. Aligning with policy ensures the device remains managed.', isCorrect: true },
+              { id: 'o2', label: 'Show them how to bypass the Microsoft login using a fake email.', feedback: 'NEVER do this for school devices. It breaks management.', isCorrect: false }
+            ]
+          }
+        ],
+        dcsApplication: 'At DCS, we use Microsoft accounts to enable "zero-touch" provisioning via Autopilot.',
+        retrievalQuestion: 'Why do we prefer Microsoft accounts over local ones for school laptops?',
+        reflectionPrompt: 'How do you explain the benefits of a "managed" account (like self-service resets) to a reluctant user?'
+      },
+      {
+        id: 'lab-usb-formatting',
+        title: 'USB Formatting / Disk Management',
+        scenario: 'A teacher has a USB drive with "important files" that won\'t open on their school laptop. It says "You need to format the disk before you can use it."',
+        decisionPoints: [
+          {
+            id: 'd1',
+            question: 'What is the FIRST question Josh should ask?',
+            options: [
+              { id: 'o1', label: 'Do you have a backup of these files anywhere else?', feedback: 'Critical. Formatting WILL erase everything on the drive.', isCorrect: true },
+              { id: 'o2', label: 'What size is the USB drive?', feedback: 'Less relevant than data safety.', isCorrect: false }
+            ]
+          },
+          {
+            id: 'd2',
+            question: 'What should you NOT change too early?',
+            options: [
+              { id: 'o1', label: 'Clicking "Format" in the Windows prompt.', feedback: 'Correct. This is destructive. We should try to recover or check on another machine first.', isCorrect: true },
+              { id: 'o2', label: 'Plugging it into a different USB port.', feedback: 'Safe and recommended.', isCorrect: false }
+            ]
+          }
+        ],
+        dcsApplication: 'DCS encourages using OneDrive for "important files" to avoid USB failure risks.',
+        retrievalQuestion: 'What does "formatting" a disk actually do?',
+        reflectionPrompt: 'How do you gently transition a teacher from "USB-first" to "Cloud-first" for their teaching resources?'
+      },
+      {
+        id: 'lab-windows-update-driver',
+        title: 'Windows Update / Driver Triage',
+        scenario: 'A laptop is behaving strangely—the Wi-Fi keeps cutting out and the trackpad is "jumpy" after a recent update.',
+        decisionPoints: [
+          {
+            id: 'd1',
+            question: 'What is a safe first check?',
+            options: [
+              { id: 'o1', label: 'Check "Update History" in Windows Settings.', feedback: 'Correct. Identify if a specific driver or quality update was recently installed.', isCorrect: true },
+              { id: 'o2', label: 'Reset Windows to factory settings.', feedback: 'Extremely invasive. Do not do this yet.', isCorrect: false }
+            ]
+          },
+          {
+            id: 'd2',
+            question: 'If a specific driver update caused the issue, what is the next safe step?',
+            options: [
+              { id: 'o1', label: 'Use "Roll Back Driver" in Device Manager.', feedback: 'Correct. This reverts to the previous known-good driver.', isCorrect: true },
+              { id: 'o2', label: 'Disable the device in Device Manager.', feedback: 'Unhelpful—it just stops the feature from working entirely.', isCorrect: false }
+            ]
+          }
+        ],
+        dcsApplication: 'At DCS, we use Intune to manage update rings. Report any "bad" updates to Paul so they can be paused for others.',
+        retrievalQuestion: 'Where do you go to roll back a specific hardware driver?',
+        reflectionPrompt: 'How do you explain to a teacher that "updates" are for security even when they cause temporary bugs?'
       }
     ],
     flashcards: [

@@ -49,6 +49,25 @@ export type SourceSubjectAlignment = {
   slgCurrency: string;
 };
 
+export type InteractiveLab = {
+  id: string;
+  title: string;
+  scenario: string;
+  decisionPoints: {
+    id: string;
+    question: string;
+    options: {
+      id: string;
+      label: string;
+      feedback: string;
+      isCorrect: boolean;
+    }[];
+  }[];
+  dcsApplication: string;
+  retrievalQuestion: string;
+  reflectionPrompt: string;
+};
+
 export type TrainingModule = {
   id: string;
   title: string;
@@ -64,5 +83,6 @@ export type TrainingModule = {
   quiz: AssessmentQuestion[];
   scenarioPrompts: ScenarioPrompt[];
   practicalOutputs: PracticalOutput[];
+  interactiveLabs?: InteractiveLab[];
   sourceSubjects?: SourceSubjectAlignment[];
 };

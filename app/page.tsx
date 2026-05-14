@@ -36,6 +36,41 @@ export default function HomePage() {
   ).length;
   const dueQuestions = progress.assessmentAttempts.filter((attempt) => isDue(attempt.nextReviewDateIso)).length;
 
+  const getNextBestAction = () => {
+    // 1. Due Reviews (High Priority)
+    if (dueFlashcards > 0 || dueQuestions > 0) {
+      return {
+        title: "Clear Today's Reviews",
+        detail: `You have ${dueFlashcards + dueQuestions} items due for retrieval practice.`,
+        ctaLabel: "Review Now",
+        ctaHref: "/due-today",
+        category: "Confidence Builder"
+      };
+    }
+
+    // 2. Unfinished Interactive Labs (Real Practice)
+    const allLabs = modules.flatMap(m => m.interactiveLabs || []);
+    // In a real app we'd track lab completion in progress. 
+    // For now, let's suggest the most critical DCS labs if not already in deep study.
+    const criticalLabs = [
+      { id: 'lab-viewboard-no-display', title: 'ViewBoard Display Triage' },
+      { id: 'lab-student-169-ip', title: '169.254 IP Troubleshooting' },
+      { id: 'lab-papercut-stuck', title: 'PaperCut Printer Jobs' }
+    ];
+    
+    // Suggest a random critical lab as a "10-minute action"
+    const randomLab = criticalLabs[Math.floor(Math.random() * criticalLabs.length)];
+    return {
+      title: `Practice: ${randomLab.title}`,
+      detail: "Next best 10-minute action: run a simulated DCS support scenario.",
+      ctaLabel: "Run Lab",
+      ctaHref: "/modules", // Link to modules list to find labs
+      category: "10-Minute Action"
+    };
+  };
+
+  const nextAction = getNextBestAction();
+
   useEffect(() => {
     const storedProgress = getStoredProgressSnapshot(modules);
     const derivedGamificationState = deriveGamificationState(storedProgress, modules, loadGamificationState());
@@ -58,9 +93,9 @@ export default function HomePage() {
   const monthlyMinutes = progress.pdLogEntries
     .filter((entry) => entry.date.startsWith(getMonthKey(new Date())))
     .reduce((sum, entry) => sum + entry.minutes, 0);
-  const recommendation = getDashboardRecommendation(progress);
-  const overallProgress = getOverallProgress(modules, progress);
-  const weakestFocus = getCurrentWeakFocus(progress);
+  const dashboardRecommendation = getDashboardRecommendation(progress);
+  const overallProgress = Math.round(getOverallProgress(modules, progress));
+  const currentWeakestFocus = getCurrentWeakFocus(progress);
   const gamificationSummary = getGamificationSummary(progress, modules, gamificationState);
   const recentBadges = gamificationSummary.badges.filter((badge) => badge.earned).slice(0, 4);
   const quietWindowActions = [
@@ -77,7 +112,7 @@ export default function HomePage() {
     {
       label: '20-minute focus block',
       description: 'Use the main guided study block for one bounded session.',
-      href: recommendation.ctaHref
+      href: dashboardRecommendation.ctaHref
     },
     {
       label: 'Review due flashcards',
@@ -100,34 +135,24 @@ export default function HomePage() {
     <div className="space-y-6">
       <section className="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-sm">
         <div className="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
-          <div className="max-w-3xl">
-            <div className="text-sm font-semibold uppercase tracking-[0.2em] text-slate-500">Today&apos;s quiet-window PD</div>
-            <h1 className="mt-3 text-4xl font-semibold tracking-tight text-slate-900">
-              Quiet-window dashboard for short DCS IT study blocks
-            </h1>
-            <p className="mt-4 text-sm leading-7 text-slate-600">
-              Use this page when there is genuine breathing room between live support tasks. It keeps the next
-              study action small, clear, and aligned with weak areas, due review, and practical DCS IT support work.
+          <div>
+            <div className="text-sm font-semibold uppercase tracking-[0.2em] text-slate-500">Welcome, Josh</div>
+            <h1 className="mt-3 text-4xl font-semibold tracking-tight text-slate-900">Your DCS PD Dashboard</h1>
+            <p className="mt-4 max-w-xl text-sm leading-7 text-slate-600">
+              Track your progress in IT support fundamentals and real-world DCS workflows. 
+              Remember: <span className="font-bold text-rose-600">Tickets, walk-ups, calls, and Paul&apos;s instructions come first.</span>
             </p>
-            <div className="mt-5 inline-flex rounded-full border border-emerald-200 bg-emerald-50 px-4 py-2 text-xs font-semibold uppercase tracking-[0.18em] text-emerald-800">
-              Tickets, walk-ups, calls, and Paul&apos;s instructions come first.
-            </div>
           </div>
-
           <div className="w-full max-w-sm flex flex-col gap-4">
             <div className="rounded-[2rem] bg-slate-100 p-5">
-              <div className="text-sm font-semibold uppercase tracking-[0.2em] text-slate-500">What should I study next?</div>
-              <h2 className="mt-3 text-2xl font-semibold text-slate-900">{recommendation.title}</h2>
-              <p className="mt-3 text-sm leading-7 text-slate-700">{recommendation.detail}</p>
-              <div className="mt-4 rounded-3xl bg-white px-4 py-3">
-                <div className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">Weak area driving this</div>
-                <div className="mt-2 text-sm font-medium text-slate-900">{weakestFocus}</div>
-              </div>
+              <div className="text-sm font-semibold uppercase tracking-[0.2em] text-slate-500">{nextAction.category}</div>
+              <h2 className="mt-3 text-2xl font-semibold text-slate-900">{nextAction.title}</h2>
+              <p className="mt-3 text-sm leading-7 text-slate-700">{nextAction.detail}</p>
               <Link
-                href={recommendation.ctaHref}
-                className="mt-5 inline-flex rounded-full bg-slate-900 px-4 py-2 text-sm text-white"
+                href={nextAction.ctaHref}
+                className="mt-5 inline-flex rounded-full bg-slate-900 px-4 py-2 text-sm text-white font-semibold"
               >
-                {recommendation.ctaLabel}
+                {nextAction.ctaLabel}
               </Link>
             </div>
             <ScheduleSuggestions />
@@ -138,12 +163,12 @@ export default function HomePage() {
       <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
         <div className="rounded-[2rem] border border-slate-200 bg-white p-5 shadow-sm">
           <div className="text-sm text-slate-500">Current weak focus area</div>
-          <div className="mt-3 text-2xl font-semibold text-slate-900">{weakestFocus}</div>
+          <div className="mt-3 text-2xl font-semibold text-slate-900">{currentWeakestFocus}</div>
           <p className="mt-2 text-sm text-slate-600">Use this to choose the next quiet-window study block.</p>
         </div>
         <div className="rounded-[2rem] border border-slate-200 bg-white p-5 shadow-sm">
           <div className="text-sm text-slate-500">Overall progress</div>
-          <div className="mt-3 text-2xl font-semibold text-slate-900">{Math.round(overallProgress)}%</div>
+          <div className="mt-3 text-2xl font-semibold text-slate-900">{overallProgress}%</div>
           <p className="mt-2 text-sm text-slate-600">Across modules, flashcards, practical outputs, and assessment sessions.</p>
         </div>
         <div className="rounded-[2rem] border border-slate-200 bg-white p-5 shadow-sm">

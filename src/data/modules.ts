@@ -1,4 +1,4 @@
-﻿import type { AssessmentQuestion, AssessmentSource } from '../types/assessment';
+import type { AssessmentQuestion, AssessmentSource } from '../types/assessment';
 import type { TrainingModule } from '../types/training';
 import { dcsWorkflowModules } from './dcsWorkflowModules';
 import { messerCore2Modules } from './messerCore2Modules';
@@ -96,6 +96,35 @@ export const modules: TrainingModule[] = [
         id: 'foundations-4',
         title: 'Multi-campus rhythm and where workflow knowledge lives',
         bodyMarkdown: `Many symptoms repeat across campuses but fixes still route through the right owners. Note campus or site in tickets early because VLAN paths, room naming, and local contacts differ.\n\nTrustworthy operational knowledge usually lives in approved channels such as internal ticketing history, authorised Teams channels, published intranet articles, and leadership-approved procedures—not informal guesses.\n\nJosh stays credible when he cites what was verified locally versus what still needs the authoritative owner.`
+      }
+    ],
+    interactiveLabs: [
+      {
+        id: 'lab-login-sequence',
+        title: 'Login Failure Sequence',
+        scenario: 'A staff member says "I can\'t log in to the Sentral portal, it says wrong password but I just changed it."',
+        decisionPoints: [
+          {
+            id: 'd1',
+            question: 'What is the FIRST question Josh should ask?',
+            options: [
+              { id: 'o1', label: 'Are you sure you typed it correctly?', feedback: 'Risky. Can sound condescending. Check the source of truth first.', isCorrect: false },
+              { id: 'o2', label: 'Can you log in to your email with that same password?', feedback: 'Good. This checks if the password sync is working across M365/SSO.', isCorrect: true },
+              { id: 'o3', label: 'When exactly did you change it?', feedback: 'Useful, but checking another service is a faster scope test.', isCorrect: false }
+            ]
+          },
+          {
+            id: 'd2',
+            question: 'The email login works. What should you NOT change too early?',
+            options: [
+              { id: 'o1', label: 'The staff member\'s password (again).', feedback: 'Correct. If sync is working for email, the password itself is likely fine; the issue is with the portal link or local cache.', isCorrect: true },
+              { id: 'o2', label: 'The browser being used.', feedback: 'Safe to try another browser or Incognito mode.', isCorrect: false }
+            ]
+          }
+        ],
+        dcsApplication: 'At DCS, Sentral uses SSO. If email works but Sentral doesn\'t, it might be a session timeout or a specific portal issue Paul needs to see.',
+        retrievalQuestion: 'What is SSO?',
+        reflectionPrompt: 'How do you handle a user who is "locked out" and needs to start a class in 2 minutes?'
       }
     ],
     flashcards: [

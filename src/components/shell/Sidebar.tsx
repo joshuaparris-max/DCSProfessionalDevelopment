@@ -28,7 +28,7 @@ export default function Sidebar() {
   return (
     <aside className="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-sm">
       <div className="text-sm font-semibold uppercase tracking-[0.2em] text-slate-500">Navigation</div>
-      <nav className="mt-5 space-y-3 text-sm text-slate-700">
+      <nav className="mt-5 space-y-3 text-sm text-slate-700" aria-label="Main Navigation">
         {navItems.map((item) => {
           const isActive = pathname === item.href;
           return (

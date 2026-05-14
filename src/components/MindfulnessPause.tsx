@@ -14,6 +14,9 @@ export function MindfulnessPause({ onComplete }: MindfulnessPauseProps) {
   const [completed, setCompleted] = useState(false);
   const [optOut, setOptOut] = useState(false);
 
+  // DCS Priority Check: "Tickets, walk-ups, calls, and Paul’s instructions come first."
+  const dcsPriorityReminder = "Operational Priority: If a walk-up or call arrives, STOP this pause immediately and resume support.";
+
   useEffect(() => {
     if (typeof window === 'undefined') {
       return;
@@ -84,6 +87,7 @@ export function MindfulnessPause({ onComplete }: MindfulnessPauseProps) {
       {active ? (
         <div className="mt-5 grid gap-4 rounded-3xl bg-white p-5 text-center text-slate-900">
           <div className="text-5xl font-semibold">{secondsLeft}s</div>
+          <p className="text-sm font-bold text-rose-600 mb-2">{dcsPriorityReminder}</p>
           <p className="text-sm leading-6 text-slate-700">
             {secondsLeft > 45 ? 'Breathe in for 4 seconds...' : 
              secondsLeft > 30 ? 'Notice tension in your shoulders and jaw—let it go as you breathe out.' :

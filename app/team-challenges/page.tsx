@@ -69,12 +69,23 @@ export default function TeamChallengesPage() {
   return (
     <div className="space-y-6">
       <section className="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-sm">
-        <div className="text-sm font-semibold uppercase tracking-[0.2em] text-slate-500">Social Gamification</div>
-        <h1 className="mt-3 text-4xl font-semibold tracking-tight text-slate-900">Team Challenges</h1>
+        <div className="flex items-center justify-between">
+          <div>
+            <div className="text-sm font-semibold uppercase tracking-[0.2em] text-slate-500">Social Gamification (Demo)</div>
+            <h1 className="mt-3 text-4xl font-semibold tracking-tight text-slate-900">Team Challenges</h1>
+          </div>
+          <span className="bg-amber-100 text-amber-800 text-[10px] font-bold px-3 py-1 rounded-full border border-amber-200 uppercase">
+            Preview Mode: Demo Data
+          </span>
+        </div>
         <p className="mt-4 text-sm leading-7 text-slate-600">
           Join a team and collaborate with peers to complete weekly professional development goals. 
           Your individual progress contributes to your team&apos;s overall standing.
         </p>
+        <div className="mt-4 p-4 rounded-2xl bg-slate-50 border border-slate-200 text-xs text-slate-500 italic">
+          <strong>Implementation Note:</strong> This page currently displays simulated peer data. 
+          A persistent backend (e.g., Supabase or Firebase) is required to sync real progress between staff members.
+        </div>
       </section>
 
       <div className="grid gap-6 lg:grid-cols-[1fr_350px]">

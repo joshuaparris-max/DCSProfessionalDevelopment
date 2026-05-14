@@ -6,6 +6,7 @@ import { useEffect, useState } from 'react';
 import { MindfulnessPause } from '../MindfulnessPause';
 import { trackUsageInteraction } from '../../hooks/useUsageTracking';
 import { useOfflineDownload } from '../../hooks/useOfflineDownload';
+import { LabRunner } from '../LabRunner';
 import { getModuleCompletion } from '../../lib/moduleMath';
 import {
   getStoredProgressSnapshot,
@@ -391,6 +392,14 @@ export default function ModuleDetail({
                 ))}
               </div>
             </div>
+
+            {moduleData.interactiveLabs?.length ? (
+              <div className="space-y-6">
+                {moduleData.interactiveLabs.map((lab) => (
+                  <LabRunner key={lab.id} lab={lab} />
+                ))}
+              </div>
+            ) : null}
 
             <div className="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-sm">
               <h2 className="text-2xl font-semibold text-slate-900">Flashcards</h2>

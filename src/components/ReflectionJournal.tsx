@@ -46,12 +46,15 @@ export function ReflectionJournal({ scenarioId, onSave }: ReflectionJournalProps
     <div className="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-sm">
       <div className="text-sm font-semibold uppercase tracking-[0.2em] text-slate-500">Reflection Journal</div>
       <h2 className="mt-3 text-2xl font-semibold text-slate-900">How did that scenario feel?</h2>
+      <div className="text-[10px] text-slate-400 italic mt-1">
+        Privacy Note: Reflection area only. Do not enter real student, staff, or school-sensitive information.
+      </div>
       <p className="mt-2 text-sm text-slate-600">
         Recording your emotional state and thoughts after a troubleshooting session helps build professional resilience.
       </p>
 
-      <div className="mt-6">
-        <label className="block text-sm font-medium text-slate-700 mb-2">
+      <div className="mt-6" role="group" aria-labelledby="emotion-label">
+        <label id="emotion-label" className="block text-sm font-medium text-slate-700 mb-2">
           What emotions did you notice during this scenario?
         </label>
         <div className="flex flex-wrap gap-2">
@@ -59,7 +62,8 @@ export function ReflectionJournal({ scenarioId, onSave }: ReflectionJournalProps
             <button
               key={emotion}
               onClick={() => toggleEmotion(emotion)}
-              className={`px-4 py-2 rounded-full text-sm transition-all ${
+              aria-pressed={selectedEmotions.includes(emotion)}
+              className={`px-4 py-2 rounded-full text-sm transition-all outline-none focus:ring-2 focus:ring-slate-900 ${
                 selectedEmotions.includes(emotion)
                   ? 'bg-slate-900 text-white'
                   : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
@@ -72,14 +76,15 @@ export function ReflectionJournal({ scenarioId, onSave }: ReflectionJournalProps
       </div>
 
       <div className="mt-6">
-        <label className="block text-sm font-medium text-slate-700 mb-2">
+        <label htmlFor={`takeaways-${scenarioId}`} className="block text-sm font-medium text-slate-700 mb-2">
           Key takeaways or thoughts:
         </label>
         <textarea
+          id={`takeaways-${scenarioId}`}
           value={content}
           onChange={(e) => setContent(e.target.value)}
           placeholder="What would you do differently next time? What felt most challenging?"
-          className="w-full min-h-32 p-4 rounded-2xl border border-slate-200 text-sm text-slate-800 outline-none focus:border-slate-400"
+          className="w-full min-h-32 p-4 rounded-2xl border border-slate-200 text-sm text-slate-800 outline-none focus:border-slate-400 focus:ring-2 focus:ring-slate-400"
         />
       </div>
 

@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { useUI } from '../../contexts/UIContext';
+import { StorageStatus } from '../StorageStatus';
 
 const STORAGE_KEY = 'dcsprep-theme';
 
@@ -53,7 +54,8 @@ export default function Topbar() {
           <Link href="/due-today">Due Today</Link>
           <Link href="/pd-log">PD Log</Link>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-4">
+          <StorageStatus />
           <button
             type="button"
             onClick={toggleFocusMode}
