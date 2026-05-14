@@ -28,6 +28,13 @@ export default function HomePage() {
   const [progress, setProgress] = useState<UserProgress>(() => getInitialProgressSnapshot(modules));
   const [gamificationState, setGamificationState] = useState<GamificationState>(() => getInitialGamificationState());
 
+  const dueFlashcards = modules.flatMap((module) =>
+    Object.values(progress.modules[module.id]?.flashcards || {}).filter(
+      (card) => card.reviewCount > 0 && isDue(card.dueDateIso)
+    )
+  ).length;
+  const dueQuestions = progress.assessmentAttempts.filter((attempt) => isDue(attempt.nextReviewDateIso)).length;
+
   useEffect(() => {
     const storedProgress = getStoredProgressSnapshot(modules);
     const derivedGamificationState = deriveGamificationState(storedProgress, modules, loadGamificationState());
@@ -46,12 +53,6 @@ export default function HomePage() {
     }
   }, [dueFlashcards, dueQuestions]);
 
-  const dueFlashcards = modules.flatMap((module) =>
-    Object.values(progress.modules[module.id]?.flashcards || {}).filter(
-      (card) => card.reviewCount > 0 && isDue(card.dueDateIso)
-    )
-  ).length;
-  const dueQuestions = progress.assessmentAttempts.filter((attempt) => isDue(attempt.nextReviewDateIso)).length;
   const completedScenarios = progress.scenarioRuns.filter((run) => run.completed).length;
   const monthlyMinutes = progress.pdLogEntries
     .filter((entry) => entry.date.startsWith(getMonthKey(new Date())))
