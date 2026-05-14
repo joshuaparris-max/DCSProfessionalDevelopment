@@ -7,6 +7,15 @@ import { getDashboardRecommendation, getCurrentWeakFocus } from '../src/lib/read
 import { getInitialProgressSnapshot, getStoredProgressSnapshot, type UserProgress } from '../src/lib/progress';
 import { isDue } from '../src/lib/spacedRepetition';
 import { getOverallProgress } from '../src/lib/moduleMath';
+import {
+  deriveGamificationState,
+  getGamificationSummary,
+  getInitialGamificationState,
+  loadGamificationState,
+  saveGamificationState,
+  type GamificationState
+} from '../src/lib/gamification';
+import { DailyChallenge } from '../src/components/DailyChallenge';
 
 function getMonthKey(date: Date) {
   return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
@@ -14,9 +23,15 @@ function getMonthKey(date: Date) {
 
 export default function HomePage() {
   const [progress, setProgress] = useState<UserProgress>(() => getInitialProgressSnapshot(modules));
+  const [gamificationState, setGamificationState] = useState<GamificationState>(() => getInitialGamificationState());
 
   useEffect(() => {
-    setProgress(getStoredProgressSnapshot(modules));
+    const storedProgress = getStoredProgressSnapshot(modules);
+    const derivedGamificationState = deriveGamificationState(storedProgress, modules, loadGamificationState());
+
+    setProgress(storedProgress);
+    setGamificationState(derivedGamificationState);
+    saveGamificationState(derivedGamificationState);
   }, []);
 
   const dueFlashcards = modules.flatMap((module) =>
@@ -32,6 +47,8 @@ export default function HomePage() {
   const recommendation = getDashboardRecommendation(progress);
   const overallProgress = getOverallProgress(modules, progress);
   const weakestFocus = getCurrentWeakFocus(progress);
+  const gamificationSummary = getGamificationSummary(progress, modules, gamificationState);
+  const recentBadges = gamificationSummary.badges.filter((badge) => badge.earned).slice(0, 4);
   const quietWindowActions = [
     {
       label: 'Micro-learning card (single module drill)',
@@ -124,6 +141,55 @@ export default function HomePage() {
         </div>
       </section>
 
+      <section className="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-sm">
+        <div className="flex flex-col gap-5 lg:flex-row lg:items-start lg:justify-between">
+          <div>
+            <div className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-500">Personal progression</div>
+            <h2 className="mt-3 text-2xl font-semibold text-slate-900">Points, streaks, and DCS task badges</h2>
+            <p className="mt-2 max-w-3xl text-sm leading-7 text-slate-600">
+              Progress is earned from module milestones, scenario work, PD logging, assessment attempts, and practical
+              outputs. Badge dates are saved locally on this device.
+            </p>
+          </div>
+
+          <div className="grid w-full gap-3 sm:grid-cols-3 lg:max-w-lg">
+            <div className="rounded-3xl bg-slate-50 px-4 py-3">
+              <div className="text-xs font-semibold uppercase tracking-[0.16em] text-slate-500">Points</div>
+              <div className="mt-2 text-2xl font-semibold text-slate-900">{gamificationSummary.points}</div>
+            </div>
+            <div className="rounded-3xl bg-slate-50 px-4 py-3">
+              <div className="text-xs font-semibold uppercase tracking-[0.16em] text-slate-500">Streak</div>
+              <div className="mt-2 text-2xl font-semibold text-slate-900">{gamificationSummary.studyStreakDays} day</div>
+            </div>
+            <div className="rounded-3xl bg-slate-50 px-4 py-3">
+              <div className="text-xs font-semibold uppercase tracking-[0.16em] text-slate-500">Badges</div>
+              <div className="mt-2 text-2xl font-semibold text-slate-900">{gamificationSummary.completedBadgeCount}</div>
+            </div>
+          </div>
+        </div>
+
+        <div className="mt-5 grid gap-3 md:grid-cols-2 xl:grid-cols-4">
+          {(recentBadges.length > 0 ? recentBadges : gamificationSummary.badges.slice(0, 4)).map((badge) => (
+            <div
+              key={badge.id}
+              className={`rounded-3xl border px-4 py-4 ${
+                badge.earned ? 'border-emerald-200 bg-emerald-50' : 'border-slate-200 bg-slate-50'
+              }`}
+            >
+              <div className={`text-xs font-semibold uppercase tracking-[0.16em] ${badge.earned ? 'text-emerald-700' : 'text-slate-500'}`}>
+                {badge.earned ? 'Earned' : 'Next badge'}
+              </div>
+              <div className="mt-2 text-sm font-semibold text-slate-900">{badge.title}</div>
+              <p className="mt-2 text-xs leading-6 text-slate-600">{badge.description}</p>
+            </div>
+          ))}
+        </div>
+
+        <div className="mt-4 text-xs font-medium text-slate-500">Next milestone: {gamificationSummary.nextMilestone}</div>
+      </section>
+
+      <DailyChallenge />
+
       <section className="rounded-[2rem] border border-rose-100 bg-rose-50 p-6 shadow-sm">
         <div className="text-xs font-semibold uppercase tracking-[0.2em] text-rose-700">I&apos;m overwhelmed mode</div>
         <h2 className="mt-3 text-2xl font-semibold text-slate-900">Three tiny moves when everything feels loud</h2>
@@ -151,6 +217,8 @@ export default function HomePage() {
           </Link>
         </div>
       </section>
+
+      <DailyChallenge />
 
       <section className="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-sm">
         <div className="flex items-center justify-between">

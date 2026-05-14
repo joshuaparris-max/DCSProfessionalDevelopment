@@ -15,30 +15,68 @@ The app should stay privacy-safe while becoming more relevant to the actual DCS 
 ## Current App Areas
 
 - Professional Development Dashboard
-- Modules
+- Modules (DCS workflow + Academic PD)
 - Scenario Lab
 - Due Today
+- Personal progression badges, points, and streaks
+- Daily dashboard challenge
+- Live AI coaching with detailed feedback, tips, and next steps
 - Structured assessment
 - PD log
 - Error log
 - Readiness profiles
+- PD Scheduler
+- Usage Insights
+- Evidence Pack
+- Knowledge Base Lab
+- Academic PD (RBC + SMITB bridge)
+- Support tools
+- Code Playground (Python & HTML)
+- Career Paths
+- Final Projects
+- Mobile Audit (one-thumb friendly)
+- PWA app shell with install metadata and offline navigation fallback
 - Trainer guide
 - Settings
 
 ## Current Content Coverage
 
-Core module areas currently implemented:
+Core DCS workflow module areas currently implemented:
 
 - DCS IT Support Foundations
 - Ports and Protocols
 - DNS, DHCP, Gateway, and IP Basics
 - Printer Troubleshooting
 - Classroom Display and ViewBoard Troubleshooting
+- Login and Password Support
+- Permissions and Access Requests
+- Teams, SharePoint, and OneDrive Support
 - M365 Identity and Offboarding Basics
 - MDM, Intune, and Group Policy Concepts
 - VLANs and Network Segmentation
 - Cloud Models: SaaS, PaaS, IaaS, and DaaS
 - Ticket Notes and Escalation Quality
+- Device Imaging and Deployment Workflows
+- Parent Portal Registration
+- Parent Portal Details Updates
+- Sentral Support
+- OurDCS / Schoolbox Support
+- New User Onboarding
+- Website Filtering and Unblock Requests
+- iPad and Jamf Workflow Basics
+- Soft Skills for DCS Support
+
+Academic PD modules (RBC + SMITB integration):
+
+- CSE1IIT (Information and Information Technology)
+- CSE1ICB (Introduction to Computational Thinking)
+- STA1DCT (Data and Chance)
+- CSE1OOF (Office Software Fundamentals)
+- CSE1IS (Information Systems)
+- CSE3PE (Professional Environments)
+- SMITB subjects (Bendigo-specific academic integration)
+- A+ Core 1 and Core 2 support modules
+- RBC/SMITB academic-alignment modules
 
 ## Development Commands
 
@@ -76,6 +114,11 @@ npm run build
 - `src/lib/progress.ts` - local progress storage and hydration-safe helpers
 - `src/lib/moduleMath.ts` - completion calculations
 - `src/lib/readinessMath.ts` - readiness-profile calculations
+- `src/lib/scenarioReview.ts` - scenario note rubric and scenario-to-module revisit mappings
+- `src/lib/gamification.ts` - local-first points, streaks, and badge milestone calculations
+- `src/components/pwa/ServiceWorkerRegistration.tsx` - production service worker registration for offline app-shell caching
+- `app/manifest.ts` - installable PWA manifest metadata
+- `public/sw.js` - service worker for app-shell precache and offline navigation fallback
 - `src/types/` - shared types
 
 ## Audit and Roadmap Docs

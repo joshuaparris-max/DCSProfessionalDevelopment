@@ -4,6 +4,12 @@ import type { UserProgress } from './progress';
 export function buildEvidencePackMarkdown(progress: UserProgress, monthKey: string) {
   const summary = getMonthlyPdSummary(progress, monthKey);
 
+  const settings = progress.evidencePackSettings ?? {
+    includeCertificates: true,
+    includeLinks: true,
+    privacyReminderAccepted: false
+  };
+
   const lines = [
     `# DCSPrep Evidence Pack — ${summary.monthKey}`,
     '',
@@ -14,6 +20,8 @@ export function buildEvidencePackMarkdown(progress: UserProgress, monthKey: stri
     `- Topics covered: ${summary.topicsCovered.length ? summary.topicsCovered.join(', ') : 'None yet'}`,
     `- Weak areas touched: ${summary.weakTopicsTouched.length ? summary.weakTopicsTouched.join(', ') : 'None yet'}`,
     `- Suggested next focus: ${summary.suggestedNextFocus}`,
+    `- Include optional links: ${settings.includeLinks ? 'Yes' : 'No'}`,
+    `- Include certificate references: ${settings.includeCertificates ? 'Yes' : 'No'}`,
     '',
     '## Entry summary',
     ''
@@ -37,6 +45,10 @@ export function buildEvidencePackMarkdown(progress: UserProgress, monthKey: stri
       if (entry.reflection) {
         lines.push('');
         lines.push(`**Reflection:** ${entry.reflection}`);
+      }
+      if (entry.evidenceLink) {
+        lines.push('');
+        lines.push(`- **Evidence:** ${settings.includeLinks ? entry.evidenceLink : '(links omitted as requested)'}`);
       }
       lines.push('');
     });

@@ -1,5 +1,7 @@
 import { describe, expect, it } from 'vitest';
+import { academicSubjectAssessments } from '../data/academicSubjectAssessments';
 import { modules } from '../data/modules';
+import { strictQuestionBank } from '../data/questions';
 
 describe('module catalogue', () => {
   it('includes the starter IT PD modules', () => {
@@ -58,5 +60,39 @@ describe('module catalogue', () => {
     expect(scriptingUseCases?.sections.length).toBeGreaterThanOrEqual(3);
     expect(scriptingUseCases?.flashcards.length).toBeGreaterThanOrEqual(8);
     expect(scriptingUseCases?.quiz.length).toBeGreaterThanOrEqual(4);
+  });
+
+  it('keeps recommended module IDs resolvable across assessment content', () => {
+    const moduleIds = new Set(modules.map((module) => module.id));
+    const moduleQuestions = modules.flatMap((module) => module.quiz);
+    const academicQuestions = Object.values(academicSubjectAssessments).flat();
+
+    [...moduleQuestions, ...strictQuestionBank, ...academicQuestions].forEach((question) => {
+      expect(moduleIds.has(question.recommendedModuleId), question.id).toBe(true);
+    });
+  });
+
+  it('keeps DCS workflow modules at full scored-practice depth', () => {
+    const dcsWorkflowModuleIds = [
+      'parent-portal-registration',
+      'parent-portal-details-updates',
+      'sentral-support',
+      'ourdcs-schoolbox-support',
+      'login-password-support',
+      'permissions-access-requests',
+      'website-filtering-unblock-requests',
+      'new-user-onboarding',
+      'teams-sharepoint-onedrive-support',
+      'ipad-jamf-workflow-basics',
+      'device-imaging-deployment-workflows'
+    ];
+
+    dcsWorkflowModuleIds.forEach((moduleId) => {
+      const moduleData = modules.find((module) => module.id === moduleId);
+
+      expect(moduleData, moduleId).toBeDefined();
+      expect(moduleData?.quiz.length, moduleId).toBeGreaterThanOrEqual(8);
+      expect(moduleData?.flashcards.length, moduleId).toBeGreaterThanOrEqual(10);
+    });
   });
 });

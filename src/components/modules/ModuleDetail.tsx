@@ -3,7 +3,9 @@
 import dynamic from 'next/dynamic';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
+import { MindfulnessPause } from '../MindfulnessPause';
 import { trackUsageInteraction } from '../../hooks/useUsageTracking';
+import { useOfflineDownload } from '../../hooks/useOfflineDownload';
 import { getModuleCompletion } from '../../lib/moduleMath';
 import {
   getStoredProgressSnapshot,
@@ -45,6 +47,7 @@ export default function ModuleDetail({
   const [feynmanRubric, setFeynmanRubric] = useState({ clarity: 0, correctness: 0, relevance: 0 });
   const [progress, setProgress] = useState<UserProgress>(() => getStoredProgressSnapshot([moduleData]));
   const [hasHydratedProgress, setHasHydratedProgress] = useState(false);
+  const { isDownloaded, isDownloading, toggleDownload } = useOfflineDownload(moduleData);
   const questions = quizQuestions;
 
   useEffect(() => {
@@ -169,8 +172,21 @@ export default function ModuleDetail({
               ))}
             </div>
           </div>
-          <div className="rounded-3xl bg-slate-100 px-5 py-4 text-sm text-slate-700">
-            Estimated {moduleData.estimatedMinutes} minutes · {moduleCompletion}% complete
+          <div className="flex flex-col items-end gap-3">
+            <div className="rounded-3xl bg-slate-100 px-5 py-4 text-sm text-slate-700">
+              Estimated {moduleData.estimatedMinutes} minutes · {moduleCompletion}% complete
+            </div>
+            <button
+              onClick={toggleDownload}
+              disabled={isDownloading}
+              className={`text-xs font-semibold px-4 py-2 rounded-full transition-all ${
+                isDownloaded 
+                  ? 'bg-emerald-100 text-emerald-700 border border-emerald-200' 
+                  : 'bg-slate-100 text-slate-600 border border-slate-200 hover:bg-slate-200'
+              }`}
+            >
+              {isDownloading ? 'Downloading...' : isDownloaded ? 'Available Offline' : 'Download for Offline'}
+            </button>
           </div>
         </div>
       </section>
@@ -648,6 +664,10 @@ export default function ModuleDetail({
                 This module does not yet include assessment questions.
               </div>
             )}
+
+            <div className="mt-6">
+              <MindfulnessPause />
+            </div>
           </div>
 
           <aside className="space-y-4">

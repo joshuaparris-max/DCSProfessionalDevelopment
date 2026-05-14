@@ -25,8 +25,8 @@ Document of fixes applied to the DCSPrep IT PD Learning Cockpit.
 
 4. **Build Warning - next.config.mjs**
    - Issue: `experimental.appDir` is deprecated in Next.js 14.2+
-   - Status: Warning only, doesn't affect functionality
-   - Fix: Can be removed in future update (not critical)
+   - Status: Resolved
+   - Fix: Removed the stale `experimental.appDir` setting; `next.config.mjs` now only enables React strict mode.
 
 ### Package Versions (Locked)
 

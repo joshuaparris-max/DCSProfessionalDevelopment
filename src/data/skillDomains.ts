@@ -21,6 +21,7 @@ export const weakTopicLabels: Record<string, string> = {
   'hardware-network-web': 'Hardware, network, and web basics',
   'script-literacy': 'Script literacy',
   'professional-practice': 'Professional practice',
+  'endpoint-deployment': 'Endpoint deployment',
   'dcs-parent-portal': 'Parent Portal triage',
   'dcs-sentral-support': 'Sentral support boundaries',
   'dcs-schoolbox-portal': 'OurDCS / Schoolbox triage',

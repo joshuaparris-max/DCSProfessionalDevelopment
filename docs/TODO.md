@@ -41,6 +41,7 @@
 - [x] Add scenario: new user onboarding with missing system access.
 - [x] Require a Jira-style escalation note at the end of every scenario. _(Ticket note example block + completion rubric prompts.)_
 - [x] Score scenario notes with a rubric for symptom clarity, scope, steps tried, urgency, and privacy-safe wording. _(Self-check checklist on Scenario Lab completion screen.)_
+- [x] Add mindfulness / wellbeing widget to scenario pages for short pause and reset support.
 
 ## P1: Stronger Assessment Engine
 
@@ -61,6 +62,7 @@
 - [ ] Deepen Group Policy content with startup, sign-in, background refresh, OU placement, security filtering, drive mapping, and printer deployment.
 - [ ] Deepen VLAN content with source-destination allow/block rule writing and guest-internet-only designs.
 - [ ] Deepen cloud content with DaaS / hosted-desktop school scenarios and BYOD trade-off reasoning.
+- [x] Add `Device Imaging and Deployment Workflows` module covering imaging vs provisioning, reference builds, driver/app readiness, rollout evidence, and Level 1-safe deployment handoff.
 
 ## P2: Support-Quality Outputs
 
@@ -79,6 +81,9 @@
 - [x] Add explicit Leitner-style flashcard buckets or box labels on top of the current spaced repetition flow.
 - [x] Add a Pomodoro-style study timer tied to one clear task.
 - [x] Add micro-learning task cards sized for short quiet windows, with one question set or one workflow at a time.
+- [x] Add local-first gamified progression with dashboard points, daily streaks, and task badges tied to real DCS learning work.
+- [x] Add a bite-sized daily dashboard MCQ challenge that resets by date.
+- [x] Add a PWA baseline with install manifest, app icon, production service worker registration, and offline app-shell fallback.
 
 ## Guardrails
 

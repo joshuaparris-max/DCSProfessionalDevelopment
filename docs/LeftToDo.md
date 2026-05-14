@@ -49,6 +49,7 @@ isProject: false
    - Micro-learning task cards (short quiet windows).
    - Pomodoro-style timer tied to one learning task.
    - End-of-session reflection prompts.
+   - [x] Add mindfulness pause widget to scenario pages.
 
 ## Priority P0/P1: Content completeness for Tier 1 + assessment + scenario loops
 4. Build “missing” Tier 1 workflow modules to full completeness criteria
@@ -103,7 +104,8 @@ isProject: false
    - [x] Add Jira-style note scoring rubric (who/where/device, symptom, scope, steps tried, urgency/impact, privacy-safe wording).
    - [x] Store scenario attempts, note scores, and revisit flags in `localStorage`.
    - [x] Add due-review hooks for missed scenario decisions. (Implemented in `src/lib/dueReview.ts` and `app/due-today/page.tsx`)
-   - Add tests for scenario progression + note-scoring math + revisit scheduling.
+   - [x] Add tests for scenario note-scoring math + scenario-to-module revisit mappings. (Implemented in `src/tests/scenarios.test.ts`)
+   - Add browser-level test coverage for full scenario progression and save flow.
 
 ## Priority P1/P2: Due Today + quiet-window + outputs (learning must loop back to practice)
 8. Upgrade Due Today + spaced repetition + Error Log into one unified due-review system
@@ -157,9 +159,9 @@ isProject: false
    - Link this workflow from repo docs.
 
 14. Finish testing + docs + release readiness
-   - [ ] Run `npm run lint`.
+   - [x] Run `npm run lint`.
    - [x] Run `npm run build`.
-   - Run tests and add missing tests for storage migrations, scoring, spaced repetition, scenario note scoring, readiness math, module completion math. (Verified `src/tests/dueReview.test.ts` and `src/tests/readinessMath.test.ts` pass.)
+   - [x] Run tests and add missing tests for storage migrations, scoring, spaced repetition, scenario note scoring, readiness math, module completion math, gamification, and PWA manifest metadata. (Verified full `npm test -- --run` passes: 8 files, 18 tests.)
    - Verify routes work desktop + mobile: `/`, `/modules`, `/strict-quiz`, `/due-today`, `/scenarios`, `/pd-log`, `/error-log`, `/readiness`, `/trainer-guide`, `/settings`, `/knowledge-base-lab`, `/evidence-pack`.
    - Verify old routes + existing saved progress still work after migrations.
    - Review visible copy for professionalism + clarity.
@@ -169,12 +171,15 @@ isProject: false
 ## Priority P10: “Platform excellence” extras (lower priority)
 - Soft Skills Integration: “Soft Skills for DCS Support” module.
 - Gamified reinforcement:
-  - Daily streak counter.
-  - Bite-sized daily challenge (1-minute MCQ) resetting every 24 hours.
+  - [x] Daily streak counter. (Implemented in `src/lib/gamification.ts` and shown on `app/page.tsx`)
+  - [x] Local-first points and task badges for PD logs, scenarios, strong ticket notes, practical outputs, module milestones, and imaging readiness.
+  - [x] Bite-sized daily challenge (1-minute MCQ) resetting every 24 hours. (Implemented in `src/components/DailyChallenge.tsx`)
 - Interactive learning: in-app playground for Python + HTML/CSS previews.
 - Structured learning paths: group modules into “Career Paths”.
 - Project-based mastery: “Final Projects” per path.
 - Micro-learning optimization: one-thumb UI audit.
+- [x] PWA install metadata and offline app-shell fallback. (Implemented with `app/manifest.ts`, `public/sw.js`, and `src/components/pwa/ServiceWorkerRegistration.tsx`)
+- Offline module/scenario content packs, IndexedDB downloads, background sync, and push reminders remain open.
 
 ## RBC/SMITB integration backlog (from `RBC-SMITB-Integration-TODO.md`)
 All unchecked items below are part of “what’s left” if academic PD integration is in scope:

@@ -2071,5 +2071,717 @@ export const dcsWorkflowModules: TrainingModule[] = [
     ],
     scenarioPrompts: [{ id: 'jamf-s1', title: 'Cart of iPads outdated profiles', prompt: 'Correlation escalation storyline.' }],
     practicalOutputs: [{ id: 'jamf-p1', title: 'MDM escalation snapshot template', description: 'Minimal fields list for Jamf owners.' }]
+  },
+  {
+    id: 'device-imaging-deployment-workflows',
+    title: 'Device Imaging and Deployment Workflows',
+    description:
+      'First-line awareness for imaging, provisioning, reference builds, driver readiness, and deployment evidence without pretending to own production rollout tooling.',
+    domain: 'Endpoint Support',
+    level: 'L2',
+    estimatedMinutes: 24,
+    tags: ['imaging', 'deployment', 'provisioning', 'drivers', 'Windows'],
+    learningObjectives: [
+      'Separate imaging, provisioning, and app deployment as related but different endpoint workflows.',
+      'Recognise why reference builds, driver packs, test groups, and rollback notes matter before rollout.',
+      'Capture useful Level 1 evidence when a newly deployed device is not ready for staff or students.'
+    ],
+    dcsRelevance: [
+      'New or rebuilt devices are common school support touchpoints.',
+      'Good first-line notes reduce rework for deployment owners.',
+      'Deployment vocabulary helps Josh escalate without unsafe production changes.'
+    ],
+    sections: [
+      {
+        id: 'imaging-1',
+        title: 'Imaging vs provisioning',
+        bodyMarkdown:
+          'Imaging usually applies a prepared operating-system build to a device. Provisioning configures a device into the right managed state with accounts, policies, apps, certificates, and compliance expectations.\n\nIn modern fleets the two ideas can overlap, but they are not identical. A device can have a working OS image and still be missing apps, policies, drivers, or group membership.'
+      },
+      {
+        id: 'imaging-2',
+        title: 'Why reference builds need testing',
+        bodyMarkdown:
+          'A reference build should be tested on the actual hardware family before wider rollout. Driver mismatch, BIOS/UEFI settings, storage mode, Wi-Fi drivers, display adapters, and activation/licensing can turn a technically successful deployment into an unusable classroom device.'
+      },
+      {
+        id: 'imaging-3',
+        title: 'Level 1 deployment evidence',
+        bodyMarkdown:
+          'Josh does not need to own the deployment server to be useful. He can capture device model, asset tag, build version, deployment stage, missing app or driver symptom, whether peers are affected, and the class or staff impact. That creates a better handoff to the imaging or endpoint owner.'
+      }
+    ],
+    flashcards: [
+      { id: 'img-f1', front: 'Imaging in plain English?', back: 'Applying a prepared operating-system build to a device.' },
+      { id: 'img-f2', front: 'Provisioning in plain English?', back: 'Putting the device into the right managed state with apps, policies, accounts, and compliance.' },
+      { id: 'img-f3', front: 'Why can a device boot but still not be ready?', back: 'It may be missing apps, drivers, policies, activation, certificates, or group assignment.' },
+      { id: 'img-f4', front: 'Reference build risk?', back: 'A build that works on one hardware family may fail or degrade on another.' },
+      { id: 'img-f5', front: 'Driver pack evidence includes?', back: 'Device model, missing device category, error text, and build version.' },
+      { id: 'img-f6', front: 'Why test small groups first?', back: 'Pilot testing catches deployment problems before they affect a full class or cohort.' },
+      { id: 'img-f7', front: 'Rollback note should capture?', back: 'What changed, who approved it, affected scope, and fallback path.' },
+      { id: 'img-f8', front: 'Level 1 should avoid?', back: 'Changing production images or deployment rules without authority.' },
+      { id: 'img-f9', front: 'Best new-device readiness check?', back: 'Login, Wi-Fi, core apps, printing, browser, and management/policy status.' },
+      { id: 'img-f10', front: 'Deployment handoff value?', back: 'Precise scope and stage reduce repeated rebuilds and guesswork.' }
+    ],
+    quiz: [
+      {
+        type: 'mcq',
+        id: 'img-q1',
+        prompt: 'A newly imaged laptop boots but has no required classroom apps. Best first classification?',
+        domain: 'Device deployment',
+        difficulty: 'foundation',
+        explanation: 'OS readiness and app provisioning are separate readiness layers.',
+        modelAnswer: 'The OS image may have succeeded, but app provisioning or assignment may still be incomplete.',
+        commonMistakes: ['Calling the whole image corrupt', 'Rebuilding before checking assignment/provisioning stage'],
+        dcsContext: 'New device readiness often depends on several systems finishing in sequence.',
+        reviewSchedule,
+        recommendedModuleId: 'device-imaging-deployment-workflows',
+        weakTopic: 'endpoint-deployment',
+        options: [
+          { id: 'a', label: 'The laptop is definitely physically broken' },
+          { id: 'b', label: 'The OS image may be complete while app provisioning is incomplete' },
+          { id: 'c', label: 'Delete all deployment records and start again' },
+          { id: 'd', label: 'Ignore the missing apps until the teacher complains twice' }
+        ],
+        correctOptionId: 'b'
+      },
+      {
+        type: 'short-answer',
+        id: 'img-q2',
+        prompt: 'List five fields Josh should capture when a deployed device is not classroom-ready.',
+        domain: 'Device deployment',
+        difficulty: 'stretch',
+        explanation: 'Deployment owners need stage, scope, and symptom evidence.',
+        modelAnswer:
+          'Asset tag, device model, build/version, missing app or driver symptom, deployment stage if visible, user role/class impact, and whether peer devices are affected.',
+        commonMistakes: ['Only writing “new laptop broken”', 'Skipping model or build information'],
+        dcsContext: 'Good handoffs reduce rebuild loops.',
+        reviewSchedule,
+        recommendedModuleId: 'device-imaging-deployment-workflows',
+        weakTopic: 'endpoint-deployment',
+        rubric: ['Device identity', 'Build/stage', 'Symptom', 'Scope', 'Impact'],
+        keywordHints: ['asset', 'model', 'build', 'scope', 'impact']
+      },
+      {
+        type: 'order-steps',
+        id: 'img-q3',
+        prompt: 'Order a safe first-line response to a newly deployed laptop with Wi-Fi missing.',
+        domain: 'Device deployment',
+        difficulty: 'stretch',
+        explanation: 'Confirm scope before assuming bad image or bad network.',
+        modelAnswer:
+          'Confirm hardware/model and build, compare peer devices from same rollout, check whether Wi-Fi adapter/driver is visible, then escalate with deployment evidence.',
+        commonMistakes: ['Resetting network infrastructure first', 'Reimaging immediately without scope'],
+        dcsContext: 'A driver issue can look like a network issue until scoped.',
+        reviewSchedule,
+        recommendedModuleId: 'device-imaging-deployment-workflows',
+        weakTopic: 'endpoint-deployment',
+        steps: [
+          { id: 'device', label: 'Confirm device model and build version' },
+          { id: 'scope', label: 'Compare peer devices from the same rollout' },
+          { id: 'adapter', label: 'Check whether the Wi-Fi adapter or driver is visible' },
+          { id: 'handoff', label: 'Escalate with rollout evidence and impact' }
+        ],
+        correctOrder: ['device', 'scope', 'adapter', 'handoff'],
+        rubric: ['Starts with device/build', 'Scopes rollout', 'Escalates with evidence']
+      },
+      {
+        type: 'scenario-response',
+        id: 'img-q4',
+        prompt: 'A teacher says the rebuilt laptop is “not set up properly” five minutes before class. Write the support posture.',
+        domain: 'Device deployment',
+        difficulty: 'challenge',
+        explanation: 'Classroom urgency changes the response, but not the authority boundary.',
+        modelAnswer:
+          'Acknowledge class impact, check login and one or two core readiness items quickly, provide a fallback if available, and escalate missing deployment items with asset/build/scope evidence.',
+        commonMistakes: ['Attempting deep deployment fixes during class', 'Ignoring immediate teaching impact'],
+        dcsContext: 'Front-of-class deployment failures need both triage and handoff discipline.',
+        reviewSchedule,
+        recommendedModuleId: 'device-imaging-deployment-workflows',
+        weakTopic: 'endpoint-deployment',
+        rubric: ['Acknowledges urgency', 'Uses quick readiness checks', 'Escalates missing deployment layer']
+      },
+      {
+        type: 'mcq',
+        id: 'img-q5',
+        prompt: 'Why is a pilot group useful before a wider device rollout?',
+        domain: 'Device deployment',
+        difficulty: 'foundation',
+        explanation: 'Small-scope testing contains deployment defects.',
+        modelAnswer: 'It catches build, driver, app, and policy problems before they affect a full cohort.',
+        commonMistakes: ['Assuming deployment either works everywhere or nowhere'],
+        dcsContext: 'Schools have tight class timing and limited spare-device tolerance.',
+        reviewSchedule,
+        recommendedModuleId: 'device-imaging-deployment-workflows',
+        weakTopic: 'endpoint-deployment',
+        options: [
+          { id: 'a', label: 'It makes documentation unnecessary' },
+          { id: 'b', label: 'It catches rollout problems before broad impact' },
+          { id: 'c', label: 'It proves no rollback plan is needed' },
+          { id: 'd', label: 'It lets Level 1 bypass change ownership' }
+        ],
+        correctOptionId: 'b'
+      },
+      {
+        type: 'explain-it-simply',
+        id: 'img-q6',
+        prompt: 'Explain imaging vs provisioning to a non-technical staff member.',
+        domain: 'Device deployment',
+        difficulty: 'foundation',
+        explanation: 'Plain language reduces false expectations.',
+        modelAnswer:
+          'Imaging is like putting the base setup on the laptop. Provisioning is the follow-up that gives it the right school apps, settings, and access.',
+        commonMistakes: ['Using deployment jargon with no distinction'],
+        dcsContext: 'Staff often see one “new laptop setup” process even when several systems are involved.',
+        reviewSchedule,
+        recommendedModuleId: 'device-imaging-deployment-workflows',
+        weakTopic: 'endpoint-deployment',
+        rubric: ['Distinguishes base setup', 'Mentions apps/settings/access'],
+        keywordHints: ['base', 'apps', 'settings', 'access']
+      },
+      {
+        type: 'mcq',
+        id: 'img-q7',
+        prompt: 'Which action stays inside a Level 1-safe deployment role?',
+        domain: 'Device deployment',
+        difficulty: 'foundation',
+        explanation: 'First-line value is evidence and safe checks, not unauthorised image changes.',
+        modelAnswer: 'Capture asset, model, build, scope, and exact readiness failure before escalating.',
+        commonMistakes: ['Editing task sequences or image sources casually'],
+        dcsContext: 'Deployment systems can affect many devices quickly.',
+        reviewSchedule,
+        recommendedModuleId: 'device-imaging-deployment-workflows',
+        weakTopic: 'endpoint-deployment',
+        options: [
+          { id: 'a', label: 'Change the production image to test a guess' },
+          { id: 'b', label: 'Capture asset/model/build/scope and escalate the readiness failure' },
+          { id: 'c', label: 'Disable management policies for speed' },
+          { id: 'd', label: 'Delete the device record without approval' }
+        ],
+        correctOptionId: 'b'
+      },
+      {
+        type: 'short-answer',
+        id: 'img-q8',
+        prompt: 'Write one sentence for a deployment-owner handoff.',
+        domain: 'Device deployment',
+        difficulty: 'stretch',
+        explanation: 'A useful handoff includes stage, scope, symptom, and impact.',
+        modelAnswer:
+          'Three Year 8 laptops from today’s rollout boot successfully but lack the required classroom app; same model/build, class starts 10:15, requesting provisioning assignment review.',
+        commonMistakes: ['No scope', 'No requested next owner action'],
+        dcsContext: 'Deployment handoffs should point to the likely owner without blame.',
+        reviewSchedule,
+        recommendedModuleId: 'device-imaging-deployment-workflows',
+        weakTopic: 'endpoint-deployment',
+        rubric: ['Scope', 'Build/stage', 'Symptom', 'Impact/request'],
+        keywordHints: ['rollout', 'build', 'scope', 'review']
+      }
+    ],
+    scenarioPrompts: [
+      {
+        id: 'img-s1',
+        title: 'New laptop not classroom-ready',
+        prompt: 'Separate OS image success from missing provisioning, driver, or app assignment evidence.'
+      }
+    ],
+    practicalOutputs: [
+      {
+        id: 'img-p1',
+        title: 'Deployment readiness evidence card',
+        description: 'Create a one-page checklist for asset, model, build, apps, drivers, policy status, scope, and class impact.'
+      }
+    ]
+  },
+  {
+    id: 'soft-skills-dcs-support',
+    title: 'Soft Skills for DCS Support',
+    description:
+      'Develop communication, empathy, problem-solving, and time-management skills essential for effective IT support in a school environment.',
+    domain: 'Professional Practice',
+    level: 'L1',
+    estimatedMinutes: 25,
+    tags: ['Communication', 'Empathy', 'Problem-solving', 'Time management', 'Professional development'],
+    learningObjectives: [
+      'Practice clear, empathetic communication with diverse school stakeholders.',
+      'Apply structured problem-solving approaches to IT issues.',
+      'Manage time effectively during busy support periods.',
+      'Build rapport and trust with teachers, students, and staff.'
+    ],
+    dcsRelevance: [
+      'IT support involves as much people skills as technical skills.',
+      'Clear communication reduces misunderstandings and repeat calls.',
+      'Empathy helps de-escalate frustrated users.',
+      'Structured problem-solving prevents rushed, ineffective fixes.'
+    ],
+    sections: [
+      {
+        id: 'ss-1',
+        title: 'Empathetic communication basics',
+        bodyMarkdown:
+          'Start with acknowledgment: "I understand this is disrupting your class." Use active listening: repeat back what you heard. Avoid jargon; explain in plain language. End with next steps and realistic timelines.'
+      },
+      {
+        id: 'ss-2',
+        title: 'Structured problem-solving',
+        bodyMarkdown:
+          'Gather facts first, then symptoms, then scope. Test one change at a time. Document what you try. If stuck, escalate with complete evidence rather than guessing.'
+      },
+      {
+        id: 'ss-3',
+        title: 'Time management in support',
+        bodyMarkdown:
+          'Prioritize by impact: class in session > urgent admin > non-urgent. Use quiet windows for complex tasks. Set expectations: "This may take 15 minutes." Batch similar issues.'
+      },
+      {
+        id: 'ss-4',
+        title: 'Building trust and rapport',
+        bodyMarkdown:
+          'Follow through on commitments. Admit when you don\'t know but will find out. Share progress updates. Celebrate successful resolutions.'
+      }
+    ],
+    flashcards: [
+      { id: 'ss-f1', front: 'Empathy first response?', back: 'Acknowledge the disruption and show understanding.' },
+      { id: 'ss-f2', front: 'Active listening includes?', back: 'Repeating back what the user said to confirm understanding.' },
+      { id: 'ss-f3', front: 'Avoid jargon by?', back: 'Explaining technical terms in simple, everyday language.' },
+      { id: 'ss-f4', front: 'Problem-solving order?', back: 'Facts → symptoms → scope → test one change → document → escalate if needed.' },
+      { id: 'ss-f5', front: 'Time priority hierarchy?', back: 'Class in session > urgent admin > non-urgent tasks.' },
+      { id: 'ss-f6', front: 'Set expectations with?', back: 'Realistic timelines and progress updates.' },
+      { id: 'ss-f7', front: 'Batch similar issues to?', back: 'Increase efficiency and reduce context switching.' },
+      { id: 'ss-f8', front: 'Build trust by?', back: 'Following through, admitting unknowns, sharing progress, celebrating wins.' },
+      { id: 'ss-f9', front: 'De-escalate frustration with?', back: 'Calm tone, empathy, clear next steps.' },
+      { id: 'ss-f10', front: 'Document everything because?', back: 'It helps future you and enables proper escalation.' }
+    ],
+    quiz: [
+      {
+        type: 'mcq',
+        id: 'ss-q1',
+        prompt: 'A teacher is frustrated because their projector won\'t work during class. Best first response?',
+        domain: 'Soft skills',
+        difficulty: 'foundation',
+        explanation: 'Empathy de-escalates while gathering facts.',
+        modelAnswer: 'Acknowledge the urgency and disruption, then ask for specific symptoms.',
+        commonMistakes: ['Jumping straight to technical questions', 'Minimizing the problem'],
+        dcsContext: 'Class disruptions create immediate stress.',
+        reviewSchedule,
+        recommendedModuleId: 'soft-skills-dcs-support',
+        weakTopic: 'rbc-professional-practice',
+        options: [
+          { id: 'a', label: 'Tell them to wait until after class' },
+          { id: 'b', label: 'Acknowledge the class disruption and ask what exactly is happening' },
+          { id: 'c', label: 'Start troubleshooting the projector immediately' },
+          { id: 'd', label: 'Explain HDMI technical details' }
+        ],
+        correctOptionId: 'b'
+      },
+      {
+        type: 'short-answer',
+        id: 'ss-q2',
+        prompt: 'List three ways to show empathy during IT support.',
+        domain: 'Soft skills',
+        difficulty: 'foundation',
+        explanation: 'Empathy builds rapport and reduces tension.',
+        modelAnswer: 'Acknowledge the problem\'s impact, use a calm tone, repeat back understanding, offer realistic timelines.',
+        commonMistakes: ['Focusing only on technical fixes', 'Using dismissive language'],
+        dcsContext: 'School users often face time pressure.',
+        reviewSchedule,
+        recommendedModuleId: 'soft-skills-dcs-support',
+        weakTopic: 'rbc-professional-practice',
+        rubric: ['Acknowledgment', 'Tone', 'Understanding'],
+        keywordHints: ['acknowledge', 'calm', 'timeline']
+      },
+      {
+        type: 'order-steps',
+        id: 'ss-q3',
+        prompt: 'Order steps for handling a complex issue during a busy period.',
+        domain: 'Soft skills',
+        difficulty: 'stretch',
+        explanation: 'Structured approach prevents overwhelm.',
+        modelAnswer: 'Assess urgency and impact, set user expectations, gather facts, test changes one at a time, document progress.',
+        commonMistakes: ['Trying multiple fixes at once', 'Not communicating progress'],
+        dcsContext: 'Busy periods require efficient prioritization.',
+        reviewSchedule,
+        recommendedModuleId: 'soft-skills-dcs-support',
+        weakTopic: 'rbc-professional-practice',
+        steps: [
+          { id: 'assess', label: 'Assess urgency and impact' },
+          { id: 'expect', label: 'Set user expectations' },
+          { id: 'facts', label: 'Gather complete facts' },
+          { id: 'test', label: 'Test one change at a time' },
+          { id: 'doc', label: 'Document everything' }
+        ],
+        correctOrder: ['assess', 'expect', 'facts', 'test', 'doc'],
+        rubric: ['Prioritizes urgency', 'Sets expectations', 'Documents']
+      },
+      {
+        type: 'scenario-response',
+        id: 'ss-q4',
+        prompt: 'A staff member calls about a password issue but is clearly stressed about a deadline. How do you respond?',
+        domain: 'Soft skills',
+        difficulty: 'challenge',
+        explanation: 'Balance technical help with emotional support.',
+        modelAnswer: 'Acknowledge the stress and deadline pressure, confirm you\'ll work efficiently, walk through password reset calmly, offer to follow up if needed.',
+        commonMistakes: ['Ignoring the stress', 'Rushing through without explanation'],
+        dcsContext: 'School work often has tight deadlines.',
+        reviewSchedule,
+        recommendedModuleId: 'soft-skills-dcs-support',
+        weakTopic: 'rbc-professional-practice',
+        rubric: ['Acknowledges stress', 'Offers efficient help', 'Provides follow-up']
+      },
+      {
+        type: 'explain-it-simply',
+        id: 'ss-q5',
+        prompt: 'Explain to a non-technical teacher why you need to test one thing at a time.',
+        domain: 'Soft skills',
+        difficulty: 'foundation',
+        explanation: 'Clear communication builds trust.',
+        modelAnswer: 'Testing one change at a time helps us know exactly what fixed the problem, so we can prevent it happening again and not waste time on unnecessary steps.',
+        commonMistakes: ['Using technical jargon', 'Not explaining the benefit'],
+        dcsContext: 'Teachers appreciate efficiency explanations.',
+        reviewSchedule,
+        recommendedModuleId: 'soft-skills-dcs-support',
+        weakTopic: 'rbc-professional-practice',
+        rubric: ['Explains method', 'Gives benefit', 'Avoids jargon'],
+        keywordHints: ['one change', 'prevent', 'waste time']
+      }
+    ],
+    scenarioPrompts: [
+      {
+        id: 'ss-s1',
+        title: 'Frustrated teacher during class',
+        prompt: 'Practice empathetic communication and structured problem-solving when a teacher\'s laptop won\'t connect to the projector mid-lesson.'
+      },
+      {
+        id: 'ss-s2',
+        title: 'Multiple urgent requests',
+        prompt: 'Demonstrate time management and prioritization when three teachers need help simultaneously during a busy morning.'
+      }
+    ],
+    practicalOutputs: [
+      {
+        id: 'ss-p1',
+        title: 'Empathy checklist',
+        description: 'Create a personal checklist of empathetic phrases and active listening techniques for support interactions.'
+      },
+      {
+        id: 'ss-p2',
+        title: 'Problem-solving template',
+        description: 'Design a template for documenting facts, symptoms, scope, attempted fixes, and escalation notes.'
+      }
+    ]
+  },
+  {
+    id: 'microsoft-intune-fundamentals',
+    title: 'Microsoft Intune and MDM Fundamentals',
+    description: 'Learn to manage, secure, and deploy school devices and apps using Microsoft Intune and modern MDM workflows.',
+    domain: 'Endpoint Support',
+    level: 'L2',
+    estimatedMinutes: 28,
+    tags: ['Intune', 'MDM', 'Endpoint Manager', 'provisioning', 'compliance'],
+    learningObjectives: [
+      'Explain the role of MDM in modern school IT environments.',
+      'Navigate Intune enrollment, compliance, and configuration workflows.',
+      'Deploy applications and security policies to managed devices.',
+      'Perform remote management tasks like wiping lost devices safely.'
+    ],
+    dcsRelevance: [
+      'Intune is the primary tool for managing student and staff Windows devices.',
+      'Understanding enrollment helps troubleshoot "not set up" complaints.',
+      'Compliance policies ensure only secure devices access school data.'
+    ],
+    sections: [
+      {
+        id: 'intune-1',
+        title: 'What is Intune and MDM?',
+        bodyMarkdown: 'Microsoft Intune is a cloud-based service that focuses on mobile device management (MDM) and mobile application management (MAM). In schools, it allows IT to control how devices are used, including mobile phones, tablets, and laptops.'
+      },
+      {
+        id: 'intune-2',
+        title: 'Device Enrollment',
+        bodyMarkdown: 'Enrollment is the process of adding a device to Intune. Once enrolled, the device can receive policies, certificates, and apps. Common methods include Autopilot for Windows and Company Portal for BYOD.'
+      },
+      {
+        id: 'intune-3',
+        title: 'Compliance and Configuration',
+        bodyMarkdown: 'Compliance policies define the rules a device must follow (e.g., must have a PIN, must be encrypted). Configuration profiles allow you to manage settings like Wi-Fi, VPN, and email automatically.'
+      },
+      {
+        id: 'intune-4',
+        title: 'Remote Actions',
+        bodyMarkdown: 'Intune allows for remote actions such as Restart, Remote Wipe (erases all data), and Fresh Start (removes pre-installed apps and reinstalls Windows).'
+      }
+    ],
+    flashcards: [
+      { id: 'int-f1', front: 'What is MDM?', back: 'Mobile Device Management—software that secures and manages mobile devices.' },
+      { id: 'int-f2', front: 'What is Autopilot?', back: 'A collection of technologies used to set up and pre-configure new devices.' },
+      { id: 'int-f3', front: 'Compliance Policy purpose?', back: 'Ensures devices meet security standards before accessing data.' },
+      { id: 'int-f4', front: 'Remote Wipe vs Retire?', back: 'Wipe erases everything; Retire only removes school data and management.' },
+      { id: 'int-f5', front: 'Company Portal?', back: 'The app users use to enroll devices and install school-approved apps.' }
+    ],
+    quiz: [
+      {
+        type: 'mcq',
+        id: 'int-q1',
+        prompt: 'A teacher’s laptop is stolen. Which Intune action is most appropriate to protect data?',
+        domain: 'Intune management',
+        difficulty: 'foundation',
+        explanation: 'Wipe removes all data, protecting sensitive information.',
+        modelAnswer: 'Remote Wipe',
+        commonMistakes: ['Retire'],
+        dcsContext: 'Theft requires immediate data destruction.',
+        reviewSchedule,
+        recommendedModuleId: 'microsoft-intune-fundamentals',
+        weakTopic: 'endpoint-deployment',
+        options: [
+          { id: 'a', label: 'Retire device' },
+          { id: 'b', label: 'Remote Wipe' },
+          { id: 'c', label: 'Restart' },
+          { id: 'd', label: 'Sync' }
+        ],
+        correctOptionId: 'b'
+      },
+      {
+        type: 'short-answer',
+        id: 'int-q2',
+        prompt: 'List three items a Compliance Policy might check.',
+        domain: 'Intune management',
+        difficulty: 'stretch',
+        explanation: 'Security rules for devices.',
+        modelAnswer: 'BitLocker encryption, OS version, Minimum password length, Antivirus status.',
+        commonMistakes: [],
+        dcsContext: 'Ensures classroom devices are secure.',
+        reviewSchedule,
+        recommendedModuleId: 'microsoft-intune-fundamentals',
+        weakTopic: 'endpoint-deployment',
+        rubric: ['Encryption', 'Version', 'Password'],
+        keywordHints: ['encryption', 'version', 'password']
+      }
+    ],
+    scenarioPrompts: [
+      {
+        id: 'int-s1',
+        title: 'Device enrollment failure',
+        prompt: 'Troubleshoot a Windows laptop that fails to enroll during Autopilot setup.'
+      }
+    ],
+    practicalOutputs: [
+      {
+        id: 'int-p1',
+        title: 'Intune enrollment guide',
+        description: 'Create a one-page guide for staff on how to enroll their BYOD devices via Company Portal.'
+      }
+    ]
+  },
+  {
+    id: 'cybersecurity-incident-response-nist',
+    title: 'Cybersecurity and Incident Response (NIST 800-61)',
+    description: 'Understand modern cyber threats and the structured phases of incident response for school environments.',
+    domain: 'Cybersecurity',
+    level: 'L2',
+    estimatedMinutes: 30,
+    tags: ['cybersecurity', 'NIST', 'incident response', 'phishing', 'ransomware'],
+    learningObjectives: [
+      'Identify common cyber threats facing K-12 schools.',
+      'Explain the four phases of the NIST 800-61 incident response lifecycle.',
+      'Recognize signs of phishing and ransomware early.',
+      'Report incidents correctly according to school policy.'
+    ],
+    dcsRelevance: [
+      'Schools are high-value targets for ransomware.',
+      'Staff are the first line of defense against phishing.',
+      'Structured response prevents panic and data loss.'
+    ],
+    sections: [
+      {
+        id: 'nist-1',
+        title: 'Modern School Threats',
+        bodyMarkdown: 'Schools face phishing, ransomware, data breaches, and insider threats. Attackers often target student records or financial data.'
+      },
+      {
+        id: 'nist-2',
+        title: 'NIST Incident Response Lifecycle',
+        bodyMarkdown: 'The NIST 800-61 framework defines four phases:\n1. **Preparation**: Hardening systems and training staff.\n2. **Detection & Analysis**: Identifying a potential incident.\n3. **Containment, Eradication & Recovery**: Stopping the threat and restoring service.\n4. **Post-Incident Activity**: Learning from the event.'
+      },
+      {
+        id: 'nist-3',
+        title: 'Phishing and Social Engineering',
+        bodyMarkdown: 'Phishing uses deceptive emails to steal credentials. Social engineering manipulates people into performing actions or divesting confidential information.'
+      }
+    ],
+    flashcards: [
+      { id: 'nist-f1', front: 'NIST 800-61?', back: 'Computer Security Incident Handling Guide.' },
+      { id: 'nist-f2', front: 'Containment goal?', back: 'Stop the incident from spreading and causing more damage.' },
+      { id: 'nist-f3', front: 'Preparation phase?', back: 'Building capacity to respond before an incident occurs.' },
+      { id: 'nist-f4', front: 'Ransomware?', back: 'Malware that encrypts files and demands payment for the key.' }
+    ],
+    quiz: [
+      {
+        type: 'mcq',
+        id: 'nist-q1',
+        prompt: 'What is the first phase of the NIST Incident Response Lifecycle?',
+        domain: 'Cybersecurity',
+        difficulty: 'foundation',
+        explanation: 'Preparation happens before an incident starts.',
+        modelAnswer: 'Preparation',
+        commonMistakes: ['Detection'],
+        dcsContext: 'Preparation includes staff training like this.',
+        reviewSchedule,
+        recommendedModuleId: 'cybersecurity-incident-response-nist',
+        weakTopic: 'security-risk-judgement',
+        options: [
+          { id: 'a', label: 'Detection & Analysis' },
+          { id: 'b', label: 'Preparation' },
+          { id: 'c', label: 'Recovery' },
+          { id: 'd', label: 'Containment' }
+        ],
+        correctOptionId: 'b'
+      }
+    ],
+    scenarioPrompts: [
+      {
+        id: 'nist-s1',
+        title: 'Suspected Ransomware',
+        prompt: 'A teacher reports they cannot open any files and sees a strange message on their desktop. Walk through the initial response.'
+      }
+    ],
+    practicalOutputs: [
+      {
+        id: 'nist-p1',
+        title: 'Incident reporting template',
+        description: 'Create a clear template for staff to use when reporting a suspected security incident.'
+      }
+    ]
+  },
+  {
+    id: 'accessibility-inclusive-design',
+    title: 'Accessibility and Inclusive Design',
+    description: 'Learn to create and support digital content that is accessible to all users, including those with impairments.',
+    domain: 'Professional Practice',
+    level: 'L1',
+    estimatedMinutes: 22,
+    tags: ['accessibility', 'WCAG', 'inclusive design', 'alt-text'],
+    learningObjectives: [
+      'Explain the importance of accessibility in e-learning and school IT.',
+      'Apply WCAG 2.1 principles to digital content.',
+      'Write effective alt-text for images.',
+      'Ensure clear color contrast and keyboard navigability.'
+    ],
+    dcsRelevance: [
+      'Inclusive design ensures all students can access learning materials.',
+      'Accessibility is often a legal and ethical requirement.',
+      'Good design benefits everyone, not just those with impairments.'
+    ],
+    sections: [
+      {
+        id: 'a11y-1',
+        title: 'WCAG Principles (POUR)',
+        bodyMarkdown: 'Web Content Accessibility Guidelines are built on four principles:\n- **Perceivable**: Information must be presentable to users in ways they can perceive.\n- **Operable**: Interface components and navigation must be operable.\n- **Understandable**: Information and operation must be understandable.\n- **Robust**: Content must be robust enough to be interpreted by various user agents.'
+      },
+      {
+        id: 'a11y-2',
+        title: 'Alt-Text and Contrast',
+        bodyMarkdown: 'Alt-text provides a text description for images for screen readers. Color contrast ensures that text is readable against its background.'
+      }
+    ],
+    flashcards: [
+      { id: 'a11y-f1', front: 'WCAG?', back: 'Web Content Accessibility Guidelines.' },
+      { id: 'a11y-f2', front: 'POUR?', back: 'Perceivable, Operable, Understandable, Robust.' },
+      { id: 'a11y-f3', front: 'Alt-Text?', back: 'Text description of an image for accessibility.' }
+    ],
+    quiz: [
+      {
+        type: 'mcq',
+        id: 'a11y-q1',
+        prompt: 'Which WCAG principle ensures users can navigate using only a keyboard?',
+        domain: 'Accessibility',
+        difficulty: 'foundation',
+        explanation: 'Operable covers navigation and interface interaction.',
+        modelAnswer: 'Operable',
+        commonMistakes: ['Perceivable'],
+        dcsContext: 'Keyboard navigation is vital for users with motor impairments.',
+        reviewSchedule,
+        recommendedModuleId: 'accessibility-inclusive-design',
+        weakTopic: 'rbc-professional-practice',
+        options: [
+          { id: 'a', label: 'Perceivable' },
+          { id: 'b', label: 'Operable' },
+          { id: 'c', label: 'Understandable' },
+          { id: 'd', label: 'Robust' }
+        ],
+        correctOptionId: 'b'
+      }
+    ],
+    practicalOutputs: [
+      {
+        id: 'a11y-p1',
+        title: 'Accessibility Audit Checklist',
+        description: 'Create a simple checklist for teachers to use when creating classroom digital materials.'
+      }
+    ]
+  },
+  {
+    id: 'itil-foundations-service-management',
+    title: 'ITIL Foundations for School IT',
+    description: 'An introduction to ITIL service management concepts adapted for school IT support environments.',
+    domain: 'Professional Practice',
+    level: 'L2',
+    estimatedMinutes: 25,
+    tags: ['ITIL', 'service management', 'incident', 'change'],
+    learningObjectives: [
+      'Define the core concepts of ITIL service management.',
+      'Differentiate between an Incident and a Service Request.',
+      'Explain the importance of Change Management in reducing downtime.',
+      'Apply ITIL principles to daily school support tasks.'
+    ],
+    dcsRelevance: [
+      'ITIL provides a standard vocabulary for IT professionals.',
+      'Clear incident vs. request handling improves efficiency.',
+      'Change management protects teaching time from unexpected outages.'
+    ],
+    sections: [
+      {
+        id: 'itil-1',
+        title: 'What is ITIL?',
+        bodyMarkdown: 'ITIL (Information Technology Infrastructure Library) is a set of best practices for IT service management (ITSM). It focuses on aligning IT services with the needs of the business (or school).'
+      },
+      {
+        id: 'itil-2',
+        title: 'Incident vs. Service Request',
+        bodyMarkdown: '- **Incident**: An unplanned interruption to a service or reduction in the quality of a service (e.g., "The projector is broken").\n- **Service Request**: A request for something to be provided (e.g., "I need a new laptop").'
+      },
+      {
+        id: 'itil-3',
+        title: 'Change Management',
+        bodyMarkdown: 'Change management ensures that standardized methods and procedures are used for efficient and prompt handling of all changes to IT infrastructure.'
+      }
+    ],
+    flashcards: [
+      { id: 'itil-f1', front: 'ITIL?', back: 'Information Technology Infrastructure Library.' },
+      { id: 'itil-f2', front: 'Incident?', back: 'Unplanned interruption to an IT service.' },
+      { id: 'itil-f3', front: 'Service Request?', back: 'Formal request for something new or changed.' }
+    ],
+    quiz: [
+      {
+        type: 'mcq',
+        id: 'itil-q1',
+        prompt: 'A teacher asks for a software update to be installed on their laptop. This is an example of:',
+        domain: 'ITIL concepts',
+        difficulty: 'foundation',
+        explanation: 'It is a formal request for a change/provision, not a failure.',
+        modelAnswer: 'Service Request',
+        commonMistakes: ['Incident'],
+        dcsContext: 'Requests should follow the formal intake path.',
+        reviewSchedule,
+        recommendedModuleId: 'itil-foundations-service-management',
+        weakTopic: 'rbc-professional-practice',
+        options: [
+          { id: 'a', label: 'Incident' },
+          { id: 'b', label: 'Service Request' },
+          { id: 'c', label: 'Problem' },
+          { id: 'd', label: 'Emergency Change' }
+        ],
+        correctOptionId: 'b'
+      }
+    ]
   }
 ];

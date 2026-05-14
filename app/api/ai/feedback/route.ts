@@ -26,6 +26,9 @@ type FeedbackResponse = {
   summary: string;
   missingPoints: string[];
   suggestedNextEdit: string;
+  coachingTip: string;
+  encouragement: string;
+  nextSteps: string[];
 };
 
 function buildMessages(input: z.infer<typeof requestSchema>) {
@@ -36,12 +39,16 @@ function buildMessages(input: z.infer<typeof requestSchema>) {
     'Give realtime feedback on a draft answer while the user is still typing.',
     'Be concise and specific. Do not be patronizing.',
     'Never request or include sensitive school data, credentials, or personal information.',
-    'Focus on: correctness, reasoning quality, and risk/judgement for a Level 1 support context.'
+    'Focus on: correctness, reasoning quality, and risk/judgement for a Level 1 support context.',
+    'Provide coaching tips, encouragement, and specific next steps for improvement.'
   ].join(' ');
 
   const user = [
     'Evaluate the user draft against the model answer and rubric.',
-    'Return ONLY valid JSON with keys: overall, summary, missingPoints, suggestedNextEdit.',
+    'Return ONLY valid JSON with keys: overall, summary, missingPoints, suggestedNextEdit, coachingTip, encouragement, nextSteps.',
+    'coachingTip: A specific learning tip related to this question type.',
+    'encouragement: Brief positive reinforcement.',
+    'nextSteps: Array of 2-3 actionable improvement steps.',
     '',
     `Question (${question.type}): ${question.prompt}`,
     '',
@@ -147,7 +154,7 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: 'AI returned invalid JSON.' }, { status: 502 });
   }
 
-  if (!feedback || !feedback.summary || !feedback.suggestedNextEdit) {
+  if (!feedback || !feedback.summary || !feedback.suggestedNextEdit || !feedback.coachingTip || !feedback.encouragement || !feedback.nextSteps) {
     return NextResponse.json({ error: 'AI response was missing required fields.' }, { status: 502 });
   }
 

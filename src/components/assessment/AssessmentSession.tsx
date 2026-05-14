@@ -29,6 +29,9 @@ type LiveFeedback = {
   summary: string;
   missingPoints: string[];
   suggestedNextEdit: string;
+  coachingTip: string;
+  encouragement: string;
+  nextSteps: string[];
 };
 
 function shuffle<T>(items: T[]) {
@@ -503,12 +506,33 @@ export default function AssessmentSession({
                       </span>
                     </div>
                     <p className="mt-3">{liveFeedback.summary}</p>
+                    {liveFeedback.encouragement ? (
+                      <div className="mt-3 rounded-2xl bg-emerald-50 p-3">
+                        <div className="text-emerald-800">{liveFeedback.encouragement}</div>
+                      </div>
+                    ) : null}
+                    {liveFeedback.coachingTip ? (
+                      <div className="mt-3 rounded-2xl bg-blue-50 p-3">
+                        <div className="font-semibold text-blue-900">Coaching tip</div>
+                        <p className="mt-1 text-blue-800">{liveFeedback.coachingTip}</p>
+                      </div>
+                    ) : null}
                     {liveFeedback.missingPoints?.length ? (
                       <div className="mt-3">
                         <div className="font-semibold text-slate-900">Missing points</div>
                         <ul className="mt-2 space-y-1 text-slate-700">
                           {liveFeedback.missingPoints.slice(0, 5).map((point) => (
                             <li key={point}>- {point}</li>
+                          ))}
+                        </ul>
+                      </div>
+                    ) : null}
+                    {liveFeedback.nextSteps?.length ? (
+                      <div className="mt-3">
+                        <div className="font-semibold text-slate-900">Next steps</div>
+                        <ul className="mt-2 space-y-1 text-slate-700">
+                          {liveFeedback.nextSteps.slice(0, 3).map((step) => (
+                            <li key={step}>- {step}</li>
                           ))}
                         </ul>
                       </div>

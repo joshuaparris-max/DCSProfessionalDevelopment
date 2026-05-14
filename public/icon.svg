@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="DCSPrep app icon">
+  <rect width="512" height="512" rx="104" fill="#0f172a" />
+  <path d="M128 156c0-22.1 17.9-40 40-40h176c22.1 0 40 17.9 40 40v200c0 22.1-17.9 40-40 40H168c-22.1 0-40-17.9-40-40V156Z" fill="#f8fafc" />
+  <path d="M178 176h156v36H178v-36Zm0 72h156v28H178v-28Zm0 62h96v28h-96v-28Z" fill="#0f172a" />
+  <path d="M310 320l22 22 44-56" fill="none" stroke="#10b981" stroke-width="28" stroke-linecap="round" stroke-linejoin="round" />
+</svg>

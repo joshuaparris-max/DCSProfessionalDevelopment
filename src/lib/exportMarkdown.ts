@@ -18,6 +18,10 @@ export function buildMonthlyPdMarkdown(progress: UserProgress) {
     }
     lines.push('');
     lines.push(`**What I learned:** ${entry.learned}`);
+    if (entry.reflection) {
+      lines.push('');
+      lines.push(`**Reflection:** ${entry.reflection}`);
+    }
     lines.push('');
     lines.push(`**Next step:** ${entry.nextStep}`);
     if (entry.evidenceLink) {

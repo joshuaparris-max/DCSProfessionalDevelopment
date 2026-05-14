@@ -79,6 +79,7 @@ export default function PdLogPage() {
     topic: '',
     dcsRelevance: '',
     learned: '',
+    reflection: '',
     nextStep: '',
     evidenceLink: '',
     moduleIds: [],
@@ -159,6 +160,7 @@ export default function PdLogPage() {
       topic: '',
       dcsRelevance: '',
       learned: '',
+      reflection: '',
       nextStep: '',
       evidenceLink: '',
       moduleIds: [],
@@ -292,6 +294,15 @@ export default function PdLogPage() {
                 onChange={(event) => setForm({ ...form, learned: event.target.value })}
                 className="mt-2 min-h-24 w-full rounded-2xl border border-slate-200 px-4 py-3"
                 placeholder="What changed in your understanding?"
+              />
+            </label>
+            <label className="text-sm text-slate-700 md:col-span-2">
+              Reflection note (optional)
+              <textarea
+                value={form.reflection}
+                onChange={(event) => setForm({ ...form, reflection: event.target.value })}
+                className="mt-2 min-h-24 w-full rounded-2xl border border-slate-200 px-4 py-3"
+                placeholder="Optional reflection: why this matters and what you will do differently."
               />
             </label>
             <label className="text-sm text-slate-700 md:col-span-2">
@@ -466,6 +477,9 @@ export default function PdLogPage() {
                   <div key={entry.id} className="rounded-3xl bg-slate-50 p-4">
                     <div className="text-sm font-semibold text-slate-900">{entry.date} | {entry.minutes} min | {entry.topic}</div>
                     <p className="mt-2 text-sm text-slate-700">{entry.learned}</p>
+                    {entry.reflection ? (
+                      <p className="mt-2 text-sm text-slate-700">Reflection: {entry.reflection}</p>
+                    ) : null}
                     <p className="mt-2 text-sm text-slate-600">Next step: {entry.nextStep}</p>
                   </div>
                 ))

@@ -10,22 +10,13 @@ import {
   saveScenarioRun,
   type UserProgress
 } from '../../src/lib/progress';
+import {
+  calculateScenarioNoteScore,
+  getScenarioRecommendedModuleId,
+  scenarioNoteRubric
+} from '../../src/lib/scenarioReview';
 import type { ScenarioChoice, ScenarioRunChoice } from '../../src/types/scenarios';
-
-const noteRubric = [
-  { id: 'symptom', label: 'Symptom clarity (exact observable behaviour)', weight: 0.25 },
-  { id: 'scope', label: 'Scope (who/where/device counts)', weight: 0.2 },
-  { id: 'steps', label: 'Steps tried + results captured', weight: 0.2 },
-  { id: 'urgency', label: 'Urgency / learning impact stated', weight: 0.2 },
-  { id: 'privacy', label: 'Privacy-safe wording (no secrets or unnecessary identifiers)', weight: 0.15 }
-];
-
-const scenarioRevisitModuleMap: Record<string, string> = {
-  'display-black-screen': 'classroom-display-viewboard-troubleshooting',
-  'classroom-wifi-no-internet': 'dns-dhcp-gateway-ip-basics',
-  'staff-offboarding-m365-visibility': 'm365-identity-offboarding-basics',
-  'printer-jobs-stuck': 'printer-troubleshooting'
-};
+import { MindfulnessPause } from '../../src/components/MindfulnessPause';
 
 export default function ScenariosPage() {
   const [progress, setProgress] = useState<UserProgress>(() => getInitialProgressSnapshot());
@@ -35,6 +26,7 @@ export default function ScenariosPage() {
   const [runChoices, setRunChoices] = useState<ScenarioRunChoice[]>([]);
   const [revealedChoice, setRevealedChoice] = useState<ScenarioChoice | null>(null);
   const [rubricSelfCheck, setRubricSelfCheck] = useState<Record<string, boolean>>({});
+  const [scenarioSaved, setScenarioSaved] = useState(false);
 
   useEffect(() => {
     setProgress(getStoredProgressSnapshot());
@@ -53,10 +45,7 @@ export default function ScenariosPage() {
 
   const currentStep = scenario?.steps[stepIndex];
   const completedScenarios = progress.scenarioRuns.filter((run) => run.completed).length;
-  const currentNoteScore = noteRubric.reduce(
-    (sum, item) => sum + (rubricSelfCheck[item.id] ? item.weight : 0),
-    0
-  );
+  const currentNoteScore = calculateScenarioNoteScore(rubricSelfCheck);
   const currentNoteScorePercent = Math.round(currentNoteScore * 100);
 
   function restartScenario(nextScenarioId = scenario.id) {
@@ -65,6 +54,7 @@ export default function ScenariosPage() {
     setRunChoices([]);
     setRevealedChoice(null);
     setRubricSelfCheck({});
+    setScenarioSaved(false);
     const nextScenario = scenarios.find((entry) => entry.id === nextScenarioId);
     trackUsageInteraction({
       eventType: 'scenario_open',
@@ -107,35 +97,6 @@ export default function ScenariosPage() {
     ];
 
     if (stepIndex === scenario.steps.length - 1) {
-      const noteScore = noteRubric.reduce((sum, item) => sum + (rubricSelfCheck[item.id] ? item.weight : 0), 0);
-      const revisitDueDateIso =
-        noteScore < 0.85 ? new Date(Date.now() + 2 * 24 * 60 * 60 * 1000).toISOString() : undefined;
-      setProgress((current) =>
-        saveScenarioRun(current, {
-          id: `${scenario.id}-${Date.now()}`,
-          scenarioId: scenario.id,
-          startedAtIso: new Date().toISOString(),
-          completedAtIso: new Date().toISOString(),
-          stepChoices: nextChoices,
-          noteRubricChecks: rubricSelfCheck,
-          noteScore: Number(noteScore.toFixed(2)),
-          revisitDueDateIso,
-          recommendedModuleId: scenarioRevisitModuleMap[scenario.id],
-          weakTopic: 'scenario-note-quality',
-          completed: true
-        })
-      );
-      trackUsageInteraction({
-        eventType: 'scenario_completed',
-        route: '/scenarios',
-        label: scenario.title,
-        contentType: 'scenario',
-        contentId: scenario.id,
-        activityCategory: 'scenario',
-        completed: true,
-        score: Number(noteScore.toFixed(2)),
-        metadata: { weakTopic: 'scenario-note-quality', source: 'built-in' }
-      });
       setRunChoices(nextChoices);
       setStepIndex(stepIndex + 1);
       setRevealedChoice(null);
@@ -145,6 +106,44 @@ export default function ScenariosPage() {
     setRunChoices(nextChoices);
     setStepIndex(stepIndex + 1);
     setRevealedChoice(null);
+  }
+
+  function saveScenarioResult() {
+    if (!scenario || scenarioSaved) {
+      return;
+    }
+
+    const noteScore = calculateScenarioNoteScore(rubricSelfCheck);
+    const revisitDueDateIso =
+      noteScore < 0.85 ? new Date(Date.now() + 2 * 24 * 60 * 60 * 1000).toISOString() : undefined;
+
+    setProgress((current) =>
+      saveScenarioRun(current, {
+        id: `${scenario.id}-${Date.now()}`,
+        scenarioId: scenario.id,
+        startedAtIso: new Date().toISOString(),
+        completedAtIso: new Date().toISOString(),
+        stepChoices: runChoices,
+        noteRubricChecks: rubricSelfCheck,
+        noteScore,
+        revisitDueDateIso,
+        recommendedModuleId: getScenarioRecommendedModuleId(scenario.id),
+        weakTopic: 'scenario-note-quality',
+        completed: true
+      })
+    );
+    trackUsageInteraction({
+      eventType: 'scenario_completed',
+      route: '/scenarios',
+      label: scenario.title,
+      contentType: 'scenario',
+      contentId: scenario.id,
+      activityCategory: 'scenario',
+      completed: true,
+      score: noteScore,
+      metadata: { weakTopic: 'scenario-note-quality', source: 'built-in' }
+    });
+    setScenarioSaved(true);
   }
 
   if (!scenario) {
@@ -171,6 +170,10 @@ export default function ScenariosPage() {
             {completedScenarios} scenario exercises recorded.
           </div>
         </div>
+      </section>
+
+      <section className="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-sm">
+        <MindfulnessPause />
       </section>
 
       <div className="grid gap-6 lg:grid-cols-[340px_minmax(0,1fr)]">
@@ -297,7 +300,7 @@ export default function ScenariosPage() {
                   </p>
                 </div>
                 <div className="mt-4 space-y-3">
-                  {noteRubric.map((item) => (
+                  {scenarioNoteRubric.map((item) => (
                     <label key={item.id} className="flex items-start gap-3 text-sm text-emerald-950">
                       <input
                         type="checkbox"
@@ -316,9 +319,18 @@ export default function ScenariosPage() {
                 </div>
               </div>
 
-              <button onClick={() => restartScenario()} className="rounded-full bg-slate-900 px-4 py-2 text-sm text-white">
-                Restart scenario
-              </button>
+              <div className="flex flex-wrap gap-3">
+                <button
+                  onClick={saveScenarioResult}
+                  disabled={scenarioSaved}
+                  className="rounded-full bg-slate-900 px-4 py-2 text-sm text-white disabled:cursor-not-allowed disabled:bg-slate-400"
+                >
+                  {scenarioSaved ? 'Scenario result saved' : 'Save scenario result'}
+                </button>
+                <button onClick={() => restartScenario()} className="rounded-full bg-slate-100 px-4 py-2 text-sm text-slate-900">
+                  Restart scenario
+                </button>
+              </div>
             </div>
           )}
         </section>

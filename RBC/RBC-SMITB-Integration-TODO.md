@@ -214,7 +214,7 @@ _Added complementary DCS workflow scenarios in `src/data/scenarios.ts` (HDMI aud
 
 ## 9. Testing and validation
 
-- [ ] Update existing tests or add new tests under `src/tests/`.
+- [x] Update existing tests or add new tests under `src/tests/`. _(Added scenario catalogue/revisit tests and broader recommended-module validation.)_
 - [x] Run module data validation tests after adding modules.
 - [ ] Add tests for any extended type/schema assumptions.
 - [x] Validate that every new module has:
@@ -228,8 +228,8 @@ _Added complementary DCS workflow scenarios in `src/data/scenarios.ts` (HDMI aud
   - flashcards;
   - quiz items;
   - scenario prompts/practical outputs as appropriate.
-- [ ] Validate that every `recommendedModuleId` points to a real module.
-- [ ] Validate that new scenario IDs and choice IDs are unique.
+- [x] Validate that every `recommendedModuleId` points to a real module.
+- [x] Validate that new scenario IDs and choice IDs are unique.
 - [x] Run the normal app checks:
   - `npm test` or the repo's available test command.
   - `npm run lint` if configured.

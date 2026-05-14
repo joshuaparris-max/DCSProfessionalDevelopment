@@ -30,6 +30,7 @@ export type WeakTopicKey =
   | 'hardware-network-web'
   | 'script-literacy'
   | 'professional-practice'
+  | 'endpoint-deployment'
   | 'dcs-parent-portal'
   | 'dcs-sentral-support'
   | 'dcs-schoolbox-portal'

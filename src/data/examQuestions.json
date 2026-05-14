@@ -1,0 +1,44 @@
+[
+  {
+    "id": "exam-ap-1",
+    "type": "mcq",
+    "prompt": "Which component is most likely at fault when a laptop screen is very dim but still barely visible?",
+    "domain": "CompTIA A+ Hardware",
+    "difficulty": "foundation",
+    "explanation": "The inverter or backlight is usually responsible for screen brightness.",
+    "modelAnswer": "Inverter or Backlight",
+    "commonMistakes": ["GPU", "LCD Panel"],
+    "dcsContext": "Dim screens often mean backlight failure, not a dead laptop.",
+    "reviewSchedule": "Daily",
+    "recommendedModuleId": "messer-core2-troubleshooting-awareness",
+    "weakTopic": "a-plus-hardware",
+    "options": [
+      { "id": "a", "label": "GPU" },
+      { "id": "b", "label": "LCD Panel" },
+      { "id": "c", "label": "Inverter" },
+      { "id": "d", "label": "RAM" }
+    ],
+    "correctOptionId": "c"
+  },
+  {
+    "id": "exam-itil-1",
+    "type": "mcq",
+    "prompt": "What is the primary goal of Incident Management?",
+    "domain": "ITIL Foundations",
+    "difficulty": "foundation",
+    "explanation": "Restoring service as quickly as possible is the main goal.",
+    "modelAnswer": "Restore service as quickly as possible.",
+    "commonMistakes": ["Finding root cause", "Preventing changes"],
+    "dcsContext": "In schools, classroom service restoration is the priority.",
+    "reviewSchedule": "Daily",
+    "recommendedModuleId": "itil-foundations-service-management",
+    "weakTopic": "rbc-professional-practice",
+    "options": [
+      { "id": "a", "label": "Eliminate root causes" },
+      { "id": "b", "label": "Restore normal service operation as quickly as possible" },
+      { "id": "c", "label": "Ensure all changes are recorded" },
+      { "id": "d", "label": "Minimize the impact of problems" }
+    ],
+    "correctOptionId": "b"
+  }
+]

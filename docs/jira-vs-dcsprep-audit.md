@@ -25,23 +25,19 @@ What does the app still fail to teach deeply enough for Josh's actual DCS suppor
 
 Current DCSPrep strengths:
 
-- 10 PD modules covering foundations, ports and protocols, DNS/DHCP/gateway, printers, classroom display/ViewBoard, M365 offboarding basics, MDM/Intune/Group Policy concepts, VLANs, cloud models, and ticket notes.
+- 20+ PD modules covering DCS workflow areas including foundations, ports/protocols, DNS/DHCP/gateway, printers, classroom display/ViewBoard, login/password, permissions, Teams/SharePoint/OneDrive, M365 offboarding, MDM/Intune/Group Policy, VLANs, cloud models, ticket notes, device imaging, Parent Portal, Sentral, OurDCS/Schoolbox, new user onboarding, website filtering, and iPad/Jamf basics.
 - Strict assessment foundation with confidence rating, explanation, risk judgement, scoring, error log, and spaced repetition.
-- 3 scenario chains:
-  - no internet in classroom
-  - staff offboarding and M365 access
-  - ViewBoard display issue
-- PD log, due review queue, readiness profiles, trainer guide, and settings/privacy reminders.
+- 19 scenario chains covering real DCS support situations like ViewBoard display issues, no internet in classroom, staff offboarding, printer queues, Wi-Fi issues, phishing, Parent Portal, Sentral, password lockouts, new user onboarding, camera/Windows Hello, and dashboard/log interpretation.
+- PD log, due review queue, readiness profiles, trainer guide, settings/privacy reminders, scheduler, usage insights, evidence pack, knowledge base lab, academic PD integration, and support tools.
 
 Current app limitations:
 
-- Only 3 full scenarios.
-- Strict question bank is still small and not yet ticket-volume aligned.
-- No dedicated coverage for several high-frequency real DCS enquiry themes.
-- No self-service article authoring or SOP-building track even though the Jira analysis strongly emphasizes deflection content.
-- Networking and identity are better represented than several routine school-service themes that appear more often in the ticket data.
-- The learning experience is still too content-led in places and not yet consistently retrieval-first.
-- The app is not yet organized around the real internal DCS workflow sources that likely sit in Sentral support material, OurDCS, Teams, paper-based SOPs, or staff induction resources.
+- Strict question bank could be expanded further for ticket-volume alignment.
+- Some advanced technical areas (deep Intune, Group Policy, VLAN rules) still need deepening.
+- Self-service article authoring in Knowledge Base Lab is present but could be more integrated with real deflection workflows.
+- Academic PD integration is in progress but not fully complete for all subjects.
+- Gamification now has local points, streaks, and badges; peer/social mechanics remain out of scope until there is a backend user model.
+- Offline capability now has a PWA manifest and app-shell service worker fallback; downloadable module/scenario packs, background sync, and push reminders remain open.
 
 ## Coverage Matrix
 

@@ -2,6 +2,8 @@
 
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
+import { requestNotificationPermission } from '../../src/lib/notifications';
+import { useAuth, type UserRole } from '../../src/contexts/AuthContext';
 import {
   defaultSchedulerSettings,
   loadSchedulerSettings,
@@ -23,12 +25,28 @@ export default function SettingsPage() {
   const [schedulerSaved, setSchedulerSaved] = useState(false);
   const [usageTrackingEnabled, setUsageTrackingState] = useState(true);
   const [usageEventCount, setUsageEventCount] = useState(0);
+  const [notificationPermission, setNotificationPermission] = useState<NotificationPermission | 'unsupported'>('default');
+  const { user, role, login, logout } = useAuth();
 
   useEffect(() => {
     setSchedulerSettings(loadSchedulerSettings());
     setUsageTrackingState(getUsageTrackingEnabled());
     setUsageEventCount(getUsageEvents().length);
+    if (!('Notification' in window)) {
+      setNotificationPermission('unsupported');
+    } else {
+      setNotificationPermission(Notification.permission);
+    }
   }, []);
+
+  async function handleRequestNotifications() {
+    const granted = await requestNotificationPermission();
+    if (granted) {
+      setNotificationPermission('granted');
+    } else {
+      setNotificationPermission(Notification.permission);
+    }
+  }
 
   function handleReset() {
     if (window.confirm('Reset all DCSPrep local progress and logs? This cannot be undone.')) {
@@ -101,6 +119,65 @@ export default function SettingsPage() {
 
   return (
     <div className="space-y-6">
+      <section className="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-sm">
+        <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+          <div>
+            <div className="text-sm font-semibold uppercase tracking-[0.2em] text-slate-500">Identity & Roles</div>
+            <h2 className="mt-3 text-2xl font-semibold text-slate-900">User Role (Mock RBAC)</h2>
+            <p className="mt-2 max-w-3xl text-sm leading-7 text-slate-600">
+              Select a role to see how the app adapts (e.g., restricted content or admin-only tools).
+            </p>
+            <p className="mt-2 text-sm text-slate-600">
+              Current Role: <span className="font-semibold text-slate-900 capitalize">{role}</span>
+            </p>
+          </div>
+          <div className="flex flex-wrap gap-3">
+            {(['learner', 'educator', 'admin'] as UserRole[]).map((r) => (
+              <button
+                key={r}
+                onClick={() => login(r)}
+                className={`rounded-full px-4 py-2 text-sm font-semibold transition-all ${
+                  role === r
+                    ? 'bg-slate-900 text-white'
+                    : 'border border-slate-200 bg-white text-slate-700'
+                }`}
+              >
+                {r.charAt(0).toUpperCase() + r.slice(1)}
+              </button>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section className="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-sm">
+        <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+          <div>
+            <div className="text-sm font-semibold uppercase tracking-[0.2em] text-slate-500">Notifications</div>
+            <h2 className="mt-3 text-2xl font-semibold text-slate-900">Push Notifications</h2>
+            <p className="mt-2 max-w-3xl text-sm leading-7 text-slate-600">
+              Enable notifications to receive reminders for due reviews, new modules, and certification milestones.
+            </p>
+            <p className="mt-2 text-sm text-slate-600">
+              Status: <span className="font-semibold text-slate-900 capitalize">{notificationPermission}</span>
+            </p>
+          </div>
+          <div className="flex flex-wrap gap-3">
+            <button
+              type="button"
+              onClick={handleRequestNotifications}
+              disabled={notificationPermission === 'granted' || notificationPermission === 'unsupported'}
+              className={`rounded-full px-4 py-2 text-sm font-semibold transition-all ${
+                notificationPermission === 'granted'
+                  ? 'bg-emerald-100 text-emerald-700 border border-emerald-200'
+                  : 'bg-slate-900 text-white'
+              } ${notificationPermission === 'unsupported' ? 'opacity-50 cursor-not-allowed' : ''}`}
+            >
+              {notificationPermission === 'granted' ? 'Notifications Enabled' : 'Enable Notifications'}
+            </button>
+          </div>
+        </div>
+      </section>
+
       <section className="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-sm">
         <div className="max-w-3xl">
           <div className="text-sm font-semibold uppercase tracking-[0.2em] text-slate-500">Settings</div>

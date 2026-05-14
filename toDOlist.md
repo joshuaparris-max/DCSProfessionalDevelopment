@@ -1078,8 +1078,9 @@ Features to move DCS Prep from a local tool to a professional-grade learning pla
 * [ ] **Soft Skills Integration (LinkedIn Learning style)**:
     * Add "Soft Skills for DCS Support" module covering empathy, de-escalation, and clear communication with staff/students.
 * [ ] **Gamified Reinforcement (Axonify/Sololearn style)**:
-    * Implement a "Daily Streak" counter on the dashboard.
-    * Add "Bite-Sized Daily Challenge" (a single 1-minute MCQ) that resets every 24 hours.
+    * [x] Implement a "Daily Streak" counter on the dashboard.
+    * [x] Add local-first points and task badges for completed learning work.
+    * [x] Add "Bite-Sized Daily Challenge" (a single 1-minute MCQ) that resets every 24 hours.
 * [ ] **Interactive Learning (Coursera/Sololearn style)**:
     * Add an "In-App Playground" for running basic Python snippets and HTML/CSS previews related to DCS tasks.
 * [ ] **Structured Learning Paths (O'Reilly/Udacity style)**:
