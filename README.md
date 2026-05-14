@@ -116,6 +116,8 @@ npm run build
 - `src/lib/readinessMath.ts` - readiness-profile calculations
 - `src/lib/scenarioReview.ts` - scenario note rubric and scenario-to-module revisit mappings
 - `src/lib/gamification.ts` - local-first points, streaks, and badge milestone calculations
+- `src/lib/offlineStorage.ts` - IndexedDB module download storage
+- `src/lib/notifications.ts` - notification permission and local reminder helpers
 - `src/components/pwa/ServiceWorkerRegistration.tsx` - production service worker registration for offline app-shell caching
 - `app/manifest.ts` - installable PWA manifest metadata
 - `public/sw.js` - service worker for app-shell precache and offline navigation fallback
@@ -127,7 +129,8 @@ Current audit and backlog documents:
 
 - [`docs/jira-vs-dcsprep-audit.md`](docs/jira-vs-dcsprep-audit.md)
 - [`docs/dcsprep-upskilling-roadmap.md`](docs/dcsprep-upskilling-roadmap.md)
-- [`TODO.md`](TODO.md)
+- [`docs/TODO.md`](docs/TODO.md)
+- [`docs/LeftToDo.md`](docs/LeftToDo.md)
 
 These documents map the app against the DCS Jira analysis, identify missing or shallow training areas, and define the next implementation priorities.
 

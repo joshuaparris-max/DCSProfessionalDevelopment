@@ -249,17 +249,19 @@ export function deriveGamificationState(
   options: GamificationOptions = {}
 ): GamificationState {
   const nowIso = options.nowIso ?? new Date().toISOString();
+  const previousBadges = previousState.badges ?? {};
+  const previousStickers = Array.isArray(previousState.stickers) ? previousState.stickers : [];
   const earnedBadgeIds = getBadgeDefinitions(progress, modules)
     .filter((badge) => badge.earned)
     .map((badge) => badge.id);
-  const badges = { ...previousState.badges };
+  const badges = { ...previousBadges };
 
   earnedBadgeIds.forEach((badgeId) => {
     badges[badgeId] = badges[badgeId] ?? { awardedAtIso: nowIso };
   });
 
   // Calculate Stickers
-  const stickers = [...previousState.stickers];
+  const stickers = [...previousStickers];
   const reflections = Object.values(progress.reflectionJournal || {});
   
   const addSticker = (id: string, label: string, emoji: string) => {

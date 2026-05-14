@@ -2801,7 +2801,10 @@ export const dcsWorkflowModules: TrainingModule[] = [
       { id: 'int-f2', front: 'What is Autopilot?', back: 'A collection of technologies used to set up and pre-configure new devices.' },
       { id: 'int-f3', front: 'Compliance Policy purpose?', back: 'Ensures devices meet security standards before accessing data.' },
       { id: 'int-f4', front: 'Remote Wipe vs Retire?', back: 'Wipe erases everything; Retire only removes school data and management.' },
-      { id: 'int-f5', front: 'Company Portal?', back: 'The app users use to enroll devices and install school-approved apps.' }
+      { id: 'int-f5', front: 'Company Portal?', back: 'The app users use to enroll devices and install school-approved apps.' },
+      { id: 'int-f6', front: 'What does Last check-in tell you?', back: 'Whether the device recently contacted Intune and can receive management commands.' },
+      { id: 'int-f7', front: 'What is a configuration profile?', back: 'A managed settings payload for Wi-Fi, certificates, security settings, or app behavior.' },
+      { id: 'int-f8', front: 'What should L1 avoid in Intune?', back: 'Changing broad policies, wiping devices, or retiring devices without explicit approval and evidence.' }
     ],
     quiz: [
       {
@@ -2840,6 +2843,45 @@ export const dcsWorkflowModules: TrainingModule[] = [
         weakTopic: 'endpoint-deployment',
         rubric: ['Encryption', 'Version', 'Password'],
         keywordHints: ['encryption', 'version', 'password']
+      },
+      {
+        type: 'order-steps',
+        id: 'int-q3',
+        prompt: 'Order a safe first-line check for an Autopilot enrollment failure.',
+        domain: 'Intune management',
+        difficulty: 'stretch',
+        explanation: 'Enrollment faults need evidence before policy changes.',
+        modelAnswer: 'Confirm device identity, network access, assigned profile, last error, then escalate with screenshots or error codes.',
+        commonMistakes: ['Wiping the device before checking assignment', 'Ignoring network and identity evidence'],
+        dcsContext: 'A clean handoff helps the endpoint owner decide whether the issue is device, assignment, or policy related.',
+        reviewSchedule,
+        recommendedModuleId: 'microsoft-intune-fundamentals',
+        weakTopic: 'endpoint-deployment',
+        steps: [
+          { id: 'identity', label: 'Confirm serial/device identity' },
+          { id: 'network', label: 'Confirm network can reach enrollment services' },
+          { id: 'profile', label: 'Check profile assignment or expected group' },
+          { id: 'error', label: 'Capture exact error and last check-in' },
+          { id: 'escalate', label: 'Escalate to endpoint owner' }
+        ],
+        correctOrder: ['identity', 'network', 'profile', 'error', 'escalate'],
+        rubric: ['Device identity first', 'Evidence before escalation', 'No risky policy change']
+      },
+      {
+        type: 'scenario-response',
+        id: 'int-q4',
+        prompt: 'A managed student laptop is non-compliant and blocked from a cloud app. Write the first-line escalation note.',
+        domain: 'Intune management',
+        difficulty: 'challenge',
+        explanation: 'Compliance issues should be described with scope and evidence, not guessed fixes.',
+        modelAnswer:
+          'Include device/user context, app affected, compliance message, last check-in if known, safe checks tried, impact, and request endpoint owner review policy/device state.',
+        commonMistakes: ['Promising policy changes', 'Leaving out the compliance message', 'Including sensitive data unnecessarily'],
+        dcsContext: 'Compliance blocks affect learning access and need privacy-safe, owner-ready evidence.',
+        reviewSchedule,
+        recommendedModuleId: 'microsoft-intune-fundamentals',
+        weakTopic: 'endpoint-deployment',
+        rubric: ['Device/user context', 'Compliance evidence', 'Owner-ready escalation']
       }
     ],
     scenarioPrompts: [
@@ -2918,7 +2960,11 @@ export const dcsWorkflowModules: TrainingModule[] = [
       { id: 'nist-f1', front: 'NIST 800-61?', back: 'Computer Security Incident Handling Guide.' },
       { id: 'nist-f2', front: 'Containment goal?', back: 'Stop the incident from spreading and causing more damage.' },
       { id: 'nist-f3', front: 'Preparation phase?', back: 'Building capacity to respond before an incident occurs.' },
-      { id: 'nist-f4', front: 'Ransomware?', back: 'Malware that encrypts files and demands payment for the key.' }
+      { id: 'nist-f4', front: 'Ransomware?', back: 'Malware that encrypts files and demands payment for the key.' },
+      { id: 'nist-f5', front: 'Detection and analysis means?', back: 'Identify indicators, confirm scope, preserve evidence, and avoid premature conclusions.' },
+      { id: 'nist-f6', front: 'Post-incident activity means?', back: 'Record lessons learned and improve controls, communication, and training.' },
+      { id: 'nist-f7', front: 'First phishing triage evidence?', back: 'Sender, subject, time received, link or attachment indicator, and who else received it.' },
+      { id: 'nist-f8', front: 'Privacy-safe incident note?', back: 'Describe impact and evidence without copying credentials, student data, or unnecessary personal details.' }
     ],
     quiz: [
       {
@@ -2941,6 +2987,66 @@ export const dcsWorkflowModules: TrainingModule[] = [
           { id: 'd', label: 'Containment' }
         ],
         correctOptionId: 'b'
+      },
+      {
+        type: 'mcq',
+        id: 'nist-q2',
+        prompt: 'A staff member reports a suspicious email with a link. What should Josh capture first?',
+        domain: 'Cybersecurity',
+        difficulty: 'foundation',
+        explanation: 'Phishing triage starts with evidence and scope.',
+        modelAnswer: 'Capture sender, subject, time received, link/attachment indicator, and whether other users received it.',
+        commonMistakes: ['Clicking the link to test it', 'Forwarding the email broadly', 'Deleting evidence immediately'],
+        dcsContext: 'Security owners need indicators and scope to block or investigate safely.',
+        reviewSchedule,
+        recommendedModuleId: 'cybersecurity-incident-response-nist',
+        weakTopic: 'security-risk-judgement',
+        options: [
+          { id: 'a', label: 'Click the link from a school device to see what happens' },
+          { id: 'b', label: 'Capture sender, subject, time, link/attachment indicator, and scope' },
+          { id: 'c', label: 'Delete the message and close the ticket' },
+          { id: 'd', label: 'Reply to the sender asking if it is real' }
+        ],
+        correctOptionId: 'b'
+      },
+      {
+        type: 'order-steps',
+        id: 'nist-q3',
+        prompt: 'Order the first response to suspected ransomware on a school PC.',
+        domain: 'Cybersecurity',
+        difficulty: 'stretch',
+        explanation: 'Containment and reporting come before normal troubleshooting.',
+        modelAnswer: 'Isolate device, preserve evidence, notify the right owner, capture scope, then follow recovery direction.',
+        commonMistakes: ['Running random cleanup tools first', 'Reconnecting to test', 'Letting the user keep working'],
+        dcsContext: 'Fast isolation protects shared resources and reduces blast radius.',
+        reviewSchedule,
+        recommendedModuleId: 'cybersecurity-incident-response-nist',
+        weakTopic: 'security-risk-judgement',
+        steps: [
+          { id: 'isolate', label: 'Isolate network connection' },
+          { id: 'preserve', label: 'Preserve screenshots and visible indicators' },
+          { id: 'notify', label: 'Notify security/IT owner immediately' },
+          { id: 'scope', label: 'Capture who/where/device/scope' },
+          { id: 'recover', label: 'Follow authorised recovery direction' }
+        ],
+        correctOrder: ['isolate', 'preserve', 'notify', 'scope', 'recover'],
+        rubric: ['Containment first', 'Evidence preserved', 'Owner notified']
+      },
+      {
+        type: 'scenario-response',
+        id: 'nist-q4',
+        prompt: 'Write a privacy-safe incident note for a suspected credential phishing email.',
+        domain: 'Cybersecurity',
+        difficulty: 'challenge',
+        explanation: 'Incident notes need useful indicators without spreading sensitive content.',
+        modelAnswer:
+          'Include reporter role, time received, sender/domain indicator, subject summary, link/attachment presence, whether credentials were entered if known, scope, and escalation request.',
+        commonMistakes: ['Pasting passwords or full sensitive message content', 'No scope', 'No escalation ask'],
+        dcsContext: 'Clean notes help security response without increasing exposure.',
+        reviewSchedule,
+        recommendedModuleId: 'cybersecurity-incident-response-nist',
+        weakTopic: 'security-risk-judgement',
+        rubric: ['Indicators included', 'Scope included', 'Privacy-safe wording']
       }
     ],
     scenarioPrompts: [
@@ -2987,6 +3093,12 @@ export const dcsWorkflowModules: TrainingModule[] = [
         id: 'a11y-2',
         title: 'Alt-Text and Contrast',
         bodyMarkdown: 'Alt-text provides a text description for images for screen readers. Color contrast ensures that text is readable against its background.'
+      },
+      {
+        id: 'a11y-3',
+        title: 'Keyboard and Plain-Language Support',
+        bodyMarkdown:
+          'Accessible classroom resources should work without a mouse, have visible focus states, use clear headings, and avoid relying on colour alone. First-line support should suggest practical improvements without collecting sensitive student details.'
       }
     ],
     interactiveLabs: [
@@ -3021,7 +3133,12 @@ export const dcsWorkflowModules: TrainingModule[] = [
     flashcards: [
       { id: 'a11y-f1', front: 'WCAG?', back: 'Web Content Accessibility Guidelines.' },
       { id: 'a11y-f2', front: 'POUR?', back: 'Perceivable, Operable, Understandable, Robust.' },
-      { id: 'a11y-f3', front: 'Alt-Text?', back: 'Text description of an image for accessibility.' }
+      { id: 'a11y-f3', front: 'Alt-Text?', back: 'Text description of an image for accessibility.' },
+      { id: 'a11y-f4', front: 'Colour contrast helps who?', back: 'Everyone, especially users with low vision, glare, tiredness, or poor display conditions.' },
+      { id: 'a11y-f5', front: 'Keyboard accessibility means?', back: 'A user can reach and operate content without needing a mouse.' },
+      { id: 'a11y-f6', front: 'Avoid colour-only meaning because?', back: 'Users may not perceive colour differences or may use assistive technology.' },
+      { id: 'a11y-f7', front: 'Privacy-safe accessibility note?', back: 'Describe functional need and impact without unnecessary disability or medical details.' },
+      { id: 'a11y-f8', front: 'Accessible headings help?', back: 'They make content easier to scan visually and easier to navigate with screen readers.' }
     ],
     quiz: [
       {
@@ -3044,9 +3161,75 @@ export const dcsWorkflowModules: TrainingModule[] = [
           { id: 'd', label: 'Robust' }
         ],
         correctOptionId: 'b'
+      },
+      {
+        type: 'mcq',
+        id: 'a11y-q2',
+        prompt: 'A slide uses red text alone to show urgent steps. What is the accessibility issue?',
+        domain: 'Accessibility',
+        difficulty: 'foundation',
+        explanation: 'Meaning should not rely on colour alone.',
+        modelAnswer: 'Add text labels, icons, ordering, or emphasis so the meaning is available without relying only on colour.',
+        commonMistakes: ['Only making the red brighter', 'Assuming all users perceive colour the same way'],
+        dcsContext: 'Classroom resources need to be readable across students, devices, and room conditions.',
+        reviewSchedule,
+        recommendedModuleId: 'accessibility-inclusive-design',
+        weakTopic: 'rbc-professional-practice',
+        options: [
+          { id: 'a', label: 'No issue if most users can see red' },
+          { id: 'b', label: 'Meaning relies on colour alone' },
+          { id: 'c', label: 'It is only a printing issue' },
+          { id: 'd', label: 'It only matters for websites, not slides' }
+        ],
+        correctOptionId: 'b'
+      },
+      {
+        type: 'order-steps',
+        id: 'a11y-q3',
+        prompt: 'Order a quick accessibility check for a classroom document.',
+        domain: 'Accessibility',
+        difficulty: 'stretch',
+        explanation: 'A simple sequence catches the highest-impact issues first.',
+        modelAnswer: 'Check headings, reading order, alt text, contrast, and keyboard or screen-reader friendliness.',
+        commonMistakes: ['Only checking spelling', 'Asking for personal student details first'],
+        dcsContext: 'A repeatable checklist gives teachers practical help without overstepping privacy.',
+        reviewSchedule,
+        recommendedModuleId: 'accessibility-inclusive-design',
+        weakTopic: 'rbc-professional-practice',
+        steps: [
+          { id: 'headings', label: 'Check headings and structure' },
+          { id: 'order', label: 'Check reading order' },
+          { id: 'alt', label: 'Check alt text for meaningful images' },
+          { id: 'contrast', label: 'Check colour contrast and colour-only meaning' },
+          { id: 'operate', label: 'Check keyboard or assistive access path' }
+        ],
+        correctOrder: ['headings', 'order', 'alt', 'contrast', 'operate'],
+        rubric: ['Structure first', 'Images covered', 'Contrast and operation covered']
+      },
+      {
+        type: 'scenario-response',
+        id: 'a11y-q4',
+        prompt: 'Write a tactful response to a teacher whose resource has low contrast and missing image descriptions.',
+        domain: 'Accessibility',
+        difficulty: 'challenge',
+        explanation: 'Accessibility support works best when it is practical and respectful.',
+        modelAnswer:
+          'Acknowledge the resource goal, explain the functional impact, suggest higher contrast and short image descriptions, and offer a quick checklist without asking for sensitive student details.',
+        commonMistakes: ['Criticising teaching style', 'Mentioning student disability details unnecessarily', 'Giving vague advice only'],
+        dcsContext: 'Support should improve inclusion while preserving trust with teaching staff.',
+        reviewSchedule,
+        recommendedModuleId: 'accessibility-inclusive-design',
+        weakTopic: 'rbc-professional-practice',
+        rubric: ['Respectful tone', 'Functional impact', 'Practical next steps']
       }
     ],
-    scenarioPrompts: [],
+    scenarioPrompts: [
+      {
+        id: 'a11y-s1',
+        title: 'Accessible slide deck review',
+        prompt: 'Review a classroom resource for contrast, alt text, headings, and privacy-safe support wording.'
+      }
+    ],
     practicalOutputs: [
       {
         id: 'a11y-p1',
@@ -3235,7 +3418,12 @@ export const dcsWorkflowModules: TrainingModule[] = [
     flashcards: [
       { id: 'itil-f1', front: 'ITIL?', back: 'Information Technology Infrastructure Library.' },
       { id: 'itil-f2', front: 'Incident?', back: 'Unplanned interruption to an IT service.' },
-      { id: 'itil-f3', front: 'Service Request?', back: 'Formal request for something new or changed.' }
+      { id: 'itil-f3', front: 'Service Request?', back: 'Formal request for something new or changed.' },
+      { id: 'itil-f4', front: 'Problem in ITIL?', back: 'The underlying cause of one or more incidents.' },
+      { id: 'itil-f5', front: 'Change management protects?', back: 'Service stability, teaching time, and predictable communication.' },
+      { id: 'itil-f6', front: 'Why classify request type?', back: 'It routes work to the right workflow, owner, expectation, and priority.' },
+      { id: 'itil-f7', front: 'Emergency change means?', back: 'A high-risk urgent change handled through an approved emergency path, not improvisation.' },
+      { id: 'itil-f8', front: 'Good service request note includes?', back: 'Requested item, business reason, approval/licensing status, timeframe, and owner.' }
     ],
     quiz: [
       {
@@ -3258,9 +3446,81 @@ export const dcsWorkflowModules: TrainingModule[] = [
           { id: 'd', label: 'Emergency Change' }
         ],
         correctOptionId: 'b'
+      },
+      {
+        type: 'mcq',
+        id: 'itil-q2',
+        prompt: 'A projector fails during class and teaching is blocked. What ITIL category best fits the initial ticket?',
+        domain: 'ITIL concepts',
+        difficulty: 'foundation',
+        explanation: 'An unplanned service interruption is an incident.',
+        modelAnswer: 'Incident',
+        commonMistakes: ['Treating it as a service request', 'Ignoring impact on teaching'],
+        dcsContext: 'Incident classification helps urgent classroom faults get the right priority.',
+        reviewSchedule,
+        recommendedModuleId: 'itil-foundations-service-management',
+        weakTopic: 'rbc-professional-practice',
+        options: [
+          { id: 'a', label: 'Incident' },
+          { id: 'b', label: 'Service Request' },
+          { id: 'c', label: 'Standard change' },
+          { id: 'd', label: 'Knowledge article' }
+        ],
+        correctOptionId: 'a'
+      },
+      {
+        type: 'order-steps',
+        id: 'itil-q3',
+        prompt: 'Order a safe service request intake for new classroom software.',
+        domain: 'ITIL concepts',
+        difficulty: 'stretch',
+        explanation: 'Service requests need approval and licensing clarity before installation.',
+        modelAnswer: 'Capture need, confirm licence/approval, check device/platform fit, identify owner, then schedule or escalate.',
+        commonMistakes: ['Installing before licence approval', 'Skipping owner and timing'],
+        dcsContext: 'Software requests can affect compliance, support load, and classroom readiness.',
+        reviewSchedule,
+        recommendedModuleId: 'itil-foundations-service-management',
+        weakTopic: 'rbc-professional-practice',
+        steps: [
+          { id: 'need', label: 'Capture teaching need and timeframe' },
+          { id: 'licence', label: 'Confirm licence or budget approval' },
+          { id: 'fit', label: 'Check platform/device requirements' },
+          { id: 'owner', label: 'Identify approval or system owner' },
+          { id: 'schedule', label: 'Schedule work or escalate' }
+        ],
+        correctOrder: ['need', 'licence', 'fit', 'owner', 'schedule'],
+        rubric: ['Need first', 'Approval/licence included', 'Owner-aware handoff']
+      },
+      {
+        type: 'scenario-response',
+        id: 'itil-q4',
+        prompt: 'Write a concise note that separates an incident from a related problem trend.',
+        domain: 'ITIL concepts',
+        difficulty: 'challenge',
+        explanation: 'Incident handling restores service; problem thinking identifies repeated root cause patterns.',
+        modelAnswer:
+          'State the immediate incident, impact and restoration action, then note repeated pattern, examples, scope, and request review for underlying cause.',
+        commonMistakes: ['Calling every repeated issue a problem without evidence', 'Skipping immediate service impact'],
+        dcsContext: 'Clear wording helps support restore class service while still spotting repeated faults.',
+        reviewSchedule,
+        recommendedModuleId: 'itil-foundations-service-management',
+        weakTopic: 'rbc-professional-practice',
+        rubric: ['Incident impact', 'Pattern evidence', 'Review request']
       }
     ],
-    scenarioPrompts: [],
-    practicalOutputs: []
+    scenarioPrompts: [
+      {
+        id: 'itil-s1',
+        title: 'Incident or request classification',
+        prompt: 'Classify a mixed inbox of classroom faults and software requests, then write the next action for each.'
+      }
+    ],
+    practicalOutputs: [
+      {
+        id: 'itil-p1',
+        title: 'Ticket classification cheat sheet',
+        description: 'Create a one-page guide for incident, service request, problem trend, and change language in school IT.'
+      }
+    ]
   }
 ];
