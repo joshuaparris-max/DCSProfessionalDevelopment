@@ -19,6 +19,7 @@ import { DailyChallenge } from '../src/components/DailyChallenge';
 import { StickersDisplay } from '../src/components/StickersDisplay';
 import { showNotification } from '../src/lib/notifications';
 import { ScheduleSuggestions } from '../src/components/ScheduleSuggestions';
+import { RecentChanges } from '../src/components/RecentChanges';
 
 function getMonthKey(date: Date) {
   return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
@@ -207,6 +208,8 @@ export default function HomePage() {
       </section>
 
       <DailyChallenge />
+
+      <RecentChanges />
 
       <section className="rounded-[2rem] border border-rose-100 bg-rose-50 p-6 shadow-sm">
         <div className="text-xs font-semibold uppercase tracking-[0.2em] text-rose-700">I&apos;m overwhelmed mode</div>
