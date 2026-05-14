@@ -2,7 +2,13 @@
 
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
-import { requestNotificationPermission, showNotification } from '../../src/lib/notifications';
+import {
+  getScheduledReviewReminders,
+  registerBackgroundSync,
+  requestNotificationPermission,
+  scheduleReviewReminder,
+  showNotification
+} from '../../src/lib/notifications';
 import { useAuth, type UserRole } from '../../src/contexts/AuthContext';
 import { ProgressBackup } from '../../src/components/ProgressBackup';
 import {
@@ -33,6 +39,8 @@ export default function SettingsPage() {
   const [usageTrackingEnabled, setUsageTrackingState] = useState(true);
   const [usageEventCount, setUsageEventCount] = useState(0);
   const [notificationPermission, setNotificationPermission] = useState<NotificationPermission | 'unsupported'>('default');
+  const [scheduledReminderCount, setScheduledReminderCount] = useState(0);
+  const [backgroundSyncStatus, setBackgroundSyncStatus] = useState<'idle' | 'registered' | 'unsupported' | 'failed'>('idle');
   const { user, role, login, logout } = useAuth();
   const [progress, setProgress] = useState<UserProgress | null>(null);
 
@@ -41,6 +49,7 @@ export default function SettingsPage() {
     setUsageTrackingState(getUsageTrackingEnabled());
     setUsageEventCount(getUsageEvents().length);
     setProgress(getStoredProgressSnapshot(modules));
+    setScheduledReminderCount(getScheduledReviewReminders().length);
     if (!('Notification' in window)) {
       setNotificationPermission('unsupported');
     } else {
@@ -62,6 +71,15 @@ export default function SettingsPage() {
       body: 'This is a test notification from DCSPrep.',
       tag: 'test-notification'
     });
+  }
+
+  function handleScheduleReminder() {
+    scheduleReviewReminder('Due review practice', 1);
+    setScheduledReminderCount(getScheduledReviewReminders().length);
+  }
+
+  async function handleRegisterBackgroundSync() {
+    setBackgroundSyncStatus(await registerBackgroundSync());
   }
 
   function handleRestore(newProgress: UserProgress) {
@@ -193,10 +211,15 @@ export default function SettingsPage() {
             <div className="text-sm font-semibold uppercase tracking-[0.2em] text-slate-500">Notifications</div>
             <h2 className="mt-3 text-2xl font-semibold text-slate-900">Push Notifications</h2>
             <p className="mt-2 max-w-3xl text-sm leading-7 text-slate-600">
-              Enable notifications to receive reminders for due reviews, new modules, and certification milestones.
+              Enable notifications for immediate browser reminders. Local review reminders are saved on this device;
+              true scheduled push for due reviews, new modules, and certification milestones needs a backend push service.
             </p>
             <p className="mt-2 text-sm text-slate-600">
               Status: <span className="font-semibold text-slate-900 capitalize">{notificationPermission}</span>
+            </p>
+            <p className="mt-1 text-sm text-slate-600">
+              Local reminders saved: <span className="font-semibold text-slate-900">{scheduledReminderCount}</span>.
+              Background sync: <span className="font-semibold text-slate-900">{backgroundSyncStatus}</span>.
             </p>
           </div>
           <div className="flex flex-wrap gap-3">
@@ -221,6 +244,20 @@ export default function SettingsPage() {
                 Send Test
               </button>
             )}
+            <button
+              type="button"
+              onClick={handleScheduleReminder}
+              className="rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700"
+            >
+              Save Local Reminder
+            </button>
+            <button
+              type="button"
+              onClick={handleRegisterBackgroundSync}
+              className="rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700"
+            >
+              Register Background Sync
+            </button>
           </div>
         </div>
       </section>

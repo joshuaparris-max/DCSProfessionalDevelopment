@@ -1,7 +1,30 @@
 const DB_NAME = 'DCSPrepOffline';
 const STORE_NAME = 'modules';
-const DB_VERSION = 1;
-const MAX_STORAGE_RETRIES = 3;
+const SCENARIO_STORE_NAME = 'scenarios';
+const ASSET_STORE_NAME = 'assets';
+const SYNC_QUEUE_STORE_NAME = 'syncQueue';
+const DB_VERSION = 2;
+
+export type OfflineAsset = {
+  id: string;
+  url: string;
+  contentType: string;
+  body: Blob;
+  cachedAtIso: string;
+};
+
+export type OfflineSyncQueueItem = {
+  id: string;
+  type: 'pd-log' | 'scenario-run' | 'assessment-attempt' | 'progress-backup';
+  payload: unknown;
+  createdAtIso: string;
+};
+
+function createStoreIfMissing(db: IDBDatabase, storeName: string, options?: IDBObjectStoreParameters) {
+  if (!db.objectStoreNames.contains(storeName)) {
+    db.createObjectStore(storeName, options);
+  }
+}
 
 export async function openDB() {
   return new Promise<IDBDatabase>((resolve, reject) => {
@@ -11,9 +34,10 @@ export async function openDB() {
       request.onsuccess = () => resolve(request.result);
       request.onupgradeneeded = (event) => {
         const db = (event.target as IDBOpenDBRequest).result;
-        if (!db.objectStoreNames.contains(STORE_NAME)) {
-          db.createObjectStore(STORE_NAME, { keyPath: 'id' });
-        }
+        createStoreIfMissing(db, STORE_NAME, { keyPath: 'id' });
+        createStoreIfMissing(db, SCENARIO_STORE_NAME, { keyPath: 'id' });
+        createStoreIfMissing(db, ASSET_STORE_NAME, { keyPath: 'id' });
+        createStoreIfMissing(db, SYNC_QUEUE_STORE_NAME, { keyPath: 'id' });
       };
     } catch (e) {
       reject(new Error('IndexedDB is not supported in this environment.'));
@@ -21,45 +45,91 @@ export async function openDB() {
   });
 }
 
-export async function saveModuleOffline(moduleData: any) {
-  const db = await openDB();
-  return new Promise<void>((resolve, reject) => {
-    const transaction = db.transaction(STORE_NAME, 'readwrite');
-    const store = transaction.objectStore(STORE_NAME);
-    
-    transaction.onabort = () => {
-      const error = transaction.error;
-      if (error && error.name === 'QuotaExceededError') {
-        reject(new Error('Storage quota exceeded. Please clear space or delete other offline modules.'));
-      } else {
-        reject(new Error('Transaction aborted: ' + (error?.message || 'Unknown error')));
-      }
-    };
+function putRecord<T>(storeName: string, record: T) {
+  return openDB().then(
+    (db) =>
+      new Promise<void>((resolve, reject) => {
+        const transaction = db.transaction(storeName, 'readwrite');
+        const store = transaction.objectStore(storeName);
 
-    const request = store.put(moduleData);
-    request.onerror = () => reject(new Error('Failed to save module data to local storage.'));
-    request.onsuccess = () => resolve();
-  });
+        transaction.onabort = () => {
+          const error = transaction.error;
+          if (error && error.name === 'QuotaExceededError') {
+            reject(new Error('Storage quota exceeded. Please clear space or delete other offline packs.'));
+          } else {
+            reject(new Error('Transaction aborted: ' + (error?.message || 'Unknown error')));
+          }
+        };
+
+        const request = store.put(record);
+        request.onerror = () => reject(new Error(`Failed to save record in ${storeName}.`));
+        request.onsuccess = () => resolve();
+      })
+  );
+}
+
+function getRecord<T>(storeName: string, id: string) {
+  return openDB().then(
+    (db) =>
+      new Promise<T | undefined>((resolve, reject) => {
+        const transaction = db.transaction(storeName, 'readonly');
+        const store = transaction.objectStore(storeName);
+        const request = store.get(id);
+        request.onerror = () => reject(request.error);
+        request.onsuccess = () => resolve(request.result as T | undefined);
+      })
+  );
+}
+
+function deleteRecord(storeName: string, id: string) {
+  return openDB().then(
+    (db) =>
+      new Promise<void>((resolve, reject) => {
+        const transaction = db.transaction(storeName, 'readwrite');
+        const store = transaction.objectStore(storeName);
+        const request = store.delete(id);
+        request.onerror = () => reject(request.error);
+        request.onsuccess = () => resolve();
+      })
+  );
+}
+
+export async function saveModuleOffline(moduleData: any) {
+  return putRecord(STORE_NAME, moduleData);
 }
 
 export async function getModuleOffline(moduleId: string) {
-  const db = await openDB();
-  return new Promise<any>((resolve, reject) => {
-    const transaction = db.transaction(STORE_NAME, 'readonly');
-    const store = transaction.objectStore(STORE_NAME);
-    const request = store.get(moduleId);
-    request.onerror = () => reject(request.error);
-    request.onsuccess = () => resolve(request.result);
-  });
+  return getRecord<any>(STORE_NAME, moduleId);
 }
 
 export async function removeModuleOffline(moduleId: string) {
-  const db = await openDB();
-  return new Promise<void>((resolve, reject) => {
-    const transaction = db.transaction(STORE_NAME, 'readwrite');
-    const store = transaction.objectStore(STORE_NAME);
-    const request = store.delete(moduleId);
-    request.onerror = () => reject(request.error);
-    request.onsuccess = () => resolve();
+  return deleteRecord(STORE_NAME, moduleId);
+}
+
+export async function saveScenarioPackOffline(scenarioData: any) {
+  return putRecord(SCENARIO_STORE_NAME, scenarioData);
+}
+
+export async function getScenarioPackOffline(scenarioId: string) {
+  return getRecord<any>(SCENARIO_STORE_NAME, scenarioId);
+}
+
+export async function removeScenarioPackOffline(scenarioId: string) {
+  return deleteRecord(SCENARIO_STORE_NAME, scenarioId);
+}
+
+export async function saveOfflineAsset(asset: OfflineAsset) {
+  return putRecord(ASSET_STORE_NAME, asset);
+}
+
+export async function getOfflineAsset(assetId: string) {
+  return getRecord<OfflineAsset>(ASSET_STORE_NAME, assetId);
+}
+
+export async function queueOfflineSync(item: Omit<OfflineSyncQueueItem, 'id' | 'createdAtIso'>) {
+  return putRecord(SYNC_QUEUE_STORE_NAME, {
+    ...item,
+    id: `${item.type}:${Date.now()}`,
+    createdAtIso: new Date().toISOString()
   });
 }

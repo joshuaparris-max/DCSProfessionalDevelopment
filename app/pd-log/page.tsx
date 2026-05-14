@@ -59,6 +59,14 @@ const templates = [
     resource: 'Personal SOP drafting',
     topic: 'Process improvement',
     learned: 'I converted an unclear support area into a cleaner checklist or quick-reference document.'
+  },
+  {
+    id: 'academic-pd',
+    label: 'Academic PD alignment',
+    resource: 'DCSPrep Academic PD',
+    topic: 'RBC/SMITB alignment',
+    learned:
+      'I converted an academic subject or SLG assessment task into informal, privacy-safe DCSPrep evidence without claiming formal credit.'
   }
 ];
 
@@ -198,6 +206,10 @@ export default function PdLogPage() {
           <p className="mt-3 text-sm leading-7 text-slate-600">
             Keep entries short, practical, and privacy-safe. This is evidence of learning progress, not a place to
             record confidential ticket detail.
+          </p>
+          <p className="mt-3 text-sm leading-7 text-slate-600">
+            RBC/SMITB entries should be described as informal academic alignment or PD evidence. Do not describe them as
+            university credit, certification, or official assessment completion unless that happened in the external system.
           </p>
         </div>
       </section>

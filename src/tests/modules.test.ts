@@ -72,6 +72,21 @@ describe('module catalogue', () => {
     });
   });
 
+  it('includes the advanced technical depth called out in the TODO docs', () => {
+    const modulesById = new Map(modules.map((module) => [module.id, module]));
+
+    expect(modulesById.get('m365-identity-offboarding-basics')?.sections.map((section) => section.id)).toContain(
+      'offboarding-4'
+    );
+    expect(modulesById.get('mdm-intune-group-policy-concepts')?.sections.map((section) => section.id)).toContain(
+      'mdm-4'
+    );
+    expect(modulesById.get('vlans-network-segmentation')?.sections.map((section) => section.id)).toContain('vlan-4');
+    expect(modulesById.get('cloud-models-saas-paas-iaas-daas')?.sections.map((section) => section.id)).toContain(
+      'cloud-4'
+    );
+  });
+
   it('keeps DCS workflow modules at full scored-practice depth', () => {
     const dcsWorkflowModuleIds = [
       'parent-portal-registration',

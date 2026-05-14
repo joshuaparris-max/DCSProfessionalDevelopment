@@ -1,8 +1,22 @@
 import { getMonthlyPdSummary } from './pdSummary';
-import type { UserProgress } from './progress';
+import type { PDLogEntry, UserProgress } from './progress';
+
+function hasAcademicAlignmentEvidence(entries: PDLogEntry[]) {
+  return entries.some((entry) => {
+    const text = `${entry.resource} ${entry.topic} ${entry.learned}`.toLowerCase();
+    return (
+      entry.templateId === 'academic-pd' ||
+      text.includes('rbc') ||
+      text.includes('smitb') ||
+      text.includes('academic pd') ||
+      entry.moduleIds?.some((moduleId) => moduleId.startsWith('rbc-') || moduleId.startsWith('smitb-'))
+    );
+  });
+}
 
 export function buildEvidencePackMarkdown(progress: UserProgress, monthKey: string) {
   const summary = getMonthlyPdSummary(progress, monthKey);
+  const includesAcademicAlignment = hasAcademicAlignmentEvidence(summary.entries);
 
   const settings = progress.evidencePackSettings ?? {
     includeCertificates: true,
@@ -22,6 +36,13 @@ export function buildEvidencePackMarkdown(progress: UserProgress, monthKey: stri
     `- Suggested next focus: ${summary.suggestedNextFocus}`,
     `- Include optional links: ${settings.includeLinks ? 'Yes' : 'No'}`,
     `- Include certificate references: ${settings.includeCertificates ? 'Yes' : 'No'}`,
+    `- Academic alignment evidence: ${includesAcademicAlignment ? 'Informal RBC/SMITB PD alignment included' : 'None logged this month'}`,
+    '',
+    '## Academic alignment note',
+    '',
+    includesAcademicAlignment
+      ? 'RBC/SMITB references in this export are informal DCSPrep professional-development alignment notes. They do not claim formal university credit, certification, or official assessment completion unless separately evidenced in the external academic system.'
+      : 'No RBC/SMITB academic-alignment entries were detected for this export period.',
     '',
     '## Entry summary',
     ''

@@ -1,4 +1,4 @@
-const CACHE_NAME = 'dcsprep-app-shell-v1';
+const CACHE_NAME = 'dcsprep-app-shell-v2';
 const APP_SHELL_URLS = [
   '/',
   '/modules',
@@ -64,6 +64,49 @@ self.addEventListener('fetch', (event) => {
         caches.open(CACHE_NAME).then((cache) => cache.put(request, responseToCache));
         return networkResponse;
       });
+    })
+  );
+});
+
+self.addEventListener('sync', (event) => {
+  if (event.tag !== 'dcsprep-progress-sync') {
+    return;
+  }
+
+  event.waitUntil(
+    self.clients.matchAll({ type: 'window' }).then((clients) => {
+      clients.forEach((client) => {
+        client.postMessage({
+          type: 'DCSPREP_BACKGROUND_SYNC_READY',
+          message: 'A queued DCSPrep sync can run when a backend endpoint is configured.'
+        });
+      });
+    })
+  );
+});
+
+self.addEventListener('push', (event) => {
+  let payload = {
+    title: 'DCSPrep reminder',
+    body: 'A scheduled review is ready.',
+    tag: 'dcsprep-review-reminder'
+  };
+
+  if (event.data) {
+    try {
+      payload = { ...payload, ...event.data.json() };
+    } catch {
+      payload.body = event.data.text();
+    }
+  }
+
+  event.waitUntil(
+    self.registration.showNotification(payload.title, {
+      body: payload.body,
+      tag: payload.tag,
+      icon: '/icon.svg',
+      badge: '/icon.svg',
+      data: payload.data ?? {}
     })
   );
 });

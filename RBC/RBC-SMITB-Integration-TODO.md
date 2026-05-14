@@ -91,7 +91,7 @@ This file lists the work needed to integrate the RBC and SMITB content from `DCS
   - Scripting and code-reading literacy from CSE1PE and CSE1OOF.
   - Professional responsibility and reflective practice from CSE3PE.
   - Cloud and AI awareness from CSE4002 and CSE5006.
-- [ ] Add second-wave modules or module sections for:
+- [x] Add second-wave modules or module sections for:
   - Data literacy from STA1DCT.
   - Information systems and SDLC from CSE1IS.
   - Big-data/cloud context from CSE5BDC.
@@ -107,7 +107,7 @@ This file lists the work needed to integrate the RBC and SMITB content from `DCS
   - privacy-safe evidence notes;
   - AI/vendor-claim evaluation notes;
   - cloud-service dependency maps.
-- [ ] Avoid duplicating existing A+ modules unless the RBC/SMITB alignment adds a clear new angle.
+- [x] Avoid duplicating existing A+ modules unless the RBC/SMITB alignment adds a clear new angle.
 
 ## 5. Scenario content
 
@@ -119,7 +119,7 @@ This file lists the work needed to integrate the RBC and SMITB content from `DCS
   - SaaS/cloud service outage or dependency mapping linked to CSE5006/CSE5BDC.
   - AI tool gives a wrong or risky answer linked to CSE4002/CSE5NLP/CSE5ML.
   - privacy or ethical dilemma linked to CSE3PE.
-- [ ] Create first-pass scenarios for:
+- [x] Create first-pass scenarios for:
   - camera/Windows Hello/accessibility feature issue linked to CSE5CV.
   - dashboard/log interpretation linked to STA1DCT.
 
@@ -146,7 +146,7 @@ _Added complementary DCS workflow scenarios in `src/data/scenarios.ts` (HDMI aud
   - multiple-choice questions for quick correctness checks.
   - written/long-form prompts with model answers and rubric guidance.
   - live LLM feedback on text responses where the app can judge correctness and suggest improvements.
-- [ ] Add questions for:
+- [x] Add questions for:
   - cybersecurity regulations/standards and practical safeguards.
   - network and endpoint fundamentals.
   - script sequence/selection/iteration reasoning.
@@ -179,11 +179,11 @@ _Added complementary DCS workflow scenarios in `src/data/scenarios.ts` (HDMI aud
 
 ## 8. Evidence pack and PD log integration
 
-- [ ] Decide how RBC/SMITB learning should appear in `app/pd-log/page.tsx`.
-- [ ] Decide how completed RBC/SMITB modules should appear in `app/evidence-pack/page.tsx`.
-- [ ] Add evidence-pack wording for academic-alignment claims without overstating formal credit or certification.
-- [ ] Include reflective prompts for CSE3PE-aligned professional practice.
-- [ ] Ensure privacy-safe language for school data, student information, screenshots, ticket notes, and AI-tool examples.
+- [x] Decide how RBC/SMITB learning should appear in `app/pd-log/page.tsx`.
+- [x] Decide how completed RBC/SMITB modules should appear in `app/evidence-pack/page.tsx`.
+- [x] Add evidence-pack wording for academic-alignment claims without overstating formal credit or certification.
+- [x] Include reflective prompts for CSE3PE-aligned professional practice.
+- [x] Ensure privacy-safe language for school data, student information, screenshots, ticket notes, and AI-tool examples.
 
 ## 8A. Academic PD weekly subject boxes
 
@@ -196,9 +196,11 @@ _Added complementary DCS workflow scenarios in `src/data/scenarios.ts` (HDMI aud
 - [x] Add the 24-week Academic PD implementation roadmap to `/academic-pd`.
 - [x] Add Academic PD to app navigation.
 - [ ] Add exact weekly SLG topic rows for CSE1IIT once the full week-by-week rows are available.
-- [ ] Add exact weekly SLG topic rows for CSE1ICB, STA1DCT, CSE1OOF, CSE1IS, and CSE3PE where the source has enough detail.
-- [ ] Add exact weekly/topic boxes for SMITB subjects after confirming which subjects are actively taught at Bendigo.
+- [x] Add exact weekly SLG topic rows for CSE1ICB, STA1DCT, CSE1OOF, CSE1IS, and CSE3PE where the source has enough detail.
+- [x] Add exact weekly/topic boxes for SMITB subjects after confirming which subjects are actively taught at Bendigo.
 - [ ] Add richer resource sets for each non-CSE1PE subject.
+
+_Latest pass: where exact weekly rows were not present in the extracted source, the app now uses assessment-driven topic boxes from official SLG assessment rows rather than inventing unsupported week-by-week content._
 
 ## 8B. SLG assessment and feedback summary integration
 
@@ -209,14 +211,14 @@ _Added complementary DCS workflow scenarios in `src/data/scenarios.ts` (HDMI aud
 - [x] Attach SLG assessment summaries to existing Academic PD subject pages.
 - [x] Render official SLG assessment plans on `/academic-pd/subjects/[subjectCode]`.
 - [x] Render a full assessment-summary map on `/academic-pd`, including subjects that do not yet have full subject pages.
-- [ ] Add full Academic PD subject pages for CSE1OOF and SMITB subjects so their extracted assessment summaries are not overview-only.
-- [ ] Add per-assessment interactive practice questions for each extracted SLG assessment task.
+- [x] Add full Academic PD subject pages for CSE1OOF and SMITB subjects so their extracted assessment summaries are not overview-only.
+- [x] Add per-assessment interactive practice questions for each extracted SLG assessment task.
 
 ## 9. Testing and validation
 
 - [x] Update existing tests or add new tests under `src/tests/`. _(Added scenario catalogue/revisit tests and broader recommended-module validation.)_
 - [x] Run module data validation tests after adding modules.
-- [ ] Add tests for any extended type/schema assumptions.
+- [x] Add tests for any extended type/schema assumptions.
 - [x] Validate that every new module has:
   - unique ID;
   - title;

@@ -58,6 +58,14 @@ describe('manager-safe markdown exports', () => {
     expect(markdown).toContain('- **Evidence:** https://example.com/reflection');
   });
 
+  it('labels RBC and SMITB evidence as informal academic alignment', () => {
+    const markdown = buildEvidencePackMarkdown(progressBase, monthKey);
+
+    expect(markdown).toContain('- Academic alignment evidence: Informal RBC/SMITB PD alignment included');
+    expect(markdown).toContain('RBC/SMITB references in this export are informal DCSPrep professional-development alignment notes.');
+    expect(markdown).toContain('do not claim formal university credit, certification, or official assessment completion');
+  });
+
   it('omits raw evidence links when includeLinks is disabled', () => {
     const progressWithoutLinks = {
       ...progressBase,

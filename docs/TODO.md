@@ -58,10 +58,10 @@
 
 ## P1: Deeper Technical Judgement
 
-- [ ] Deepen M365 / Entra / Intune content with sign-in blocking, session revocation, sign-in logs, MFA, shared mailbox cleanup, and managed mobile retire/wipe concepts.
-- [ ] Deepen Group Policy content with startup, sign-in, background refresh, OU placement, security filtering, drive mapping, and printer deployment.
-- [ ] Deepen VLAN content with source-destination allow/block rule writing and guest-internet-only designs.
-- [ ] Deepen cloud content with DaaS / hosted-desktop school scenarios and BYOD trade-off reasoning.
+- [x] Deepen M365 / Entra / Intune content with sign-in blocking, session revocation, sign-in logs, MFA, shared mailbox cleanup, and managed mobile retire/wipe concepts.
+- [x] Deepen Group Policy content with startup, sign-in, background refresh, OU placement, security filtering, drive mapping, and printer deployment.
+- [x] Deepen VLAN content with source-destination allow/block rule writing and guest-internet-only designs.
+- [x] Deepen cloud content with DaaS / hosted-desktop school scenarios and BYOD trade-off reasoning.
 - [x] Add `Device Imaging and Deployment Workflows` module covering imaging vs provisioning, reference builds, driver/app readiness, rollout evidence, and Level 1-safe deployment handoff.
 
 ## P2: Support-Quality Outputs

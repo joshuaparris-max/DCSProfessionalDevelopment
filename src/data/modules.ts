@@ -1001,6 +1001,11 @@ export const modules: TrainingModule[] = [
         id: 'offboarding-3',
         title: 'The Level 1 posture',
         bodyMarkdown: `Level 1 should gather the facts, confirm the business need, note the current symptom, and hand off cleanly.\n\nNever treat identity actions as casual tasks. Poor sequencing can create privacy, access, and continuity problems.`
+      },
+      {
+        id: 'offboarding-4',
+        title: 'Sign-in logs, MFA, and session revocation language',
+        bodyMarkdown: `Advanced identity work usually needs authorised Entra or M365 access, but Josh can still use the right evidence language. Useful escalation details include the affected account, timestamp, app, device, location context, MFA symptom, and whether the issue is active or historical.\n\nSession revocation, blocking sign-in, MFA method cleanup, and shared mailbox ownership are authorised-owner actions. Level 1 should capture the risk and ask for review rather than performing or promising the change.`
       }
     ],
     flashcards: [
@@ -1011,7 +1016,9 @@ export const modules: TrainingModule[] = [
       { id: 'offboarding-f5', front: 'Why does sequencing matter in offboarding?', back: 'The wrong order can leave access, privacy, or continuity gaps.' },
       { id: 'offboarding-f6', front: 'What kind of detail belongs in an offboarding note?', back: 'Requested change, current symptom, urgency, and any visible account state.' },
       { id: 'offboarding-f7', front: 'What is the risk of vague wording like "delete the account"?', back: 'It hides the actual business need and can cause unsafe actions.' },
-      { id: 'offboarding-f8', front: 'What should a good Level 1 question ask first?', back: 'What is the requested outcome and who has approved it?' }
+      { id: 'offboarding-f8', front: 'What should a good Level 1 question ask first?', back: 'What is the requested outcome and who has approved it?' },
+      { id: 'offboarding-f9', front: 'What does session revocation do?', back: 'It invalidates active sign-in sessions so users must authenticate again.' },
+      { id: 'offboarding-f10', front: 'What should sign-in log evidence include?', back: 'Timestamp, app, account, device/location context, and observed MFA or risk signal.' }
     ],
     quiz: [
       mcq({
@@ -1087,6 +1094,21 @@ export const modules: TrainingModule[] = [
         recommendedModuleId: 'm365-identity-offboarding-basics',
         weakTopic: 'security-risk-judgement',
         rubric: ['Clarifies the business need', 'Names the risks', 'Stays inside Level 1 authority']
+      }),
+      scenarioResponse({
+        id: 'offboarding-q5',
+        prompt: 'A leader asks whether a former staff member still has active sessions, MFA methods, and shared mailbox access. Write the Level 1-safe escalation.',
+        domain: 'M365 offboarding',
+        difficulty: 'challenge',
+        explanation: 'Advanced identity checks should be requested with exact evidence and clear owner boundaries.',
+        modelAnswer:
+          'Record the account, request source, timing, and visible concern, then ask the authorised identity owner to review sign-in status, revoke sessions if appropriate, block sign-in if approved, review MFA methods, and confirm shared mailbox or file ownership continuity.',
+        commonMistakes: ['Promising to revoke sessions personally', 'Forgetting shared mailbox or file ownership', 'Leaving out timing and approval context'],
+        dcsContext: 'This keeps identity security work traceable without overstepping Level 1 authority.',
+        reviewSchedule,
+        recommendedModuleId: 'm365-identity-offboarding-basics',
+        weakTopic: 'offboarding-sequence',
+        rubric: ['Names authorised owner actions', 'Captures timing and approval context', 'Mentions access and continuity']
       })
     ],
     scenarioPrompts: [
@@ -1138,6 +1160,11 @@ export const modules: TrainingModule[] = [
         id: 'mdm-3',
         title: 'Level 1 value without pretending admin access',
         bodyMarkdown: `Josh does not need tenant-level control to benefit from these concepts.\n\nHe needs enough understanding to explain why a managed iPad, a staff laptop, and a domain-shaped Windows device may behave differently, and to escalate using the right language.`
+      },
+      {
+        id: 'mdm-4',
+        title: 'Group Policy refresh and targeting basics',
+        bodyMarkdown: `Group Policy behaviour depends on scope and timing. Startup policies apply as the device boots, sign-in policies apply as the user logs in, and background refresh may update policy later. OU placement, security filtering, and group membership decide who or what should receive a setting.\n\nFor printers and mapped drives, capture whether the problem follows the user, the device, the room, or the network path. That tells the owner whether to look at targeting, refresh, or the deployment method.`
       }
     ],
     flashcards: [
@@ -1148,7 +1175,9 @@ export const modules: TrainingModule[] = [
       { id: 'mdm-f5', front: 'Does policy behavior stay identical across all device types?', back: 'No. Device ownership and management paths change the result.' },
       { id: 'mdm-f6', front: 'Why is "just change the setting" weak thinking?', back: 'Because the setting may be centrally enforced by policy or management.' },
       { id: 'mdm-f7', front: 'What kind of devices often use MDM thinking strongly?', back: 'Cloud-managed laptops, mobiles, and tablets.' },
-      { id: 'mdm-f8', front: 'What should Josh avoid assuming about a device?', back: 'That he personally owns its management path or policy authority.' }
+      { id: 'mdm-f8', front: 'What should Josh avoid assuming about a device?', back: 'That he personally owns its management path or policy authority.' },
+      { id: 'mdm-f9', front: 'What can affect Group Policy targeting?', back: 'OU placement, security filtering, linked policy scope, and group membership.' },
+      { id: 'mdm-f10', front: 'Mapped drive or printer issue follows the user means?', back: 'User targeting or membership may matter more than the physical device.' }
     ],
     quiz: [
       mcq({
@@ -1224,6 +1253,21 @@ export const modules: TrainingModule[] = [
         recommendedModuleId: 'mdm-intune-group-policy-concepts',
         weakTopic: 'security-risk-judgement',
         rubric: ['Names management context', 'Declines unsafe workaround', 'Captures the real need']
+      }),
+      scenarioResponse({
+        id: 'mdm-q5',
+        prompt: 'A mapped drive appears for one staff member but not another in the same room. Write the Group Policy evidence Josh should capture.',
+        domain: 'MDM and Group Policy',
+        difficulty: 'challenge',
+        explanation: 'Drive mapping often depends on user targeting, group membership, and refresh state.',
+        modelAnswer:
+          'Capture affected users, device names, room, sign-in timing, whether a restart/sign-out was tried, whether the drive appears on another device, and any known role/group difference. Escalate as a targeting or policy-refresh check rather than manually mapping drives.',
+        commonMistakes: ['Manually mapping the drive without approval', 'Ignoring whether it follows the user', 'Not capturing timing after sign-in'],
+        dcsContext: 'Clean evidence helps the owner check OU, group, and security filtering without repeated questions.',
+        reviewSchedule,
+        recommendedModuleId: 'mdm-intune-group-policy-concepts',
+        weakTopic: 'mdm-group-policy',
+        rubric: ['Captures user/device pattern', 'Mentions refresh/sign-in timing', 'Avoids manual workaround']
       })
     ],
     scenarioPrompts: [
@@ -1275,6 +1319,11 @@ export const modules: TrainingModule[] = [
         id: 'vlan-3',
         title: 'What Level 1 should and should not do',
         bodyMarkdown: `Level 1 can recognise when a path may be intentionally blocked, confirm the network context, and escalate with the right request.\n\nLevel 1 should not invent ad hoc bypasses around security design.`
+      },
+      {
+        id: 'vlan-4',
+        title: 'Writing source-to-destination rules safely',
+        bodyMarkdown: `A rule request should be written as source, destination, service, reason, and risk. For example: guest Wi-Fi clients to internet DNS/HTTPS is different from guest Wi-Fi clients to internal printers or admin systems.\n\nDo not write "open access" requests. Write the narrow business need, expected duration, affected group, and why the path is required.`
       }
     ],
     flashcards: [
@@ -1285,7 +1334,9 @@ export const modules: TrainingModule[] = [
       { id: 'vlan-f5', front: 'Why is segmentation useful in schools?', back: 'It reduces risk and keeps different users and services appropriately separated.' },
       { id: 'vlan-f6', front: 'What is the first fact to confirm in a segmentation complaint?', back: 'Which network or SSID the device is actually using.' },
       { id: 'vlan-f7', front: 'What value does plain-English allow/block thinking add?', back: 'It makes escalation requests clearer and safer.' },
-      { id: 'vlan-f8', front: 'What is a risky habit in segmentation issues?', back: 'Treating blocked access as a bug without checking design intent.' }
+      { id: 'vlan-f8', front: 'What is a risky habit in segmentation issues?', back: 'Treating blocked access as a bug without checking design intent.' },
+      { id: 'vlan-f9', front: 'What five fields make a firewall rule request clearer?', back: 'Source, destination, service/port, reason, and risk or duration.' },
+      { id: 'vlan-f10', front: 'Guest-internet-only design means?', back: 'Guest devices can reach the internet but not internal school services.' }
     ],
     quiz: [
       mcq({
@@ -1361,6 +1412,21 @@ export const modules: TrainingModule[] = [
         recommendedModuleId: 'vlans-network-segmentation',
         weakTopic: 'security-risk-judgement',
         rubric: ['Recognises design intent', 'Captures the need clearly', 'Avoids unauthorised changes']
+      }),
+      scenarioResponse({
+        id: 'vlan-q5',
+        prompt: 'Write a narrow rule request for guest Wi-Fi devices that need internet-only access during a parent event.',
+        domain: 'VLAN and segmentation',
+        difficulty: 'challenge',
+        explanation: 'Good requests are narrow and describe the business path without bypassing internal controls.',
+        modelAnswer:
+          'Source: guest Wi-Fi event devices. Destination: internet only. Services: normal web/DNS as approved. Reason: parent event access. Explicitly state no internal printer, admin, file, or staff network access is required, and include the event timing.',
+        commonMistakes: ['Asking to open guest access to internal networks', 'Leaving out duration', 'Not naming source and destination'],
+        dcsContext: 'This keeps event support useful while preserving segmentation intent.',
+        reviewSchedule,
+        recommendedModuleId: 'vlans-network-segmentation',
+        weakTopic: 'vlan-firewall-rules',
+        rubric: ['Names source and destination', 'Limits access to internet-only', 'Includes reason and timing']
       })
     ],
     scenarioPrompts: [
@@ -1412,6 +1478,11 @@ export const modules: TrainingModule[] = [
         id: 'cloud-3',
         title: 'School examples without overclaiming',
         bodyMarkdown: `Use the model to reason, not to bluff. M365 and Teams are strong SaaS examples. Hosted desktops can fit DaaS thinking. Some school systems may hide deeper IaaS or platform layers, but Josh does not need to pretend he administers them to understand the shape.`
+      },
+      {
+        id: 'cloud-4',
+        title: 'DaaS, hosted desktops, and BYOD trade-offs',
+        bodyMarkdown: `Hosted desktops and DaaS can make unmanaged or low-spec devices more useful by moving the working desktop into a managed environment. The trade-off is dependency: identity, network quality, latency, licensing, peripheral redirection, and data handling all become part of the support story.\n\nFor BYOD, the key question is what stays on the personal device and what stays inside the hosted environment. That distinction shapes privacy, support boundaries, and escalation.`
       }
     ],
     flashcards: [
@@ -1422,7 +1493,9 @@ export const modules: TrainingModule[] = [
       { id: 'cloud-f5', front: 'What does DaaS usually provide?', back: 'A desktop-style environment delivered as a service.' },
       { id: 'cloud-f6', front: 'Why is M365 usually taught as SaaS first?', back: 'Because Josh mostly consumes the application and service layer.' },
       { id: 'cloud-f7', front: 'What risk comes from calling every online issue "cloud is broken"?', back: 'It hides the real layer and weakens diagnosis.' },
-      { id: 'cloud-f8', front: 'Why should Josh know cloud models if he is Level 1?', back: 'They improve support language and escalation routing.' }
+      { id: 'cloud-f8', front: 'Why should Josh know cloud models if he is Level 1?', back: 'They improve support language and escalation routing.' },
+      { id: 'cloud-f9', front: 'DaaS support depends heavily on?', back: 'Identity, network quality, latency, licensing, and peripheral redirection.' },
+      { id: 'cloud-f10', front: 'BYOD plus hosted desktop key privacy question?', back: 'What data stays on the personal device versus inside the managed hosted environment.' }
     ],
     quiz: [
       mcq({
@@ -1497,6 +1570,21 @@ export const modules: TrainingModule[] = [
         recommendedModuleId: 'cloud-models-saas-paas-iaas-daas',
         weakTopic: 'ticket-quality',
         rubric: ['Clarifies the service', 'Separates symptom from label', 'Shows useful support posture']
+      }),
+      scenarioResponse({
+        id: 'cloud-q5',
+        prompt: 'A BYOD user can open a hosted desktop but printing and webcam redirection fail. Explain the DaaS support reasoning.',
+        domain: 'Cloud models',
+        difficulty: 'challenge',
+        explanation: 'Hosted desktop symptoms often sit between endpoint, network, identity, and remote-session layers.',
+        modelAnswer:
+          'Separate hosted desktop access from peripheral redirection. Capture device type, browser/client, network, session time, whether the hosted desktop itself works, and which redirected device fails. Escalate as a DaaS/session-peripheral issue rather than treating the whole cloud service as down.',
+        commonMistakes: ['Calling it a full outage', 'Ignoring BYOD/client limitations', 'Skipping peripheral details'],
+        dcsContext: 'BYOD hosted access can work while local peripherals still need a different support path.',
+        reviewSchedule,
+        recommendedModuleId: 'cloud-models-saas-paas-iaas-daas',
+        weakTopic: 'cloud-models',
+        rubric: ['Separates access from peripheral redirection', 'Captures endpoint and session evidence', 'Avoids overclaiming outage']
       })
     ],
     scenarioPrompts: [

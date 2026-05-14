@@ -395,14 +395,15 @@ These match the still-open section in [docs/TODO.md](</c:/DCSPrepPD/DCSPrepApp (
 
 **Academic PD / RBC Work Left**
 
-Most RBC/SMITB integration is done, but the RBC TODO still has real open items:
+Most RBC/SMITB integration is done. The latest completion pass closed the app-side academic alignment items:
 
-- Decide exactly how RBC/SMITB learning appears in PD Log and Evidence Pack.
-- Add academic-alignment wording without overstating formal credit.
-- Add exact weekly SLG rows for more subjects where source data exists.
-- Add full subject pages for CSE1OOF and SMITB subjects.
-- Add per-assessment interactive practice questions.
-- Add validation tests for extended academic metadata.
+- RBC/SMITB learning appears in PD Log through an academic-alignment template.
+- Evidence Pack includes informal academic-alignment wording without overstating formal credit.
+- CSE1OOF and SMITB subjects now have full Academic PD pages.
+- Extracted SLG assessment tasks now create per-assessment DCSPrep practice.
+- Tests cover the extended academic subject/page assumptions.
+
+Remaining academic work should be limited to richer resource sets and exact weekly rows only where the source material actually contains enough week-by-week detail.
 
 Source: [RBC-SMITB-Integration-TODO.md](</c:/DCSPrepPD/DCSPrepApp (2)/DCSPrepApp/RBC/RBC-SMITB-Integration-TODO.md:118>).
 

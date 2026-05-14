@@ -57,6 +57,21 @@ const MOCK_CHALLENGES: Challenge[] = [
   }
 ];
 
+const BACKEND_REQUIREMENTS = [
+  {
+    label: 'Authentication',
+    detail: 'Real staff identity, team membership, and permission checks instead of browser-only role simulation.'
+  },
+  {
+    label: 'Shared progress API',
+    detail: 'Server-side writes for challenge joins, weekly scores, peer feedback, and audit-safe leaderboard updates.'
+  },
+  {
+    label: 'Privacy controls',
+    detail: 'Rules that prevent student, parent, credential, ticket, or sensitive school details from entering social feeds.'
+  }
+];
+
 export default function TeamChallengesPage() {
   const [selectedTeam, setSelectedTeam] = useState<string | null>(null);
   const [userPoints, setUserPoints] = useState(0);
@@ -85,6 +100,30 @@ export default function TeamChallengesPage() {
         <div className="mt-4 p-4 rounded-2xl bg-slate-50 border border-slate-200 text-xs text-slate-500 italic">
           <strong>Implementation Note:</strong> This page currently displays simulated peer data. 
           A persistent backend (e.g., Supabase or Firebase) is required to sync real progress between staff members.
+        </div>
+      </section>
+
+      <section className="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-sm">
+        <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+          <div>
+            <div className="text-sm font-semibold uppercase tracking-[0.2em] text-slate-500">Backend Boundary</div>
+            <h2 className="mt-3 text-2xl font-semibold text-slate-900">What real team sync still needs</h2>
+            <p className="mt-2 max-w-3xl text-sm leading-7 text-slate-600">
+              Local progress can power personal practice, but real multi-user leaderboards need hosted storage and
+              server-side rules before they should be used with staff teams.
+            </p>
+          </div>
+          <span className="rounded-full border border-amber-200 bg-amber-50 px-4 py-2 text-xs font-semibold uppercase tracking-[0.14em] text-amber-800">
+            Backend required
+          </span>
+        </div>
+        <div className="mt-5 grid gap-3 md:grid-cols-3">
+          {BACKEND_REQUIREMENTS.map((requirement) => (
+            <div key={requirement.label} className="rounded-3xl bg-slate-50 p-4">
+              <h3 className="text-sm font-semibold text-slate-900">{requirement.label}</h3>
+              <p className="mt-2 text-xs leading-6 text-slate-600">{requirement.detail}</p>
+            </div>
+          ))}
         </div>
       </section>
 

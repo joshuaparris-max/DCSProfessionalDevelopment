@@ -2,7 +2,308 @@ import type { AcademicSubject } from '../types/academic';
 import { academicAssessmentSummaries } from './academicAssessmentSummaries';
 import { academicSubjectAssessments } from './academicSubjectAssessments';
 
-export const academicSubjects: AcademicSubject[] = [
+const generatedAcademicSubjectConfigs: Record<
+  string,
+  {
+    title: string;
+    track: AcademicSubject['track'];
+    yearLevel: string;
+    summary: string;
+    dcsArea: AcademicSubject['dcsBridges'][number]['dcsArea'];
+    relatedDcsModuleIds: string[];
+    practicalOutput: string;
+    focusLabel: string;
+  }
+> = {
+  cse1oof: {
+    title: 'Office Software Fundamentals',
+    track: 'RBC',
+    yearLevel: 'Year 1',
+    summary:
+      'Object-oriented programming, testing, Unix environment awareness, and code explanation translated into safe script-reading and support troubleshooting practice.',
+    dcsArea: 'Programming / Automation',
+    relatedDcsModuleIds: ['rbc-scripting-code-reading', 'ticket-notes-escalation-quality'],
+    practicalOutput: 'Code explanation and test evidence note',
+    focusLabel: 'code reasoning and test evidence'
+  },
+  cse4002: {
+    title: 'Artificial Intelligence Fundamentals',
+    track: 'SMITB',
+    yearLevel: 'SMITB',
+    summary:
+      'AI concepts, expert systems, responsible AI, and applied case-study thinking for safer school support decisions involving AI tools.',
+    dcsArea: 'Data / Reporting',
+    relatedDcsModuleIds: ['smitb-cloud-ai-school-it', 'smitb-ml-dl-evaluation-support-context'],
+    practicalOutput: 'Responsible AI support case note',
+    focusLabel: 'AI case-study evaluation'
+  },
+  cse5006: {
+    title: 'Cloud Web Application Development',
+    track: 'SMITB',
+    yearLevel: 'SMITB',
+    summary:
+      'Cloud web architecture, deployment, storage, APIs, and CI/CD vocabulary mapped to SaaS support, dependency awareness, and escalation quality.',
+    dcsArea: 'M365 / Cloud',
+    relatedDcsModuleIds: ['smitb-cloud-ai-school-it', 'cloud-models-saas-paas-iaas-daas'],
+    practicalOutput: 'Cloud service dependency map',
+    focusLabel: 'cloud web dependency mapping'
+  },
+  cse5bdc: {
+    title: 'Big Data in Cloud',
+    track: 'SMITB',
+    yearLevel: 'SMITB',
+    summary:
+      'Big-data and cloud-platform awareness for interpreting analytics pipelines, service dependencies, and evidence-rich outage notes.',
+    dcsArea: 'Data / Reporting',
+    relatedDcsModuleIds: ['smitb-big-data-cloud-context-school-it', 'smitb-cloud-ai-school-it'],
+    practicalOutput: 'Analytics pipeline support map',
+    focusLabel: 'big-data/cloud support context'
+  },
+  cse5dl: {
+    title: 'Deep Learning',
+    track: 'SMITB',
+    yearLevel: 'SMITB',
+    summary:
+      'Deep-learning concepts, deployment awareness, and maintenance risks translated into AI limitation and verification practice.',
+    dcsArea: 'Data / Reporting',
+    relatedDcsModuleIds: ['smitb-ml-dl-evaluation-support-context', 'smitb-cloud-ai-school-it'],
+    practicalOutput: 'AI deployment and maintenance risk note',
+    focusLabel: 'deep-learning limitation review'
+  },
+  cse5ml: {
+    title: 'Machine Learning',
+    track: 'SMITB',
+    yearLevel: 'SMITB',
+    summary:
+      'Machine-learning model evaluation, regression, classification, accuracy, and limitation awareness for school-data risk judgement.',
+    dcsArea: 'Data / Reporting',
+    relatedDcsModuleIds: ['smitb-ml-dl-evaluation-support-context', 'smitb-cloud-ai-school-it'],
+    practicalOutput: 'Model limitation and evaluation note',
+    focusLabel: 'ML evaluation practice'
+  },
+  cse5nlp: {
+    title: 'Natural Language Processing',
+    track: 'SMITB',
+    yearLevel: 'SMITB',
+    summary:
+      'NLP, chatbot behaviour, fake-news classification, language models, and AI answer verification mapped to safe support practice.',
+    dcsArea: 'Data / Reporting',
+    relatedDcsModuleIds: ['smitb-cloud-ai-school-it', 'smitb-ml-dl-evaluation-support-context'],
+    practicalOutput: 'AI answer verification checklist',
+    focusLabel: 'NLP and chatbot reliability'
+  },
+  cse5cv: {
+    title: 'Computer Vision',
+    track: 'SMITB',
+    yearLevel: 'SMITB',
+    summary:
+      'Computer-vision concepts, camera workflows, Azure vision awareness, and accessibility risk translated into first-line camera and Windows Hello triage.',
+    dcsArea: 'DCS Level 1 Support',
+    relatedDcsModuleIds: ['smitb-computer-vision-accessibility-support', 'accessibility-inclusive-design'],
+    practicalOutput: 'Camera/vision feature risk note',
+    focusLabel: 'computer-vision support triage'
+  }
+};
+
+function buildAssessmentDrivenSubject(code: string): AcademicSubject {
+  const key = code.toLowerCase();
+  const config = generatedAcademicSubjectConfigs[key];
+  const summary = academicAssessmentSummaries[key];
+
+  return {
+    id: key,
+    code: code.toUpperCase(),
+    title: config.title,
+    provider: 'La Trobe',
+    track: config.track,
+    yearLevel: config.yearLevel,
+    sourceType: 'SLG',
+    sourceFileName: summary.sourceLabel,
+    summary: config.summary,
+    silos: [
+      {
+        id: `${key}-s1`,
+        number: 1,
+        text: `Explain the core ${config.focusLabel} concepts in plain English.`,
+        plainEnglish: `Turn ${config.focusLabel} into language that helps school IT support rather than academic jargon.`,
+        practicePrompts: [
+          `Summarise one ${config.focusLabel} idea as a DCS support note.`,
+          'Identify what evidence would make the support claim stronger.'
+        ],
+        quizItems: [
+          `Explain one ${config.focusLabel} idea in school-support language.`,
+          'Describe the safest escalation boundary for this topic.'
+        ]
+      },
+      {
+        id: `${key}-s2`,
+        number: 2,
+        text: 'Apply assessment tasks as practical DCSPrep evidence outputs.',
+        plainEnglish:
+          'Use the SLG assessment structure to produce privacy-safe notes, checklists, maps, or reflections that improve support judgement.',
+        practicePrompts: [
+          `Create a ${config.practicalOutput.toLowerCase()} from one assessment task.`,
+          'State what should not be claimed as formal credit or production authority.'
+        ],
+        quizItems: [
+          'What evidence output should be created from the assessment task?',
+          'How can the output stay manager-safe and privacy-safe?'
+        ]
+      }
+    ],
+    dcsBridges: [
+      {
+        id: `${key}-bridge-1`,
+        dcsArea: config.dcsArea,
+        relevance: 'high',
+        explanation:
+          'This subject page converts extracted SLG assessment tasks into DCSPrep practice without claiming formal university credit.',
+        relatedDcsModuleIds: config.relatedDcsModuleIds,
+        practicalOutput: config.practicalOutput
+      },
+      {
+        id: `${key}-bridge-2`,
+        dcsArea: 'Professional Practice',
+        relevance: 'medium',
+        explanation:
+          'Use the work as informal PD evidence: privacy-safe, reflective, and tied to support judgement rather than live production changes.',
+        relatedDcsModuleIds: ['ticket-notes-escalation-quality'],
+        practicalOutput: 'Manager-safe academic alignment reflection'
+      }
+    ],
+    assessmentQuestions: academicSubjectAssessments[key],
+    assessmentSections: [
+      {
+        id: `${key}-assessment-practice`,
+        title: 'Per-assessment DCSPrep practice',
+        timing: 'Use alongside each extracted SLG assessment task',
+        purpose:
+          'Convert each assessment into a practical support artifact while keeping academic alignment wording careful.',
+        tasks: summary.tasks.map((task) => `Create: ${task.evidenceOutput}`),
+        rubric: [
+          'Explains the academic concept accurately.',
+          'Connects the concept to a realistic school IT support situation.',
+          'Avoids live confidential details and avoids claiming formal credit.',
+          'Produces a practical note, checklist, map, or reflection.'
+        ],
+        relatedWeekIds: summary.tasks.map((task) => `${key}-${task.id}`)
+      }
+    ],
+    weeklyModules: summary.tasks.map((task, index) => ({
+      id: `${key}-${task.id}`,
+      week: index + 1,
+      topicNumber: index + 1,
+      title: task.assessmentType,
+      deliveryMode: 'Assessment-driven DCSPrep practice',
+      sourceDetail: `${summary.sourceLabel}: ${task.timing}; due ${task.dueDate}; weight ${task.weight}%.`,
+      summary: task.dcsPrepIntegration,
+      dcsPrepFocus: task.evidenceOutput,
+      linkedSiloIds: [`${key}-s1`, `${key}-s2`],
+      relatedDcsModuleIds: task.relatedDcsModuleIds,
+      resources: [],
+      assessment: {
+        id: `${task.id}-practice`,
+        title: `${task.assessmentType} practice output`,
+        prompt: `Create a privacy-safe DCSPrep artifact for this SLG task: ${task.dcsPrepIntegration}`,
+        questionType: 'practical-output',
+        rubric: [
+          'Names the source task and support relevance.',
+          'Produces the stated evidence output.',
+          'Keeps wording informal and manager-safe.',
+          'Does not include private school data or overstate formal credit.'
+        ],
+        evidenceOutput: task.evidenceOutput
+      }
+    })),
+    slgAssessmentSummary: summary,
+    recommendedNextAction: `Open one assessment-driven topic box and draft a ${config.practicalOutput.toLowerCase()}.`
+  };
+}
+
+function buildAssessmentPracticeSection(subject: AcademicSubject): AcademicSubject['assessmentSections'] {
+  const summary = academicAssessmentSummaries[subject.id];
+
+  if (!summary) {
+    return subject.assessmentSections;
+  }
+
+  if (subject.assessmentSections?.some((section) => section.id === `${subject.id}-assessment-practice`)) {
+    return subject.assessmentSections;
+  }
+
+  return [
+    ...(subject.assessmentSections ?? []),
+    {
+      id: `${subject.id}-assessment-practice`,
+      title: 'Per-assessment DCSPrep practice',
+      timing: 'Use alongside each extracted SLG assessment task',
+      purpose:
+        'Convert each assessment into a practical support artifact while keeping academic alignment wording careful.',
+      tasks: summary.tasks.map((task) => `Create: ${task.evidenceOutput}`),
+      rubric: [
+        'Explains the academic concept accurately.',
+        'Connects the concept to a realistic school IT support situation.',
+        'Avoids live confidential details and avoids claiming formal credit.',
+        'Produces a practical note, checklist, map, or reflection.'
+      ],
+      relatedWeekIds: summary.tasks.map((task) => `${subject.id}-${task.id}`)
+    }
+  ];
+}
+
+function buildAssessmentPracticeModules(subject: AcademicSubject): AcademicSubject['weeklyModules'] {
+  if (subject.weeklyModules?.length) {
+    return subject.weeklyModules;
+  }
+
+  const summary = academicAssessmentSummaries[subject.id];
+  if (!summary) {
+    return subject.weeklyModules;
+  }
+
+  return summary.tasks.map((task, index) => ({
+    id: `${subject.id}-${task.id}`,
+    week: index + 1,
+    topicNumber: index + 1,
+    title: task.assessmentType,
+    deliveryMode: 'Assessment-driven DCSPrep practice',
+    sourceDetail: `${summary.sourceLabel}: ${task.timing}; due ${task.dueDate}; weight ${task.weight}%.`,
+    summary: task.dcsPrepIntegration,
+    dcsPrepFocus: task.evidenceOutput,
+    linkedSiloIds: subject.silos.slice(0, 2).map((silo) => silo.id),
+    relatedDcsModuleIds: task.relatedDcsModuleIds,
+    resources: [],
+    assessment: {
+      id: `${task.id}-practice`,
+      title: `${task.assessmentType} practice output`,
+      prompt: `Create a privacy-safe DCSPrep artifact for this SLG task: ${task.dcsPrepIntegration}`,
+      questionType: 'practical-output',
+      rubric: [
+        'Names the source task and support relevance.',
+        'Produces the stated evidence output.',
+        'Keeps wording informal and manager-safe.',
+        'Does not include private school data or overstate formal credit.'
+      ],
+      evidenceOutput: task.evidenceOutput
+    }
+  }));
+}
+
+function enrichAcademicSubjectWithAssessmentPractice(subject: AcademicSubject): AcademicSubject {
+  if (!academicAssessmentSummaries[subject.id]) {
+    return subject;
+  }
+
+  return {
+    ...subject,
+    assessmentQuestions: subject.assessmentQuestions ?? academicSubjectAssessments[subject.id],
+    assessmentSections: buildAssessmentPracticeSection(subject),
+    weeklyModules: buildAssessmentPracticeModules(subject),
+    slgAssessmentSummary: subject.slgAssessmentSummary ?? academicAssessmentSummaries[subject.id]
+  };
+}
+
+const baseAcademicSubjects: AcademicSubject[] = [
   {
     id: 'cse1iit',
     code: 'CSE1IIT',
@@ -1181,8 +1482,18 @@ export const academicSubjects: AcademicSubject[] = [
     slgAssessmentSummary: academicAssessmentSummaries['cse1is'],
     recommendedNextAction:
       'Map a simple school system in plain English and identify the support implications for data and security.'
-  }
+  },
+  buildAssessmentDrivenSubject('cse1oof'),
+  buildAssessmentDrivenSubject('cse4002'),
+  buildAssessmentDrivenSubject('cse5006'),
+  buildAssessmentDrivenSubject('cse5bdc'),
+  buildAssessmentDrivenSubject('cse5dl'),
+  buildAssessmentDrivenSubject('cse5ml'),
+  buildAssessmentDrivenSubject('cse5nlp'),
+  buildAssessmentDrivenSubject('cse5cv')
 ];
+
+export const academicSubjects: AcademicSubject[] = baseAcademicSubjects.map(enrichAcademicSubjectWithAssessmentPractice);
 
 export function getAcademicSubjectByCode(code: string) {
   return academicSubjects.find((subject) => subject.code.toLowerCase() === code.toLowerCase());
