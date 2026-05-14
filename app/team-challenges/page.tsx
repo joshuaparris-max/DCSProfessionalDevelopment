@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from 'react';
-import { loadGamificationState } from '../src/lib/gamification';
+import { loadGamificationState } from '../../src/lib/gamification';
 
 type Team = {
   id: string;
