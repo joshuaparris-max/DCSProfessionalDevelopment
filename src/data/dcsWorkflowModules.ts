@@ -2711,6 +2711,7 @@ export const dcsWorkflowModules: TrainingModule[] = [
         correctOptionId: 'b'
       }
     ],
+    scenarioPrompts: [],
     practicalOutputs: [
       {
         id: 'a11y-p1',
@@ -2782,6 +2783,8 @@ export const dcsWorkflowModules: TrainingModule[] = [
         ],
         correctOptionId: 'b'
       }
-    ]
+    ],
+    scenarioPrompts: [],
+    practicalOutputs: []
   }
 ];
