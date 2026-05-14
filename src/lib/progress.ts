@@ -1,6 +1,7 @@
 import type { ModuleData } from '../data/modules';
 import type { ReviewRating } from './spacedRepetition';
 import type { ScenarioRun, ScenarioRunChoice } from '../types/scenarios';
+import type { AssessmentAttempt as StoredAssessmentAttempt } from '../types/assessment';
 
 const STORAGE_KEY = 'dcsPrepProgress';
 export const STORAGE_VERSION = 2;
@@ -27,23 +28,7 @@ export type ModuleProgress = {
   practicalOutputs?: Record<string, boolean>;
 };
 
-export type AssessmentAttempt = {
-  id: string;
-  questionId: string;
-  prompt: string;
-  answerSummary: string;
-  feedback: {
-    correctedConcept: string;
-  };
-  weakTopic: string;
-  recommendedModuleId: string;
-  domain: string;
-  nextReviewDateIso: string;
-  shouldRevisit?: boolean;
-  scoreBreakdown: {
-    total: number;
-  };
-};
+export type AssessmentAttempt = StoredAssessmentAttempt;
 
 export type WeakTopicReview = {
   topic: string;

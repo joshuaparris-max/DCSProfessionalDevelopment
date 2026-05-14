@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import SearchUsageTracker from '../../src/components/usage/SearchUsageTracker';
 import { searchApp } from '../../src/lib/searchIndex';
 
 type SearchPageProps = {
@@ -13,6 +14,7 @@ export default function SearchPage({ searchParams }: SearchPageProps) {
 
   return (
     <div className="space-y-6">
+      <SearchUsageTracker queryLength={query.length} resultCount={results.length} />
       <section className="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-sm">
         <div className="text-sm font-semibold uppercase tracking-[0.2em] text-slate-500">Search</div>
         <h1 className="mt-3 text-3xl font-semibold tracking-tight text-slate-900">Global search across DCSPrep</h1>

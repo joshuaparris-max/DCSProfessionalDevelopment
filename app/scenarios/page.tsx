@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { scenarios } from '../../src/data/scenarios';
+import { trackUsageInteraction } from '../../src/hooks/useUsageTracking';
 import {
   getInitialProgressSnapshot,
   getStoredProgressSnapshot,
@@ -64,10 +65,31 @@ export default function ScenariosPage() {
     setRunChoices([]);
     setRevealedChoice(null);
     setRubricSelfCheck({});
+    const nextScenario = scenarios.find((entry) => entry.id === nextScenarioId);
+    trackUsageInteraction({
+      eventType: 'scenario_open',
+      route: '/scenarios',
+      label: nextScenario?.title,
+      contentType: 'scenario',
+      contentId: nextScenarioId,
+      activityCategory: 'scenario',
+      metadata: { source: 'built-in' }
+    });
   }
 
   function handleChoice(choice: ScenarioChoice) {
     setRevealedChoice(choice);
+    trackUsageInteraction({
+      eventType: 'scenario_step_choice',
+      route: '/scenarios',
+      label: currentStep?.title,
+      contentType: 'scenario',
+      contentId: scenario.id,
+      activityCategory: 'scenario',
+      completed: Boolean(choice.correct),
+      score: choice.correct ? 1 : 0,
+      metadata: { source: 'built-in' }
+    });
   }
 
   function saveChoiceAndContinue() {
@@ -103,6 +125,17 @@ export default function ScenariosPage() {
           completed: true
         })
       );
+      trackUsageInteraction({
+        eventType: 'scenario_completed',
+        route: '/scenarios',
+        label: scenario.title,
+        contentType: 'scenario',
+        contentId: scenario.id,
+        activityCategory: 'scenario',
+        completed: true,
+        score: Number(noteScore.toFixed(2)),
+        metadata: { weakTopic: 'scenario-note-quality', source: 'built-in' }
+      });
       setRunChoices(nextChoices);
       setStepIndex(stepIndex + 1);
       setRevealedChoice(null);

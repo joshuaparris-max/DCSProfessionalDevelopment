@@ -5,6 +5,7 @@ import { modules } from '../../src/data/modules';
 import { scenarios } from '../../src/data/scenarios';
 import { weakTopicLabels } from '../../src/data/skillDomains';
 import { buildMonthlyPdMarkdown } from '../../src/lib/exportMarkdown';
+import { trackUsageInteraction } from '../../src/hooks/useUsageTracking';
 import { getCurrentWeakFocus } from '../../src/lib/readinessMath';
 import { getMonthKey, getMonthlyPdSummary } from '../../src/lib/pdSummary';
 import {
@@ -140,6 +141,15 @@ export default function PdLogPage() {
         ...form
       })
     );
+    trackUsageInteraction({
+      eventType: 'pd_log_entry_created',
+      route: '/pd-log',
+      label: form.type,
+      activityCategory: 'reflection',
+      completed: true,
+      durationSeconds: form.minutes * 60,
+      metadata: { source: 'built-in' }
+    });
 
     setForm({
       date: getTodayDateKey(),
@@ -162,6 +172,15 @@ export default function PdLogPage() {
 
   async function copyMarkdown() {
     await navigator.clipboard.writeText(summaryMarkdown);
+    trackUsageInteraction({
+      eventType: 'evidence_export_created',
+      route: '/pd-log',
+      label: 'Monthly PD Markdown',
+      contentType: 'evidence',
+      activityCategory: 'evidence',
+      completed: true,
+      metadata: { source: 'built-in' }
+    });
     setCopied(true);
     window.setTimeout(() => setCopied(false), 1600);
   }

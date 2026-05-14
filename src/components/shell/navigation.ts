@@ -1,6 +1,8 @@
 export const navigationItems = [
   { href: '/', label: 'Dashboard' },
   { href: '/modules', label: 'Modules' },
+  { href: '/scheduler', label: 'PD Scheduler' },
+  { href: '/usage-insights', label: 'Usage Insights' },
   { href: '/academic-pd', label: 'Academic PD' },
   { href: '/search', label: 'Search' },
   { href: '/rbc', label: 'RBC + SMITB' },

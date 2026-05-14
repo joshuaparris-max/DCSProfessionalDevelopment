@@ -1,13 +1,102 @@
 "use client";
 
+import Link from 'next/link';
+import { useEffect, useState } from 'react';
+import {
+  defaultSchedulerSettings,
+  loadSchedulerSettings,
+  saveSchedulerSettings,
+  type SchedulerBlockTemplate,
+  type SchedulerSettings
+} from '../../src/hooks/useScheduler';
 import { resetProgress } from '../../src/lib/progress';
+import {
+  clearUsageEvents,
+  exportUsageEvents,
+  getUsageEvents,
+  getUsageTrackingEnabled,
+  setUsageTrackingEnabled
+} from '../../src/lib/usageAnalytics';
 
 export default function SettingsPage() {
+  const [schedulerSettings, setSchedulerSettings] = useState<SchedulerSettings>(defaultSchedulerSettings);
+  const [schedulerSaved, setSchedulerSaved] = useState(false);
+  const [usageTrackingEnabled, setUsageTrackingState] = useState(true);
+  const [usageEventCount, setUsageEventCount] = useState(0);
+
+  useEffect(() => {
+    setSchedulerSettings(loadSchedulerSettings());
+    setUsageTrackingState(getUsageTrackingEnabled());
+    setUsageEventCount(getUsageEvents().length);
+  }, []);
+
   function handleReset() {
     if (window.confirm('Reset all DCSPrep local progress and logs? This cannot be undone.')) {
       resetProgress();
       window.location.reload();
     }
+  }
+
+  function updateBlock(index: number, field: keyof Pick<SchedulerBlockTemplate, 'start' | 'end'>, value: string) {
+    setSchedulerSettings((current) => ({
+      ...current,
+      blocks: current.blocks.map((block, blockIndex) =>
+        blockIndex === index
+          ? {
+              ...block,
+              [field]: value
+            }
+          : block
+      )
+    }));
+    setSchedulerSaved(false);
+  }
+
+  function updateStudyContext(field: keyof SchedulerSettings['studyContext'], value: string) {
+    setSchedulerSettings((current) => ({
+      ...current,
+      studyContext: {
+        ...current.studyContext,
+        [field]: value
+      }
+    }));
+    setSchedulerSaved(false);
+  }
+
+  function saveScheduler() {
+    saveSchedulerSettings(schedulerSettings);
+    setSchedulerSaved(true);
+  }
+
+  function resetSchedulerDefaults() {
+    setSchedulerSettings(defaultSchedulerSettings);
+    saveSchedulerSettings(defaultSchedulerSettings);
+    setSchedulerSaved(true);
+  }
+
+  function downloadUsageExport() {
+    const blob = new Blob([exportUsageEvents()], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const anchor = document.createElement('a');
+    anchor.href = url;
+    anchor.download = `dcsprep-usage-analytics-${new Date().toISOString().slice(0, 10)}.json`;
+    anchor.click();
+    URL.revokeObjectURL(url);
+  }
+
+  function toggleUsageTracking() {
+    const next = !usageTrackingEnabled;
+    setUsageTrackingEnabled(next);
+    setUsageTrackingState(next);
+  }
+
+  function clearUsageAnalytics() {
+    if (!window.confirm('Clear local usage analytics? This does not clear module progress, PD logs, or scheduler settings.')) {
+      return;
+    }
+
+    clearUsageEvents();
+    setUsageEventCount(0);
   }
 
   return (
@@ -30,6 +119,132 @@ export default function SettingsPage() {
           This app is for personal PD. Do not enter sensitive DCS, student, staff, parent, network, credential,
           or incident details.
         </p>
+      </section>
+
+      <section className="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-sm">
+        <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+          <div>
+            <div className="text-sm font-semibold uppercase tracking-[0.2em] text-slate-500">Usage analytics</div>
+            <h2 className="mt-3 text-2xl font-semibold text-slate-900">Local-only Usage Insights</h2>
+            <p className="mt-2 max-w-3xl text-sm leading-7 text-slate-600">
+              Tracking is metadata-only and stays in this browser. It records routes, content IDs, event types,
+              categories, durations, completion states, and existing scores where available. It does not record full
+              notes, reflections, roleplay messages, ticket text, credentials, or private typed content.
+            </p>
+            <p className="mt-2 text-sm text-slate-600">
+              Current local event count: <span className="font-semibold text-slate-900">{usageEventCount}</span>.
+              Tracking is <span className="font-semibold text-slate-900">{usageTrackingEnabled ? 'enabled' : 'disabled'}</span>.
+            </p>
+          </div>
+          <div className="flex flex-wrap gap-3">
+            <Link href="/usage-insights" className="rounded-full bg-slate-900 px-4 py-2 text-sm font-semibold text-white">
+              View Usage Insights
+            </Link>
+            <button
+              type="button"
+              onClick={downloadUsageExport}
+              className="rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700"
+            >
+              Export usage analytics JSON
+            </button>
+            <button
+              type="button"
+              onClick={toggleUsageTracking}
+              className="rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700"
+            >
+              {usageTrackingEnabled ? 'Disable tracking' : 'Enable tracking'}
+            </button>
+            <button
+              type="button"
+              onClick={clearUsageAnalytics}
+              className="rounded-full border border-rose-200 bg-white px-4 py-2 text-sm font-semibold text-rose-700"
+            >
+              Clear usage analytics
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <section className="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-sm">
+        <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+          <div>
+            <div className="text-sm font-semibold uppercase tracking-[0.2em] text-slate-500">PD Scheduler</div>
+            <h2 className="mt-3 text-2xl font-semibold text-slate-900">Timetable and study context</h2>
+            <p className="mt-2 max-w-3xl text-sm leading-7 text-slate-600">
+              These settings feed the real-time scheduler at /scheduler. Times use the system clock; there is no
+              manual time override.
+            </p>
+          </div>
+          <div className="flex flex-wrap gap-3">
+            <button
+              type="button"
+              onClick={resetSchedulerDefaults}
+              className="rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700"
+            >
+              Restore defaults
+            </button>
+            <button
+              type="button"
+              onClick={saveScheduler}
+              className="rounded-full bg-slate-900 px-4 py-2 text-sm font-semibold text-white"
+            >
+              {schedulerSaved ? 'Saved' : 'Save scheduler settings'}
+            </button>
+          </div>
+        </div>
+
+        <div className="mt-6 grid gap-4 lg:grid-cols-2">
+          {schedulerSettings.blocks.map((block, index) => (
+            <div key={block.id} className="rounded-3xl bg-slate-50 p-5">
+              <div className="text-sm font-semibold text-slate-900">
+                {block.dayLabel} {block.blockLabel}
+              </div>
+              <div className="mt-4 grid gap-3 sm:grid-cols-2">
+                <label className="text-sm text-slate-700">
+                  Start
+                  <input
+                    type="time"
+                    value={block.start}
+                    onChange={(event) => updateBlock(index, 'start', event.target.value)}
+                    className="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3"
+                  />
+                </label>
+                <label className="text-sm text-slate-700">
+                  End
+                  <input
+                    type="time"
+                    value={block.end}
+                    onChange={(event) => updateBlock(index, 'end', event.target.value)}
+                    className="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3"
+                  />
+                </label>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        <div className="mt-6 grid gap-4 md:grid-cols-2">
+          {(
+            [
+              ['coreProgress', 'Core 2 progress'],
+              ['primaryVideoSource', 'Primary video source'],
+              ['flashcardSource', 'Flashcard/SRS'],
+              ['applicationTasks', 'Application tasks'],
+              ['buildingTasks', 'Building tasks'],
+              ['writingTasks', 'Writing tasks'],
+              ['breakActivities', 'Break activities']
+            ] as const
+          ).map(([field, label]) => (
+            <label key={field} className="text-sm text-slate-700 md:col-span-2">
+              <span className="font-semibold text-slate-900">{label}</span>
+              <textarea
+                value={schedulerSettings.studyContext[field]}
+                onChange={(event) => updateStudyContext(field, event.target.value)}
+                className="mt-2 min-h-20 w-full rounded-2xl border border-slate-200 px-4 py-3"
+              />
+            </label>
+          ))}
+        </div>
       </section>
 
       <section className="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-sm">

@@ -6,6 +6,7 @@ import { buildEvidencePackMarkdown } from '../../src/lib/evidencePack';
 import EvidencePackPreview from '../../src/components/evidence/EvidencePackPreview';
 import PrivacyReminder from '../../src/components/evidence/PrivacyReminder';
 import { getMonthKey } from '../../src/lib/pdSummary';
+import { trackUsageInteraction } from '../../src/hooks/useUsageTracking';
 
 export default function EvidencePackPage() {
   const [progress, setProgress] = useState<UserProgress | null>(null);
@@ -27,6 +28,15 @@ export default function EvidencePackPage() {
     }
 
     await navigator.clipboard.writeText(markdown);
+    trackUsageInteraction({
+      eventType: 'evidence_export_created',
+      route: '/evidence-pack',
+      label: 'Evidence Pack Markdown',
+      contentType: 'evidence',
+      activityCategory: 'evidence',
+      completed: true,
+      metadata: { source: 'built-in' }
+    });
     setCopied(true);
     window.setTimeout(() => setCopied(false), 1600);
   }

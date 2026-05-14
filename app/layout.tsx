@@ -1,7 +1,9 @@
 import './globals.css';
 import type { Metadata } from 'next';
+import { Suspense } from 'react';
 import Topbar from '../src/components/shell/Topbar';
 import Sidebar from '../src/components/shell/Sidebar';
+import UsageRouteTracker from '../src/components/usage/UsageRouteTracker';
 
 export const metadata: Metadata = {
   title: 'DCSPrep',
@@ -18,6 +20,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             <Sidebar />
             <div className="min-w-0">{children}</div>
           </main>
+          <Suspense fallback={null}>
+            <UsageRouteTracker />
+          </Suspense>
           <footer className="border-t border-slate-200 bg-white/80 px-4 py-5 text-sm text-slate-500 dark:border-slate-700 dark:bg-slate-950/80 dark:text-slate-400">
             <div className="mx-auto max-w-7xl">
               DCSPrep is a personal PD tool. Keep all entries privacy-safe and free of real student, staff,

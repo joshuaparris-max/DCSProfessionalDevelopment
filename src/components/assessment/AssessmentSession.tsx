@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from 'react';
+import { trackUsageInteraction } from '../../hooks/useUsageTracking';
 import { createAssessmentAttempt, getDefaultSelfRating } from '../../lib/scoring';
 import type {
   AssessmentAttempt,
@@ -93,11 +94,28 @@ export default function AssessmentSession({
   const [liveFeedbackStatus, setLiveFeedbackStatus] = useState<'idle' | 'typing' | 'loading' | 'error'>('idle');
   const [liveFeedbackError, setLiveFeedbackError] = useState<string | null>(null);
   const liveFeedbackAbortRef = useRef<AbortController | null>(null);
+  const quizStartedRef = useRef(false);
 
   const question = questions[currentIndex];
   const sessionComplete = currentIndex >= questions.length;
 
   const supportsLiveFeedback = Boolean(question);
+
+  useEffect(() => {
+    if (quizStartedRef.current) {
+      return;
+    }
+
+    quizStartedRef.current = true;
+    trackUsageInteraction({
+      eventType: 'quiz_started',
+      route: source === 'strict-quiz' ? '/strict-quiz' : '/modules',
+      label: title,
+      contentType: source === 'module-quiz' ? 'module' : 'other',
+      activityCategory: 'quiz',
+      metadata: { source: 'built-in' }
+    });
+  }, [source, title]);
 
   const liveFeedbackPayload = useMemo(() => {
     if (!supportsLiveFeedback || !question || !draft) {
@@ -328,10 +346,34 @@ export default function AssessmentSession({
     const nextAttempts = [...sessionAttempts, finalAttempt];
 
     onRecordAttempt?.(finalAttempt);
+    trackUsageInteraction({
+      eventType: 'quiz_answered',
+      route: source === 'strict-quiz' ? '/strict-quiz' : '/modules',
+      label: title,
+      contentType: source === 'module-quiz' ? 'module' : 'other',
+      activityCategory: 'quiz',
+      completed: true,
+      score: finalAttempt.scoreBreakdown.total,
+      metadata: {
+        domain: finalAttempt.domain,
+        weakTopic: finalAttempt.weakTopic,
+        source: 'built-in'
+      }
+    });
     setSessionAttempts(nextAttempts);
 
     if (currentIndex === questions.length - 1) {
       onSessionComplete?.(nextAttempts);
+      trackUsageInteraction({
+        eventType: 'quiz_completed',
+        route: source === 'strict-quiz' ? '/strict-quiz' : '/modules',
+        label: title,
+        contentType: source === 'module-quiz' ? 'module' : 'other',
+        activityCategory: 'quiz',
+        completed: true,
+        score: nextAttempts.reduce((sum, attempt) => sum + attempt.scoreBreakdown.total, 0) / nextAttempts.length,
+        metadata: { source: 'built-in' }
+      });
       setCurrentIndex(questions.length);
       return;
     }

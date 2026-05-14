@@ -3,6 +3,7 @@
 import dynamic from 'next/dynamic';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
+import { trackUsageInteraction } from '../../hooks/useUsageTracking';
 import { getModuleCompletion } from '../../lib/moduleMath';
 import {
   getStoredProgressSnapshot,
@@ -49,7 +50,35 @@ export default function ModuleDetail({
   useEffect(() => {
     setProgress(getStoredProgressSnapshot([moduleData]));
     setHasHydratedProgress(true);
+    trackUsageInteraction({
+      eventType: 'module_open',
+      route: `/modules/${moduleData.id}`,
+      label: moduleData.title,
+      contentType: 'module',
+      contentId: moduleData.id,
+      activityCategory: 'reading',
+      metadata: { domain: moduleData.domain, level: moduleData.level, source: 'built-in' }
+    });
   }, [moduleData]);
+
+  useEffect(() => {
+    trackUsageInteraction({
+      eventType: 'module_section_view',
+      route: `/modules/${moduleData.id}`,
+      label: activeTab,
+      contentType: 'module',
+      contentId: moduleData.id,
+      activityCategory:
+        activeTab === 'Assessment'
+          ? 'quiz'
+          : activeTab === 'Review'
+          ? 'retrieval'
+          : activeTab === 'Learn'
+          ? 'reading'
+          : 'retrieval',
+      metadata: { domain: moduleData.domain, level: moduleData.level, source: 'built-in' }
+    });
+  }, [activeTab, moduleData.domain, moduleData.id, moduleData.level]);
 
   useEffect(() => {
     if (!hasHydratedProgress) {
@@ -70,6 +99,16 @@ export default function ModuleDetail({
   function togglePracticalOutput(outputId: string) {
     setProgress((current) => {
       const currentCompleted = Boolean(current.modules[moduleData.id]?.practicalOutputs?.[outputId]);
+      trackUsageInteraction({
+        eventType: 'section_view',
+        route: `/modules/${moduleData.id}`,
+        label: 'Module practical output',
+        contentType: 'module',
+        contentId: moduleData.id,
+        activityCategory: 'building',
+        completed: !currentCompleted,
+        metadata: { domain: moduleData.domain, source: 'built-in' }
+      });
       return updateModulePracticalOutput(current, moduleData.id, outputId, !currentCompleted);
     });
   }

@@ -12,6 +12,7 @@ import {
   saveProgress,
   type UserProgress
 } from '../../src/lib/progress';
+import { trackUsageInteraction } from '../../src/hooks/useUsageTracking';
 import { getDueReviewItems } from '../../src/lib/dueReview';
 import { isDue, type ReviewRating } from '../../src/lib/spacedRepetition';
 
@@ -255,12 +256,21 @@ export default function DueTodayPage({ searchParams }: { searchParams?: { mode?:
                   </div>
                   <div className="mt-3 text-xl font-semibold text-slate-900">{revealed ? card.back : card.front}</div>
                   <button
-                    onClick={() =>
+                    onClick={() => {
+                      trackUsageInteraction({
+                        eventType: 'flashcard_view',
+                        route: '/due-today',
+                        label: moduleTitle,
+                        contentType: 'module',
+                        contentId: moduleId,
+                        activityCategory: 'flashcards',
+                        metadata: { source: 'built-in' }
+                      });
                       setRevealedCards((current) => ({
                         ...current,
                         [revealKey]: !current[revealKey]
-                      }))
-                    }
+                      }));
+                    }}
                     className="mt-3 rounded-full border border-slate-200 bg-white px-4 py-2 text-sm text-slate-700"
                   >
                     {revealed ? 'Show prompt' : 'Reveal answer'}
@@ -269,9 +279,20 @@ export default function DueTodayPage({ searchParams }: { searchParams?: { mode?:
                     {ratings.map((rating) => (
                       <button
                         key={rating}
-                        onClick={() =>
-                          setProgress((current) => recordFlashcardReview(current, moduleId, card.id, rating))
-                        }
+                        onClick={() => {
+                          trackUsageInteraction({
+                            eventType: 'flashcard_answered',
+                            route: '/due-today',
+                            label: rating,
+                            contentType: 'module',
+                            contentId: moduleId,
+                            activityCategory: 'flashcards',
+                            completed: true,
+                            score: rating === 'easy' ? 1 : rating === 'good' ? 0.75 : rating === 'hard' ? 0.5 : 0.25,
+                            metadata: { source: 'built-in' }
+                          });
+                          setProgress((current) => recordFlashcardReview(current, moduleId, card.id, rating));
+                        }}
                         className="rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-medium capitalize text-slate-800"
                       >
                         {rating}
