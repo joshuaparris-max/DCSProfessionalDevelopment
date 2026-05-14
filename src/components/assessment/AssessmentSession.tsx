@@ -410,6 +410,8 @@ export default function AssessmentSession({
                 className={`rounded-full px-4 py-2 text-sm ${
                   active ? 'bg-slate-900 text-white' : 'border border-slate-200 bg-white text-slate-700'
                 }`}
+                aria-label={`Confidence level ${value}: ${confidenceLabel(level)}`}
+                aria-pressed={active}
               >
                 {value} - {confidenceLabel(level)}
               </button>

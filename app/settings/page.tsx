@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
-import { requestNotificationPermission } from '../../src/lib/notifications';
+import { requestNotificationPermission, showNotification } from '../../src/lib/notifications';
 import { useAuth, type UserRole } from '../../src/contexts/AuthContext';
 import {
   defaultSchedulerSettings,
@@ -46,6 +46,13 @@ export default function SettingsPage() {
     } else {
       setNotificationPermission(Notification.permission);
     }
+  }
+
+  function handleTestNotification() {
+    showNotification('Test Notification', {
+      body: 'This is a test notification from DCSPrep.',
+      tag: 'test-notification'
+    });
   }
 
   function handleReset() {
@@ -174,6 +181,15 @@ export default function SettingsPage() {
             >
               {notificationPermission === 'granted' ? 'Notifications Enabled' : 'Enable Notifications'}
             </button>
+            {notificationPermission === 'granted' && (
+              <button
+                type="button"
+                onClick={handleTestNotification}
+                className="rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700"
+              >
+                Send Test
+              </button>
+            )}
           </div>
         </div>
       </section>

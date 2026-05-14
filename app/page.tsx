@@ -16,6 +16,9 @@ import {
   type GamificationState
 } from '../src/lib/gamification';
 import { DailyChallenge } from '../src/components/DailyChallenge';
+import { StickersDisplay } from '../src/components/StickersDisplay';
+import { showNotification } from '../src/lib/notifications';
+import { ScheduleSuggestions } from '../src/components/ScheduleSuggestions';
 
 function getMonthKey(date: Date) {
   return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
@@ -32,7 +35,16 @@ export default function HomePage() {
     setProgress(storedProgress);
     setGamificationState(derivedGamificationState);
     saveGamificationState(derivedGamificationState);
-  }, []);
+
+    // Check for due items and notify
+    const totalDue = dueFlashcards + dueQuestions;
+    if (totalDue > 0) {
+      showNotification('PD Review Due', {
+        body: `You have ${totalDue} items waiting for review today.`,
+        tag: 'pd-review-due'
+      });
+    }
+  }, [dueFlashcards, dueQuestions]);
 
   const dueFlashcards = modules.flatMap((module) =>
     Object.values(progress.modules[module.id]?.flashcards || {}).filter(
@@ -100,20 +112,23 @@ export default function HomePage() {
             </div>
           </div>
 
-          <div className="w-full max-w-sm rounded-[2rem] bg-slate-100 p-5">
-            <div className="text-sm font-semibold uppercase tracking-[0.2em] text-slate-500">What should I study next?</div>
-            <h2 className="mt-3 text-2xl font-semibold text-slate-900">{recommendation.title}</h2>
-            <p className="mt-3 text-sm leading-7 text-slate-700">{recommendation.detail}</p>
-            <div className="mt-4 rounded-3xl bg-white px-4 py-3">
-              <div className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">Weak area driving this</div>
-              <div className="mt-2 text-sm font-medium text-slate-900">{weakestFocus}</div>
+          <div className="w-full max-w-sm flex flex-col gap-4">
+            <div className="rounded-[2rem] bg-slate-100 p-5">
+              <div className="text-sm font-semibold uppercase tracking-[0.2em] text-slate-500">What should I study next?</div>
+              <h2 className="mt-3 text-2xl font-semibold text-slate-900">{recommendation.title}</h2>
+              <p className="mt-3 text-sm leading-7 text-slate-700">{recommendation.detail}</p>
+              <div className="mt-4 rounded-3xl bg-white px-4 py-3">
+                <div className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">Weak area driving this</div>
+                <div className="mt-2 text-sm font-medium text-slate-900">{weakestFocus}</div>
+              </div>
+              <Link
+                href={recommendation.ctaHref}
+                className="mt-5 inline-flex rounded-full bg-slate-900 px-4 py-2 text-sm text-white"
+              >
+                {recommendation.ctaLabel}
+              </Link>
             </div>
-            <Link
-              href={recommendation.ctaHref}
-              className="mt-5 inline-flex rounded-full bg-slate-900 px-4 py-2 text-sm text-white"
-            >
-              {recommendation.ctaLabel}
-            </Link>
+            <ScheduleSuggestions />
           </div>
         </div>
       </section>
@@ -184,6 +199,8 @@ export default function HomePage() {
             </div>
           ))}
         </div>
+
+        <StickersDisplay stickers={gamificationSummary.stickers} />
 
         <div className="mt-4 text-xs font-medium text-slate-500">Next milestone: {gamificationSummary.nextMilestone}</div>
       </section>

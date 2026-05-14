@@ -52,7 +52,7 @@ export function DailyChallenge() {
         {!showResult ? (
           <div className="mt-4 space-y-2">
             {question.options.map((option) => (
-              <label key={option.id} className="flex items-center gap-3">
+              <label key={option.id} className="flex items-center gap-3 cursor-pointer">
                 <input
                   type="radio"
                   name="daily-challenge"
@@ -74,7 +74,7 @@ export function DailyChallenge() {
             </button>
           </div>
         ) : (
-          <div className="mt-4">
+          <div className="mt-4" aria-live="polite">
             <div className={`text-sm font-semibold ${isCorrect ? 'text-green-700' : 'text-red-700'}`}>
               {isCorrect ? 'Correct!' : 'Not quite.'}
             </div>

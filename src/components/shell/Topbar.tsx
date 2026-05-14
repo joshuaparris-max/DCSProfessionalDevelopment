@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
+import { useUI } from '../../contexts/UIContext';
 
 const STORAGE_KEY = 'dcsprep-theme';
 
@@ -9,6 +10,7 @@ type Theme = 'light' | 'dark';
 
 export default function Topbar() {
   const [theme, setTheme] = useState<Theme>('light');
+  const { toggleFocusMode } = useUI();
 
   useEffect(() => {
     const storedTheme = window.localStorage.getItem(STORAGE_KEY) as Theme | null;
@@ -51,14 +53,23 @@ export default function Topbar() {
           <Link href="/due-today">Due Today</Link>
           <Link href="/pd-log">PD Log</Link>
         </div>
-        <button
-          type="button"
-          onClick={toggleTheme}
-          className="rounded-full border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-900 transition hover:bg-slate-100 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100 dark:hover:bg-slate-700"
-          aria-label="Toggle dark mode"
-        >
-          {theme === 'dark' ? '🌙 Dark' : '☀️ Light'}
-        </button>
+        <div className="flex items-center gap-2">
+          <button
+            type="button"
+            onClick={toggleFocusMode}
+            className="hidden sm:block rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50 transition"
+          >
+            Focus Mode
+          </button>
+          <button
+            type="button"
+            onClick={toggleTheme}
+            className="rounded-full border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-900 transition hover:bg-slate-100 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100 dark:hover:bg-slate-700"
+            aria-label="Toggle dark mode"
+          >
+            {theme === 'dark' ? '🌙 Dark' : '☀️ Light'}
+          </button>
+        </div>
       </div>
     </header>
   );

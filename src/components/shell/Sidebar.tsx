@@ -15,6 +15,7 @@ const navItems = [
   { href: '/progress', label: 'Progress' },
   { href: '/readiness', label: 'Readiness' },
   { href: '/pd-log', label: 'PD Log' },
+  { href: '/team-challenges', label: 'Team Challenges' },
   { href: '/evidence-pack', label: 'Evidence Pack' },
   { href: '/error-log', label: 'Error Log' },
   { href: '/support-tools', label: 'Support Tools' },

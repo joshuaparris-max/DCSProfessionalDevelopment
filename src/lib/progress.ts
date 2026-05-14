@@ -78,6 +78,7 @@ export type UserProgress = {
   dueReviewState: Record<string, string>;
   practicalOutputReviews: Record<string, { dueDateIso: string; reviewCount: number; completed: boolean }>;
   knowledgeBaseDrafts: Record<string, { title: string; body: string; updatedAtIso: string }>;
+  reflectionJournal: Record<string, { scenarioId: string; content: string; emotions: string[]; createdAtIso: string }>;
   evidencePackSettings: {
     includeCertificates: boolean;
     includeLinks: boolean;
@@ -123,6 +124,7 @@ export function getInitialProgressSnapshot(modules: ModuleData[] = []): UserProg
     dueReviewState: {},
     practicalOutputReviews: {},
     knowledgeBaseDrafts: {},
+    reflectionJournal: {},
     evidencePackSettings: {
       includeCertificates: true,
       includeLinks: true,
@@ -159,6 +161,7 @@ function migrateProgress(raw: PersistedProgress, modules: ModuleData[]): UserPro
     dueReviewState: raw.dueReviewState ?? {},
     practicalOutputReviews: raw.practicalOutputReviews ?? {},
     knowledgeBaseDrafts: raw.knowledgeBaseDrafts ?? {},
+    reflectionJournal: raw.reflectionJournal ?? {},
     evidencePackSettings: {
       ...base.evidencePackSettings,
       ...raw.evidencePackSettings
@@ -399,6 +402,25 @@ export function updateModulePracticalOutput(
           ...moduleProgress.practicalOutputs,
           [outputId]: completed
         }
+      }
+    }
+  };
+}
+
+export function saveReflectionEntry(
+  progress: UserProgress,
+  scenarioId: string,
+  entry: { content: string; emotions: string[] }
+): UserProgress {
+  const id = `${scenarioId}:${Date.now()}`;
+  return {
+    ...progress,
+    reflectionJournal: {
+      ...progress.reflectionJournal,
+      [id]: {
+        ...entry,
+        scenarioId,
+        createdAtIso: new Date().toISOString()
       }
     }
   };

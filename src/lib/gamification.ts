@@ -12,10 +12,18 @@ export type GamificationBadge = {
   awardedAtIso?: string;
 };
 
+export type GamificationSticker = {
+  id: string;
+  label: string;
+  emoji: string;
+  awardedAtIso: string;
+};
+
 export type GamificationState = {
   points: number;
   studyStreakDays: number;
   badges: Record<string, { awardedAtIso: string }>;
+  stickers: GamificationSticker[];
   lastCalculatedAtIso: string;
 };
 
@@ -24,6 +32,7 @@ export type GamificationSummary = {
   studyStreakDays: number;
   completedBadgeCount: number;
   badges: GamificationBadge[];
+  stickers: GamificationSticker[];
   nextMilestone: string;
 };
 
@@ -48,6 +57,7 @@ export function getInitialGamificationState(nowIso = new Date().toISOString()): 
     points: 0,
     studyStreakDays: 0,
     badges: {},
+    stickers: [],
     lastCalculatedAtIso: nowIso
   };
 }
@@ -62,7 +72,8 @@ export function loadGamificationState(nowIso = new Date().toISOString()): Gamifi
   return {
     ...getInitialGamificationState(nowIso),
     ...stored,
-    badges: stored?.badges ?? {}
+    badges: stored?.badges ?? {},
+    stickers: stored?.stickers ?? []
   };
 }
 
@@ -146,7 +157,7 @@ function countCompletedPracticalOutputs(progress: UserProgress) {
   }, 0);
 }
 
-function calculatePoints(progress: UserProgress, modules: ModuleData[]) {
+function calculatePoints(progress: UserProgress, modules: ModuleData[], stickers: GamificationSticker[] = []) {
   const modulePoints = modules.reduce((sum, moduleData) => {
     return sum + Math.floor(getModuleCompletion(moduleData.id, progress, moduleData));
   }, 0);
@@ -155,8 +166,9 @@ function calculatePoints(progress: UserProgress, modules: ModuleData[]) {
   const strongScenarioNotePoints = progress.scenarioRuns.filter((run) => (run.noteScore ?? 0) >= 0.85).length * 20;
   const assessmentPoints = progress.assessmentAttempts.length * 20;
   const practicalOutputPoints = countCompletedPracticalOutputs(progress) * 50;
+  const stickerPoints = stickers.length * 10;
 
-  return modulePoints + pdPoints + completedScenarioPoints + strongScenarioNotePoints + assessmentPoints + practicalOutputPoints;
+  return modulePoints + pdPoints + completedScenarioPoints + strongScenarioNotePoints + assessmentPoints + practicalOutputPoints + stickerPoints;
 }
 
 function getBadgeDefinitions(progress: UserProgress, modules: ModuleData[]) {
@@ -246,10 +258,34 @@ export function deriveGamificationState(
     badges[badgeId] = badges[badgeId] ?? { awardedAtIso: nowIso };
   });
 
+  // Calculate Stickers
+  const stickers = [...previousState.stickers];
+  const reflections = Object.values(progress.reflectionJournal || {});
+  
+  const addSticker = (id: string, label: string, emoji: string) => {
+    if (!stickers.some(s => s.id === id)) {
+      stickers.push({ id, label, emoji, awardedAtIso: nowIso });
+    }
+  };
+
+  if (reflections.some(r => r.emotions.includes('Empathetic'))) {
+    addSticker('empathy-expert', 'Empathy Expert', '🏷️');
+  }
+  if (reflections.length >= 3) {
+    addSticker('quick-reflector', 'Quick Reflector', '📝');
+  }
+  if (modules.some(m => m.id === 'cybersecurity-incident-response-nist' && getModuleCompletion(m.id, progress, m) >= 100)) {
+    addSticker('nist-aware', 'NIST Aware', '🛡️');
+  }
+  if (modules.some(m => m.id === 'microsoft-intune-fundamentals' && getModuleCompletion(m.id, progress, m) >= 100)) {
+    addSticker('intune-hero', 'Intune Hero', '💻');
+  }
+
   return {
-    points: calculatePoints(progress, modules),
+    points: calculatePoints(progress, modules, stickers),
     studyStreakDays: calculateStudyStreakDays(progress),
     badges,
+    stickers,
     lastCalculatedAtIso: nowIso
   };
 }
@@ -269,6 +305,7 @@ export function getGamificationSummary(
     studyStreakDays: state.studyStreakDays,
     completedBadgeCount: badges.filter((badge) => badge.earned).length,
     badges,
+    stickers: state.stickers,
     nextMilestone: getNextMilestone(badges)
   };
 }

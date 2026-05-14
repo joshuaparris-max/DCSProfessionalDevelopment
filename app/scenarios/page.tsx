@@ -8,6 +8,7 @@ import {
   getStoredProgressSnapshot,
   saveProgress,
   saveScenarioRun,
+  saveReflectionEntry,
   type UserProgress
 } from '../../src/lib/progress';
 import {
@@ -17,6 +18,7 @@ import {
 } from '../../src/lib/scenarioReview';
 import type { ScenarioChoice, ScenarioRunChoice } from '../../src/types/scenarios';
 import { MindfulnessPause } from '../../src/components/MindfulnessPause';
+import { ReflectionJournal } from '../../src/components/ReflectionJournal';
 
 export default function ScenariosPage() {
   const [progress, setProgress] = useState<UserProgress>(() => getInitialProgressSnapshot());
@@ -65,6 +67,13 @@ export default function ScenariosPage() {
       activityCategory: 'scenario',
       metadata: { source: 'built-in' }
     });
+  }
+
+  function handleSaveReflection(entry: { content: string; emotions: string[] }) {
+    if (!scenario || !progress) return;
+    const newProgress = saveReflectionEntry(progress, scenario.id, entry);
+    saveProgress(newProgress);
+    setProgress(newProgress);
   }
 
   function handleChoice(choice: ScenarioChoice) {
@@ -330,6 +339,13 @@ export default function ScenariosPage() {
                 <button onClick={() => restartScenario()} className="rounded-full bg-slate-100 px-4 py-2 text-sm text-slate-900">
                   Restart scenario
                 </button>
+              </div>
+
+              <div className="mt-8">
+                <ReflectionJournal 
+                  scenarioId={scenario.id} 
+                  onSave={handleSaveReflection} 
+                />
               </div>
             </div>
           )}
