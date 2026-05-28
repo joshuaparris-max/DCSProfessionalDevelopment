@@ -18,7 +18,7 @@ isProject: false
 
 ## Current status
 
-The app is broadly complete for the local-first DCSPrep use case. The core learning loops now exist:
+The app is broadly complete for the local-first SupportOps Career Lab use case. The core learning loops now exist:
 
 - DCS workflow modules, A+ modules, Academic PD/RBC/SMITB modules, and support-tool routes.
 - Question-first module detail flow with diagnostics, learn/review/assessment tabs, flashcards, scenario prompts, labs, practical outputs, and offline download controls.

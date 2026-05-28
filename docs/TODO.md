@@ -1,4 +1,4 @@
-# DCSPrep TODO
+# SupportOps Career Lab TODO
 
 ## P0: Real DCS Ticket Relevance
 
@@ -24,7 +24,7 @@
 
 - [X] Rework module structure so each topic starts with questions before explanatory reading.
 - [x] Define a standard module pattern: diagnostic questions, flashcards, short-answer retrieval, explain-it-simply prompt, scenario, and practical output. _(See `docs/module-pattern.md`.)_
-- [x] Make flashcards and practice questions the primary way to learn DCS workflow areas that come from internal resources. _(Workflow modules emphasise cards + eight scored prompts each.)_
+- [x] Make flashcards and practice questions the primary way to learn SupportOps workflow areas that come from internal resources. _(Workflow modules emphasise cards + eight scored prompts each.)_
 - [x] Add explicit support for converting internal DCS workflow knowledge into safe app prompts without copying sensitive documents into the repo. _(See `docs/internal-source-workflow.md`.)_
 
 ## P1: Stronger Scenario Lab

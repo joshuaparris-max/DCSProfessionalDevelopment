@@ -518,7 +518,7 @@ Why? Scenario note scoring creates better evidence. Due Today makes that evidenc
 # Copilot prompt
 
 ```text
-Implement five DCSPrep upgrades in the existing Next.js / TypeScript app:
+Implement five SupportOps Career Lab upgrades in the existing Next.js / TypeScript app:
 
 1. Quiet-window dashboard and focus modes
 2. Question-first module experience

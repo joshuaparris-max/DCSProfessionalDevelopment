@@ -208,7 +208,7 @@ export function generateEvidencePackMarkdown(
   const summary = generatePdSummaryForRange(progress, options.startDateIso, options.endDateIso);
   const readiness = calculateReadinessProfiles(progress);
 
-  return `# DCSPrep Professional Development Evidence Pack
+  return `# SupportOps Career Lab Professional Development Evidence Pack
 
 Period: ${options.startDateIso} to ${options.endDateIso}
 
@@ -467,7 +467,7 @@ export async function POST(request: Request) {
         {
           role: "system",
           content: `
-You are a DCSPrep IT support coach.
+You are a SupportOps Career Lab IT support coach.
 Give concise feedback for Level 1 school IT support practice.
 Do not invent DCS policies.
 Do not include confidential information.
@@ -745,7 +745,7 @@ Don’t build AI first. Build the evidence system first, otherwise AI feedback h
 # One Copilot prompt for these 5 features
 
 ```text
-Implement the next major DCSPrep upgrade: PD Log auto-summary, Evidence Pack export, evidence-based readiness, AI coach mode using Groq, and DCS + CompTIA A+ bridge mode.
+Implement the next major SupportOps Career Lab upgrade: PD Log auto-summary, Evidence Pack export, evidence-based readiness, AI coach mode using Groq, and DCS + CompTIA A+ bridge mode.
 
 Context:
 This is a local-first Next.js / TypeScript app for Josh’s DCS IT support professional development.

@@ -16,7 +16,7 @@ Your current app already has modules for:
 * Cloud Models
 * Ticket Notes and Escalation Quality
 
-## Missing DCSPrep modules
+## Missing SupportOps Career Lab modules
 
 The most important missing modules are the DCS workflow ones:
 
@@ -48,7 +48,7 @@ My judgement: **don’t implement all A+ topics as equal modules yet.** For your
 Here’s the Copilot prompt.
 
 ```text
-You are working in my existing Next.js / TypeScript DCSPrep app.
+You are working in my existing Next.js / TypeScript SupportOps Career Lab app.
 
 Goal:
 Implement the missing DCS workflow training modules and lightly extend A+ Core 1 coverage, while keeping the app Level 1-safe, privacy-safe, and aligned with my current DCS IT support role.

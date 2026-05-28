@@ -1,6 +1,6 @@
-Absolutely. Here’s a **30-item wishlist** for making the DCSPrep app genuinely powerful — not just a quiz app, but a practical **DCS IT growth cockpit**.
+Absolutely. Here’s a **30-item wishlist** for making SupportOps Career Lab genuinely powerful — not just a quiz app, but a practical **IT growth cockpit**.
 
-## DCSPrep App Wishlist — 30 Improvements
+## SupportOps Career Lab Wishlist — 30 Improvements
 
 ### Core learning upgrades
 

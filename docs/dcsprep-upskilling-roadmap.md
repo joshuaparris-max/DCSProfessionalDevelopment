@@ -1,6 +1,6 @@
-# DCSPrep Upskilling Roadmap
+# SupportOps Career Lab Upskilling Roadmap
 
-DCSPrep should not primarily be a CompTIA A+ study app.
+SupportOps Career Lab should not primarily be a CompTIA A+ study app.
 It should be a DCS Level 1 → early Level 2 support simulator, using A+ concepts only where they directly help real DCS tickets.
 
 The most relevant focus areas
@@ -64,7 +64,7 @@ Good module:
 
 Tier 4 — Support-quality outputs
 
-This is a very good addition. DCSPrep should help you produce things like:
+This is a very good addition. SupportOps Career Lab should help you produce things like:
 
 Parent Portal quick guide
 password reset guide
@@ -115,11 +115,11 @@ It is better than a generic A+ roadmap because it aims at the real job:
 
 Can Josh respond to common DCS support issues calmly, safely, accurately, and with good handoff notes?
 
-That should be the north star for DCSPrep.
+That should be the north star for SupportOps Career Lab.
 
 ## Goal
 
-Align DCSPrep with:
+Align SupportOps Career Lab with:
 
 - the actual DCS support-ticket mix described in `_Jira analysis.txt`
 - Josh's current Level 1 to early Level 2 development path
@@ -293,7 +293,7 @@ Each completed scenario should require a note scored on:
 
 ### Build self-service and SOP outputs
 
-Because the Jira analysis emphasizes deflection and self-service, DCSPrep should teach Josh to produce support assets, not just recall facts.
+Because the Jira analysis emphasizes deflection and self-service, SupportOps Career Lab should teach Josh to produce support assets, not just recall facts.
 
 Add practical outputs such as:
 

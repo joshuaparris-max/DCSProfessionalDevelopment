@@ -1,12 +1,12 @@
 Yes — don’t delete it. **Reframe it.**
 
-Right now the app’s structure is strong: it already has modules, scenarios, PD logging, readiness profiles, support tools, and an evidence-pack export. The problem is the **DCS identity layer**, not the learning engine. The live app is still framed around “DCS IT support” and “Paul’s instructions,” while the repo describes it as a local-first Next.js PD app for Josh’s DCS IT support growth. ([DCSPrep][1]) ([GitHub][2])
+Right now the app’s structure is strong: it already has modules, scenarios, PD logging, readiness profiles, support tools, and an evidence-pack export. The problem is the **DCS identity layer**, not the learning engine. The live app is still framed around “DCS IT support” and “Paul’s instructions,” while the repo describes it as a local-first Next.js PD app for Josh’s DCS IT support growth. ([legacy DCSPrep][1]) ([GitHub][2])
 
 ## Best pivot
 
 Turn it from:
 
-**DCSPrep**
+**Legacy DCSPrep**
 → “Help Josh grow in DCS school IT”
 
 Into:
@@ -30,7 +30,7 @@ Keep these because they are still career-relevant:
 | Evidence Pack   | Portfolio / manager-safe progress report |
 | Support Tools   | Reusable checklists and templates        |
 
-The evidence-pack feature is especially valuable because it already exports a privacy-safe Markdown summary for reflection, review, or portfolio sharing. That becomes useful for future managers, interviews, performance reviews, or your own confidence. ([DCSPrep][3])
+The evidence-pack feature is especially valuable because it already exports a privacy-safe Markdown summary for reflection, review, or portfolio sharing. That becomes useful for future managers, interviews, performance reviews, or your own confidence. ([legacy DCSPrep][3])
 
 ## What to change
 
@@ -59,7 +59,7 @@ Instead of only DCS modules, add tracks like:
 9. **CompTIA A+ / Network+ / Security+ Prep**
 10. **AI-Assisted IT Support — Safe Use**
 
-The current app already has 126 modules across foundations, networking, endpoint support, identity, cloud, operations, cybersecurity, data/AI, professional practice, and automation, so this is a reframing more than a total rebuild. ([DCSPrep][4])
+The current app already has 126 modules across foundations, networking, endpoint support, identity, cloud, operations, cybersecurity, data/AI, professional practice, and automation, so this is a reframing more than a total rebuild. ([legacy DCSPrep][4])
 
 ### 3. Convert DCS-specific topics into universal IT topics
 
@@ -106,7 +106,7 @@ Same skills. Broader relevance.
 
 ### 5. Upgrade readiness profiles
 
-The current readiness page estimates CompTIA A+, Level 2 support, and School IT Manager readiness, but it says these are indicative only and need more quiz attempts, weak-topic reviews, and scenario note scores to become meaningful. ([DCSPrep][5])
+The current readiness page estimates CompTIA A+, Level 2 support, and School IT Manager readiness, but it says these are indicative only and need more quiz attempts, weak-topic reviews, and scenario note scores to become meaningful. ([legacy DCSPrep][5])
 
 Change readiness profiles to:
 
@@ -239,8 +239,8 @@ Keep all data local-first and privacy-safe. Do not add backend/auth unless absol
 
 Bottom line: **this app can become more relevant after DCS than it is now** — if you make it about your IT career, not your current workplace.
 
-[1]: https://dcs-professional-development.vercel.app/ "DCSPrep"
+[1]: https://dcs-professional-development.vercel.app/ "legacy DCSPrep"
 [2]: https://github.com/joshuaparris-max/DCSProfessionalDevelopment "GitHub - joshuaparris-max/DCSProfessionalDevelopment · GitHub"
-[3]: https://dcs-professional-development.vercel.app/evidence-pack "DCSPrep"
-[4]: https://dcs-professional-development.vercel.app/modules "DCSPrep"
-[5]: https://dcs-professional-development.vercel.app/readiness "DCSPrep"
+[3]: https://dcs-professional-development.vercel.app/evidence-pack "legacy DCSPrep"
+[4]: https://dcs-professional-development.vercel.app/modules "legacy DCSPrep"
+[5]: https://dcs-professional-development.vercel.app/readiness "legacy DCSPrep"

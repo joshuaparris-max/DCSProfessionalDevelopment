@@ -119,7 +119,7 @@ If I were building the app, I’d do them in this order:
 
 These would make the app feel less like “study content” and more like a **safe, practical DCS IT support coach**.
 
-Yes. I’ve made this concrete as a **drop-in feature patch** for your actual DCSPrep app structure.
+Yes. I’ve made this concrete as a **drop-in feature patch** for your actual SupportOps Career Lab app structure.
 
 Files here:
 
@@ -542,7 +542,7 @@ Use this order:
 ## Copy-paste Copilot prompt
 
 ```text
-Implement the next 5 high-impact DCSPrep features using the attached patch/files:
+Implement the next 5 high-impact SupportOps Career Lab features using the attached patch/files:
 
 1. Weak-area detector / next-best-action engine
 2. Error Log with “why it matters at DCS”

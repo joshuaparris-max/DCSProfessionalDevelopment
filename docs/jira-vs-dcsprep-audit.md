@@ -1,8 +1,8 @@
-# Jira Analysis vs DCSPrep Audit
+# Jira Analysis vs SupportOps Career Lab Audit
 
 ## Purpose
 
-This document compares the current DCSPrep app against the content and expectations captured in `_Jira analysis.txt`.
+This document compares the current SupportOps Career Lab app against the content and expectations captured in `_Jira analysis.txt`.
 
 It also folds in the latest direction for the app:
 
@@ -15,7 +15,7 @@ The source file contains four distinct inputs:
 1. Real DCS ticket-volume analysis and top enquiry themes.
 2. A DCS enquiry taxonomy plus self-service article pack.
 3. A learning and assessment critique showing where training stayed too shallow.
-4. A future-state app backlog for DCSPrep.
+4. A future-state app backlog for SupportOps Career Lab.
 
 This audit focuses on one question:
 
@@ -23,7 +23,7 @@ What does the app still fail to teach deeply enough for Josh's actual DCS suppor
 
 ## Current App Snapshot
 
-Current DCSPrep strengths:
+Current SupportOps Career Lab strengths:
 
 - 20+ PD modules covering DCS workflow areas including foundations, ports/protocols, DNS/DHCP/gateway, printers, classroom display/ViewBoard, login/password, permissions, Teams/SharePoint/OneDrive, M365 offboarding, MDM/Intune/Group Policy, VLANs, cloud models, ticket notes, device imaging, Parent Portal, Sentral, OurDCS/Schoolbox, new user onboarding, website filtering, and iPad/Jamf basics.
 - Strict assessment foundation with confidence rating, explanation, risk judgement, scoring, error log, and spaced repetition.
@@ -243,7 +243,7 @@ What is still shallow or missing:
 Why this matters:
 
 - the real DCS knowledge base appears to live partly in internal systems, Teams spaces, staff PD material, and school-specific processes
-- if DCSPrep does not mirror those workflow areas, it will stay technically useful but operationally incomplete
+- if SupportOps Career Lab does not mirror those workflow areas, it will stay technically useful but operationally incomplete
 
 ## Depth Gaps Beyond the Top 10 Themes
 

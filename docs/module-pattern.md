@@ -1,4 +1,4 @@
-# Standard DCSPrep module pattern
+# Standard SupportOps Career Lab module pattern
 
 Each training module should ship with this skeleton so retrieval-first learning stays consistent:
 
