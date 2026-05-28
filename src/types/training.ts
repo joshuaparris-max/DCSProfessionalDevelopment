@@ -76,6 +76,10 @@ export type TrainingModule = {
   level: ModuleLevel;
   estimatedMinutes: number;
   tags: string[];
+  careerTags?: string[];
+  contextTags?: string[];
+  certificationTags?: string[];
+  transferableSkills?: string[];
   learningObjectives: string[];
   dcsRelevance: string[];
   sections: Section[];

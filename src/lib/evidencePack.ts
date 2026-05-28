@@ -25,7 +25,7 @@ export function buildEvidencePackMarkdown(progress: UserProgress, monthKey: stri
   };
 
   const lines = [
-    `# DCSPrep Evidence Pack — ${summary.monthKey}`,
+    `# SupportOps Career Lab Career Evidence Pack — ${summary.monthKey}`,
     '',
     '> This summary is generated from local PD activity. It contains no private student, staff, or incident data.',
     '',
@@ -38,10 +38,14 @@ export function buildEvidencePackMarkdown(progress: UserProgress, monthKey: stri
     `- Include certificate references: ${settings.includeCertificates ? 'Yes' : 'No'}`,
     `- Academic alignment evidence: ${includesAcademicAlignment ? 'Informal RBC/SMITB PD alignment included' : 'None logged this month'}`,
     '',
+    '## Career evidence overview',
+    '',
+    'This export highlights your practical growth, strongest and weakest skill areas, and portfolio-safe evidence for managers or interviews.',
+    '',
     '## Academic alignment note',
     '',
     includesAcademicAlignment
-      ? 'RBC/SMITB references in this export are informal DCSPrep professional-development alignment notes. They do not claim formal university credit, certification, or official assessment completion unless separately evidenced in the external academic system.'
+      ? 'RBC/SMITB references in this export are informal professional-development alignment notes. They do not claim formal university credit, certification, or official assessment completion unless separately evidenced in the external academic system.'
       : 'No RBC/SMITB academic-alignment entries were detected for this export period.',
     '',
     '## Entry summary',

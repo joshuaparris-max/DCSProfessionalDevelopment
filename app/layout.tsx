@@ -10,8 +10,8 @@ import { UIProvider } from '../src/contexts/UIContext';
 import { LayoutShell } from '../src/components/shell/LayoutShell';
 
 export const metadata: Metadata = {
-  title: 'DCSPrep',
-  description: 'A local-first DCS IT professional development dashboard.',
+  title: 'SupportOps Career Lab',
+  description: 'A local-first IT career development dashboard for support operations and professional growth.',
   manifest: '/manifest.webmanifest'
 };
 

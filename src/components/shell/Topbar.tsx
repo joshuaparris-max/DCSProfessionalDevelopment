@@ -35,7 +35,7 @@ export default function Topbar() {
       <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-4 sm:px-6">
         <div>
           <Link href="/" className="text-lg font-semibold text-slate-900 dark:text-slate-100">
-            DCSPrep
+            SupportOps Career Lab
           </Link>
         </div>
         <form action="/search" method="get" className="hidden min-w-[280px] flex-1 px-6 lg:block">

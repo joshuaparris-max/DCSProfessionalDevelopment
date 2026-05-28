@@ -72,7 +72,7 @@ function buildPerspectiveNotes(summary: UsageSummary) {
           : 'Scenario practice is present. Keep ending scenarios with clean ticket-note evidence.'
     },
     {
-      role: 'School IT manager',
+      role: 'SupportOps coach',
       note:
         summary.evidenceOutputsCreated === 0
           ? 'Evidence logging is low. Create a weekly manager-safe summary from completed PD.'
@@ -89,7 +89,7 @@ function buildPerspectiveNotes(summary: UsageSummary) {
       role: 'Productivity / ADHD-friendly coach',
       note:
         summary.mostActiveHour !== undefined
-          ? `You tend to use DCSPrep around ${summary.mostActiveHour}:00. Use that window for the smallest next action.`
+          ? `You tend to use SupportOps Career Lab around ${summary.mostActiveHour}:00. Use that window for the smallest next action.`
           : 'Start with one tiny action: one flashcard, one scenario step, or one PD log sentence.'
     },
     {
@@ -142,7 +142,7 @@ export default function UsageInsightsPage() {
   const mostUsedSection = summary.mostUsedRoutes[0]?.route ?? 'Not enough data yet';
 
   function handleExport() {
-    downloadJson(`dcsprep-usage-analytics-${new Date().toISOString().slice(0, 10)}.json`, exportUsageEvents());
+    downloadJson(`supportops-usage-analytics-${new Date().toISOString().slice(0, 10)}.json`, exportUsageEvents());
   }
 
   async function handleCopyExport() {
@@ -174,8 +174,8 @@ export default function UsageInsightsPage() {
             <div className="text-sm font-semibold uppercase tracking-[0.2em] text-slate-500">Usage Insights</div>
             <h1 className="mt-3 text-4xl font-semibold tracking-tight text-slate-900">Local-only learning analytics</h1>
             <p className="mt-3 max-w-3xl text-sm leading-7 text-slate-600">
-              See how DCSPrep is actually being used over time, then choose small next actions that improve retention,
-              scenario practice, evidence capture, and school IT judgement.
+              See how SupportOps Career Lab is actually being used over time, then choose small next actions that improve retention,
+              scenario practice, evidence capture, and professional support judgement.
             </p>
           </div>
           <div className="rounded-3xl bg-slate-100 px-5 py-4 text-sm font-semibold text-slate-800">

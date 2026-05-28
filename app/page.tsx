@@ -36,40 +36,38 @@ export default function HomePage() {
   ).length;
   const dueQuestions = progress.assessmentAttempts.filter((attempt) => isDue(attempt.nextReviewDateIso)).length;
 
-  const getNextBestAction = () => {
-    // 1. Due Reviews (High Priority)
+  const selectedWorkContext = progress.selectedWorkContext;
+
+  const getNextBestAction = (workContext: string) => {
+    const contextLabel = workContext ? ` aligned to ${workContext}` : '';
+
     if (dueFlashcards > 0 || dueQuestions > 0) {
       return {
         title: "Clear Today's Reviews",
-        detail: `You have ${dueFlashcards + dueQuestions} items due for retrieval practice.`,
-        ctaLabel: "Review Now",
-        ctaHref: "/due-today",
-        category: "Confidence Builder"
+        detail: `You have ${dueFlashcards + dueQuestions} items due for retrieval practice${contextLabel}.`,
+        ctaLabel: 'Review Now',
+        ctaHref: '/due-today',
+        category: 'Confidence Builder'
       };
     }
 
-    // 2. Unfinished Interactive Labs (Real Practice)
-    const allLabs = modules.flatMap(m => m.interactiveLabs || []);
-    // In a real app we'd track lab completion in progress. 
-    // For now, let's suggest the most critical DCS labs if not already in deep study.
     const criticalLabs = [
-      { id: 'lab-viewboard-no-display', title: 'ViewBoard Display Triage' },
-      { id: 'lab-student-169-ip', title: '169.254 IP Troubleshooting' },
-      { id: 'lab-papercut-stuck', title: 'PaperCut Printer Jobs' }
+      { id: 'lab-display-troubleshooting', title: 'Display & AV troubleshooting' },
+      { id: 'lab-network-scope', title: 'Network scope diagnostics' },
+      { id: 'lab-print-job-queue', title: 'Printer queue recovery' }
     ];
-    
-    // Suggest a random critical lab as a "10-minute action"
     const randomLab = criticalLabs[Math.floor(Math.random() * criticalLabs.length)];
+
     return {
       title: `Practice: ${randomLab.title}`,
-      detail: "Next best 10-minute action: run a simulated DCS support scenario.",
-      ctaLabel: "Run Lab",
-      ctaHref: "/modules", // Link to modules list to find labs
-      category: "10-Minute Action"
+      detail: `Next best 10-minute action: run a simulated support scenario${contextLabel}.`,
+      ctaLabel: 'Run Lab',
+      ctaHref: '/modules',
+      category: '10-Minute Action'
     };
   };
 
-  const nextAction = getNextBestAction();
+  const nextAction = getNextBestAction(selectedWorkContext);
 
   useEffect(() => {
     const storedProgress = getStoredProgressSnapshot(modules);
@@ -136,11 +134,11 @@ export default function HomePage() {
       <section className="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-sm">
         <div className="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
           <div>
-            <div className="text-sm font-semibold uppercase tracking-[0.2em] text-slate-500">Welcome, Josh</div>
-            <h1 className="mt-3 text-4xl font-semibold tracking-tight text-slate-900">Your DCS PD Dashboard</h1>
+            <div className="text-sm font-semibold uppercase tracking-[0.2em] text-slate-500">{selectedWorkContext} profile</div>
+            <h1 className="mt-3 text-4xl font-semibold tracking-tight text-slate-900">Your IT career growth dashboard</h1>
             <p className="mt-4 max-w-xl text-sm leading-7 text-slate-600">
-              Track your progress in IT support fundamentals and real-world DCS workflows. 
-              Remember: <span className="font-bold text-rose-600">Tickets, walk-ups, calls, and Paul&apos;s instructions come first.</span>
+              Track your growth in IT support, MSP operations, M365, endpoint and networking practice, and professional service delivery.
+              Use this app to build privacy-safe evidence, scenario judgement, and career-ready readiness in a local-first workflow.
             </p>
           </div>
           <div className="w-full max-w-sm flex flex-col gap-4">
@@ -187,7 +185,7 @@ export default function HomePage() {
         <div className="flex flex-col gap-5 lg:flex-row lg:items-start lg:justify-between">
           <div>
             <div className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-500">Personal progression</div>
-            <h2 className="mt-3 text-2xl font-semibold text-slate-900">Points, streaks, and DCS task badges</h2>
+            <h2 className="mt-3 text-2xl font-semibold text-slate-900">Points, streaks, and career progress badges</h2>
             <p className="mt-2 max-w-3xl text-sm leading-7 text-slate-600">
               Progress is earned from module milestones, scenario work, PD logging, assessment attempts, and practical
               outputs. Badge dates are saved locally on this device.

@@ -32,7 +32,7 @@ export function LayoutShell({ children }: { children: React.ReactNode }) {
       {!focusMode && (
         <footer className="border-t border-slate-200 bg-white/80 px-4 py-5 text-sm text-slate-500 dark:border-slate-700 dark:bg-slate-950/80 dark:text-slate-400">
           <div className="mx-auto max-w-7xl">
-            DCSPrep is a personal PD tool. Keep all entries privacy-safe and free of real student, staff,
+            SupportOps Career Lab is a personal career development tool. Keep all entries privacy-safe and free of real student, staff,
             credential, or network details.
           </div>
         </footer>

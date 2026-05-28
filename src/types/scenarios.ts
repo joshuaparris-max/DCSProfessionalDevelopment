@@ -41,6 +41,10 @@ export type Scenario = {
   estimatedMinutes: number;
   initialReport: string;
   contextBullets: string[];
+  careerTags?: string[];
+  contextTags?: string[];
+  certificationTags?: string[];
+  transferableSkills?: string[];
   steps: ScenarioStep[];
   idealTroubleshootingPath: string[];
   escalationPoint: string;

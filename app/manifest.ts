@@ -2,9 +2,9 @@ import type { MetadataRoute } from 'next';
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: 'DCSPrep',
-    short_name: 'DCSPrep',
-    description: 'Local-first DCS IT professional development, scenario practice, and review.',
+    name: 'SupportOps Career Lab',
+    short_name: 'SupportOps Lab',
+    description: 'Local-first IT career development for support operations, scenario practice, and evidence-based growth.',
     start_url: '/',
     scope: '/',
     display: 'standalone',

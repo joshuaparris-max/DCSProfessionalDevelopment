@@ -56,8 +56,8 @@ export default function ReadinessPage() {
     setProgress(getStoredProgressSnapshot());
   }, []);
 
-  const aPlusScores = getReadinessProfile('aPlus', progress);
-  const level2Scores = getReadinessProfile('level2', progress);
+  const aPlusScores = getReadinessProfile('compTIAaPlus', progress);
+  const level2Scores = getReadinessProfile('mspL2', progress);
   const managerScores = getReadinessProfile('schoolItManager', progress);
 
   return (

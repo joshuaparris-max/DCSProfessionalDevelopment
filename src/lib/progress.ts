@@ -68,8 +68,17 @@ export type PDLogEntry = {
   sensitiveConfirmed: boolean;
 };
 
+type WorkContextProfile =
+  | 'DCS / School IT'
+  | 'MSP Support'
+  | 'Healthcare Practice IT'
+  | 'General Internal IT'
+  | 'Certification Study'
+  | 'Job Interview Prep';
+
 export type UserProgress = {
   schemaVersion: number;
+  selectedWorkContext: WorkContextProfile;
   modules: Record<string, ModuleProgress>;
   assessmentAttempts: AssessmentAttempt[];
   weakTopicReviews: Record<string, WeakTopicReview>;
@@ -116,6 +125,7 @@ function getDefaultModuleProgress(module: ModuleData): ModuleProgress {
 export function getInitialProgressSnapshot(modules: ModuleData[] = []): UserProgress {
   return {
     schemaVersion: STORAGE_VERSION,
+    selectedWorkContext: 'DCS / School IT',
     modules: Object.fromEntries(modules.map((module) => [module.id, getDefaultModuleProgress(module)])),
     assessmentAttempts: [],
     weakTopicReviews: {},
@@ -141,6 +151,7 @@ function migrateProgress(raw: PersistedProgress, modules: ModuleData[]): UserPro
     ...base,
     ...raw,
     schemaVersion: STORAGE_VERSION,
+    selectedWorkContext: raw.selectedWorkContext ?? 'DCS / School IT',
     modules: raw.modules ?? base.modules,
     assessmentAttempts: raw.assessmentAttempts ?? base.assessmentAttempts,
     weakTopicReviews: raw.weakTopicReviews ?? base.weakTopicReviews,

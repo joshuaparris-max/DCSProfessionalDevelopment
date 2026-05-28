@@ -41,6 +41,7 @@ export default function SettingsPage() {
   const [notificationPermission, setNotificationPermission] = useState<NotificationPermission | 'unsupported'>('default');
   const [scheduledReminderCount, setScheduledReminderCount] = useState(0);
   const [backgroundSyncStatus, setBackgroundSyncStatus] = useState<'idle' | 'registered' | 'unsupported' | 'failed'>('idle');
+  const workContexts = ['DCS / School IT', 'MSP Support', 'Healthcare Practice IT', 'General Internal IT', 'Certification Study', 'Job Interview Prep'] as const;
   const { user, role, login, logout } = useAuth();
   const [progress, setProgress] = useState<UserProgress | null>(null);
 
@@ -68,7 +69,7 @@ export default function SettingsPage() {
 
   function handleTestNotification() {
     showNotification('Test Notification', {
-      body: 'This is a test notification from DCSPrep.',
+      body: 'This is a test notification from SupportOps Career Lab.',
       tag: 'test-notification'
     });
   }
@@ -82,6 +83,20 @@ export default function SettingsPage() {
     setBackgroundSyncStatus(await registerBackgroundSync());
   }
 
+  function updateWorkContext(workContext: (typeof workContexts)[number]) {
+    if (!progress) {
+      return;
+    }
+
+    const nextProgress = {
+      ...progress,
+      selectedWorkContext: workContext
+    };
+
+    setProgress(nextProgress);
+    saveProgress(nextProgress);
+  }
+
   function handleRestore(newProgress: UserProgress) {
     saveProgress(newProgress);
     setProgress(newProgress);
@@ -89,7 +104,7 @@ export default function SettingsPage() {
   }
 
   function handleReset() {
-    if (window.confirm('Reset all DCSPrep local progress and logs? This cannot be undone.')) {
+    if (window.confirm('Reset all SupportOps Career Lab local progress and logs? This cannot be undone.')) {
       resetProgress();
       window.location.reload();
     }
@@ -137,7 +152,7 @@ export default function SettingsPage() {
     const url = URL.createObjectURL(blob);
     const anchor = document.createElement('a');
     anchor.href = url;
-    anchor.download = `dcsprep-usage-analytics-${new Date().toISOString().slice(0, 10)}.json`;
+    anchor.download = `supportops-usage-analytics-${new Date().toISOString().slice(0, 10)}.json`;
     anchor.click();
     URL.revokeObjectURL(url);
   }
@@ -165,8 +180,7 @@ export default function SettingsPage() {
             <div className="text-sm font-semibold uppercase tracking-[0.2em] text-slate-500">Identity & Demo Roles</div>
             <h2 className="mt-3 text-2xl font-semibold text-slate-900">Local Role Simulation</h2>
             <p className="mt-2 max-w-3xl text-sm leading-7 text-slate-600">
-              Select a role to simulate UI behavior (e.g., restricted content or educator views). 
-              <span className="block mt-1 font-bold text-rose-600">WARNING: This is a local-only simulation. Roles are stored in LocalStorage and do not provide security for sensitive data.</span>
+              Select a role to simulate UI behavior (e.g., restricted content or educator views. This is local-only and does not provide real security).
             </p>
             <p className="mt-2 text-sm text-slate-600">
               Current Simulated Role: <span className="font-semibold text-slate-900 capitalize">{role}</span>
@@ -190,14 +204,41 @@ export default function SettingsPage() {
         </div>
       </section>
 
+      <section className="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-sm">
+        <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+          <div>
+            <div className="text-sm font-semibold uppercase tracking-[0.2em] text-slate-500">Work Contexts</div>
+            <h2 className="mt-3 text-2xl font-semibold text-slate-900">Career Profile Selection</h2>
+            <p className="mt-2 max-w-3xl text-sm leading-7 text-slate-600">
+              Choose a work context to make the dashboard and suggested actions feel more aligned with your support operations goals.
+            </p>
+          </div>
+          <div className="flex flex-wrap gap-3">
+            {workContexts.map((context) => (
+              <button
+                key={context}
+                onClick={() => updateWorkContext(context)}
+                className={`rounded-full px-4 py-2 text-sm font-semibold transition-all ${
+                  progress?.selectedWorkContext === context
+                    ? 'bg-slate-900 text-white'
+                    : 'border border-slate-200 bg-white text-slate-700'
+                }`}
+              >
+                {context}
+              </button>
+            ))}
+          </div>
+        </div>
+      </section>
+
       <section className="rounded-[2rem] border border-rose-200 bg-rose-50 p-6 shadow-sm">
         <div className="flex items-start gap-4">
           <div className="text-2xl">⚠️</div>
           <div>
             <h2 className="text-lg font-bold text-rose-900">Privacy & Data Security Notice</h2>
             <p className="mt-2 text-sm text-rose-800 leading-relaxed">
-              DCSPrep is a client-side learning tool. All data is stored locally in your browser. 
-              <strong>NEVER</strong> enter real student names, staff credentials, parent contact details, or sensitive school network configurations into this application.
+              SupportOps Career Lab is a client-side learning tool. All data is stored locally in your browser.
+              <strong>NEVER</strong> enter real student names, staff credentials, parent contact details, or sensitive network or incident data into this app.
             </p>
           </div>
         </div>
@@ -269,7 +310,7 @@ export default function SettingsPage() {
             Local-only storage, operational boundaries, and privacy reminders.
           </h1>
           <p className="mt-3 text-sm leading-7 text-slate-600">
-            DCSPrep stores progress locally in the browser. There is no external auth or backend in this version.
+            SupportOps Career Lab stores progress locally in the browser. There is no external auth or backend in this version.
           </p>
         </div>
       </section>
@@ -277,8 +318,8 @@ export default function SettingsPage() {
       <section className="rounded-[2rem] border border-amber-200 bg-amber-50 p-6 shadow-sm">
         <div className="text-sm font-semibold uppercase tracking-[0.2em] text-amber-700">Privacy notice</div>
         <p className="mt-3 text-sm leading-7 text-amber-900">
-          This app is for personal PD. Do not enter sensitive DCS, student, staff, parent, network, credential,
-          or incident details.
+          This app is for personal professional development. Do not enter sensitive student, staff, parent,
+          network, credential, or incident details.
         </p>
       </section>
 
