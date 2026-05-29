@@ -8,9 +8,10 @@ import { triggerXPGain } from './XPToast';
 
 type LabRunnerProps = {
   lab: InteractiveLab;
+  onComplete?: () => void;
 };
 
-export function LabRunner({ lab }: LabRunnerProps) {
+export function LabRunner({ lab, onComplete }: LabRunnerProps) {
   const [currentStep, setCurrentStep] = useState(0);
   const [selectedOption, setSelectedOption] = useState<string | null>(null);
   const [showFeedback, setShowResult] = useState(false);
@@ -28,6 +29,9 @@ export function LabRunner({ lab }: LabRunnerProps) {
     });
     triggerXPGain(50, 'Mission Accomplished: ' + lab.title);
     setLabStep('complete');
+    if (onComplete) {
+      onComplete();
+    }
   }
 
   function handleOptionSelect(optionId: string) {
@@ -174,17 +178,33 @@ export function LabRunner({ lab }: LabRunnerProps) {
             <div className="mt-2 text-[10px] text-slate-400 italic">
               Privacy Reminder: Do not enter real student, staff, parent, credential, or network-sensitive information in your notes or reflections.
             </div>
-            <button
-              onClick={() => {
-                setLabStep('decision');
-                setCurrentStep(0);
-                setSelectedOption(null);
-                setShowResult(false);
-              }}
-              className="mt-4 w-full py-3 rounded-full bg-slate-900 text-white font-bold focus:ring-2 focus:ring-slate-500"
-            >
-              Restart Lab
-            </button>
+            
+            <div className="flex flex-col sm:flex-row gap-3 mt-6">
+              <button
+                onClick={() => {
+                  const flashcardsEl = document.getElementById('module-flashcards');
+                  if (flashcardsEl) {
+                    flashcardsEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                  } else {
+                    window.scrollTo({ top: window.scrollY + 300, behavior: 'smooth' });
+                  }
+                }}
+                className="flex-1 py-3 rounded-full bg-blue-900 text-white font-bold hover:bg-blue-800 transition shadow-lg active:scale-95"
+              >
+                Continue to Flashcards →
+              </button>
+              <button
+                onClick={() => {
+                  setLabStep('decision');
+                  setCurrentStep(0);
+                  setSelectedOption(null);
+                  setShowResult(false);
+                }}
+                className="px-6 py-3 rounded-full border border-slate-200 bg-white text-slate-600 text-sm font-bold hover:bg-slate-50 transition active:scale-95"
+              >
+                Restart Lab
+              </button>
+            </div>
           </div>
         )}
       </div>

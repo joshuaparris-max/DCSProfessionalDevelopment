@@ -13,7 +13,8 @@ import {
   saveProgress,
   type UserProgress,
   updateModulePracticalOutput,
-  updateModuleSectionProgress
+  updateModuleSectionProgress,
+  updateModuleLabProgress
 } from '../../lib/progress';
 import type { AssessmentQuestion } from '../../types/assessment';
 import type { TrainingModule } from '../../types/training';
@@ -582,12 +583,18 @@ export default function ModuleDetail({
                   </p>
                 </div>
                 {moduleData.interactiveLabs.map((lab) => (
-                  <LabRunner key={lab.id} lab={lab} />
+                  <LabRunner 
+                    key={lab.id} 
+                    lab={lab} 
+                    onComplete={() => {
+                      setProgress(current => updateModuleLabProgress(current, moduleData.id, lab.id, true));
+                    }}
+                  />
                 ))}
               </div>
             ) : null}
 
-            <div className="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-sm">
+            <div id="module-flashcards" className="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-sm scroll-mt-24">
               <h2 className="text-2xl font-semibold text-slate-900">Flashcards</h2>
               <div className="mt-4 space-y-3 text-sm text-slate-700">
                 {moduleData.flashcards.map((card) => (

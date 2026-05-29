@@ -49,12 +49,17 @@ export function getModuleCompletion(moduleId: string, progress: UserProgress, mo
     moduleData.practicalOutputs.filter((output) => Boolean(moduleProgress.practicalOutputs?.[output.id])).length,
     moduleData.practicalOutputs.length
   );
+  const labCompletion = getCompletionRatio(
+    (moduleData.interactiveLabs ?? []).filter((lab) => Boolean(moduleProgress.interactiveLabs?.[lab.id])).length,
+    (moduleData.interactiveLabs ?? []).length
+  );
 
   const activeRatios = [
     sectionCompletion,
     flashcardCompletion,
     quizCompletion,
-    practicalOutputCompletion
+    practicalOutputCompletion,
+    labCompletion
   ].filter((value): value is number => value !== null);
 
   if (activeRatios.length === 0) {

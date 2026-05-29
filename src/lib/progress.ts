@@ -29,6 +29,7 @@ export type ModuleProgress = {
   flashcards: Record<string, FlashcardProgress>;
   quizAttempts?: ModuleQuizAttempt[];
   practicalOutputs?: Record<string, boolean>;
+  interactiveLabs?: Record<string, boolean>;
 };
 
 export type AssessmentAttempt = StoredAssessmentAttempt;
@@ -283,7 +284,8 @@ export function updateModulePracticalOutput(
   const moduleProgress = progress.modules[moduleId] ?? {
     sectionsRead: {},
     flashcards: {},
-    practicalOutputs: {}
+    practicalOutputs: {},
+    interactiveLabs: {}
   };
 
   return {
@@ -295,6 +297,34 @@ export function updateModulePracticalOutput(
         practicalOutputs: {
           ...(moduleProgress.practicalOutputs ?? {}),
           [outputId]: completed
+        }
+      }
+    }
+  };
+}
+
+export function updateModuleLabProgress(
+  progress: UserProgress,
+  moduleId: string,
+  labId: string,
+  completed: boolean
+): UserProgress {
+  const moduleProgress = progress.modules[moduleId] ?? {
+    sectionsRead: {},
+    flashcards: {},
+    practicalOutputs: {},
+    interactiveLabs: {}
+  };
+
+  return {
+    ...progress,
+    modules: {
+      ...progress.modules,
+      [moduleId]: {
+        ...moduleProgress,
+        interactiveLabs: {
+          ...(moduleProgress.interactiveLabs ?? {}),
+          [labId]: completed
         }
       }
     }
