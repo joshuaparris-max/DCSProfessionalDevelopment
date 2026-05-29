@@ -460,6 +460,8 @@ export const messerCore2Modules: TrainingModule[] = [
     domain: 'Endpoint Support',
     level: 'A+',
     estimatedMinutes: 35,
+    careerTrack: 'CompTIA A+',
+    attributeFocus: 'Intelligence',
     tags: ['Professor Messer', 'CompTIA A+ 220-1202', 'operating systems', 'Windows', 'macOS', 'Linux'],
     learningObjectives: [
       'Recognise where Windows, macOS, Linux, Chrome OS, iOS, and Android fit in support triage.',

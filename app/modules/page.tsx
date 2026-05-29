@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from 'react';
+import Link from 'next/link';
 import ModuleCard from '../../src/components/modules/ModuleCard';
 import { modules } from '../../src/data/modules';
 import { getModuleCompletion } from '../../src/lib/moduleMath';
@@ -10,22 +11,26 @@ import type { ModuleDomain, ModuleLevel, TrainingModule } from '../../src/types/
 export const dynamic = 'force-dynamic';
 
 type ModuleCategory =
-  | 'Core catalogue'
-  | 'DCS workflows'
-  | 'A+ Core 2 topics'
-  | 'A+ Core 2 overview'
-  | 'RBC/SMITB'
+  | 'Support Foundations'
+  | 'M365 & Identity'
+  | 'Networking'
+  | 'Endpoint Management'
+  | 'Cybersecurity'
+  | 'DCS Context'
+  | 'A+ Readiness'
   | 'All modules';
 
 type SortMode = 'Recommended' | 'Title A-Z' | 'Progress low-high' | 'Progress high-low' | 'Shortest first';
 type CompletionFilter = 'All' | 'Not started' | 'In progress' | 'Completed';
 
 const categoryOptions: ModuleCategory[] = [
-  'Core catalogue',
-  'DCS workflows',
-  'A+ Core 2 topics',
-  'A+ Core 2 overview',
-  'RBC/SMITB',
+  'Support Foundations',
+  'M365 & Identity',
+  'Networking',
+  'Endpoint Management',
+  'Cybersecurity',
+  'DCS Context',
+  'A+ Readiness',
   'All modules'
 ];
 
@@ -33,23 +38,34 @@ const sortOptions: SortMode[] = ['Recommended', 'Title A-Z', 'Progress low-high'
 const completionOptions: CompletionFilter[] = ['All', 'Not started', 'In progress', 'Completed'];
 
 function getModuleCategory(moduleData: TrainingModule): Exclude<ModuleCategory, 'All modules'> {
-  if (moduleData.id.startsWith('messer-core2-topic-')) {
-    return 'A+ Core 2 topics';
+  const domain = moduleData.domain.toLowerCase();
+  const id = moduleData.id.toLowerCase();
+
+  if (id.startsWith('messer-core2-') || moduleData.level === 'A+') {
+    return 'A+ Readiness';
   }
 
-  if (moduleData.id.startsWith('messer-core2-')) {
-    return 'A+ Core 2 overview';
+  if (domain.includes('networking')) {
+    return 'Networking';
   }
 
-  if (moduleData.level === 'RBC' || moduleData.level === 'SMITB') {
-    return 'RBC/SMITB';
+  if (domain.includes('identity') || domain.includes('m365') || domain.includes('cloud')) {
+    return 'M365 & Identity';
+  }
+
+  if (domain.includes('endpoint') || domain.includes('hardware')) {
+    return 'Endpoint Management';
+  }
+
+  if (domain.includes('security') || domain.includes('cyber')) {
+    return 'Cybersecurity';
   }
 
   if (moduleData.level === 'DCS Context' || moduleData.tags.some((tag) => tag.toLowerCase().includes('dcs'))) {
-    return 'DCS workflows';
+    return 'DCS Context';
   }
 
-  return 'Core catalogue';
+  return 'Support Foundations';
 }
 
 function matchesCompletion(progress: number, completionFilter: CompletionFilter) {
@@ -71,7 +87,7 @@ function matchesCompletion(progress: number, completionFilter: CompletionFilter)
 export default function ModulesPage() {
   const [progress, setProgress] = useState<UserProgress>(() => getInitialProgressSnapshot(modules));
   const [query, setQuery] = useState('');
-  const [category, setCategory] = useState<ModuleCategory>('Core catalogue');
+  const [category, setCategory] = useState<ModuleCategory>('All modules');
   const [domain, setDomain] = useState<ModuleDomain | 'All'>('All');
   const [level, setLevel] = useState<ModuleLevel | 'All'>('All');
   const [completionFilter, setCompletionFilter] = useState<CompletionFilter>('All');
@@ -153,7 +169,7 @@ export default function ModulesPage() {
 
   function clearFilters() {
     setQuery('');
-    setCategory('Core catalogue');
+    setCategory('All modules');
     setDomain('All');
     setLevel('All');
     setCompletionFilter('All');
@@ -165,29 +181,67 @@ export default function ModulesPage() {
       <section className="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-sm">
         <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
           <div>
-            <div className="text-sm font-semibold uppercase tracking-[0.2em] text-slate-500">Modules</div>
+            <div className="text-sm font-semibold uppercase tracking-[0.2em] text-slate-500">Training Library</div>
             <h1 className="mt-3 text-3xl font-semibold tracking-tight text-slate-900">
-              DCS-specific modules for targeted professional development
+              SupportOps Training Modules
             </h1>
             <p className="mt-3 max-w-3xl text-sm leading-7 text-slate-600">
-              Each module is concise, practical, and aligned to common DCS support scenarios. Review the concept,
-              assess retention, apply it in context, and produce a usable reference or note.
+              Guided IT training modules covering Level 1 & 2 support foundations, Microsoft 365 administration, 
+              networking, and professional service delivery. Each module is practical and action-oriented.
             </p>
           </div>
-          <div className="rounded-3xl bg-slate-100 px-5 py-4 text-sm text-slate-700">
-            {modules.length} modules across foundations, networking, endpoints, identity, cloud, and operations.
+          <div className="rounded-3xl bg-slate-100 px-5 py-4 text-sm text-slate-700 font-bold">
+            {modules.length} Skill Modules
           </div>
         </div>
       </section>
 
+      {/* Recommended Next Module */}
+      {filteredModules.length > 0 && (
+        <section className="rounded-[2.5rem] bg-indigo-600 p-8 text-white shadow-xl">
+          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-8">
+            <div className="flex-1">
+              <div className="inline-flex items-center gap-2 rounded-full bg-white/20 px-4 py-1.5 text-[10px] font-bold uppercase tracking-widest text-white">
+                Recommended Next Objective
+              </div>
+              <h2 className="mt-4 text-3xl font-bold">{filteredModules[0].moduleData.title}</h2>
+              <p className="mt-3 text-indigo-100 max-w-2xl leading-relaxed">
+                {filteredModules[0].moduleData.description}
+              </p>
+              <div className="mt-6 flex flex-wrap gap-4 text-sm font-medium">
+                <div className="flex items-center gap-2">
+                  <span className="opacity-60">Time:</span>
+                  <span>{filteredModules[0].moduleData.estimatedMinutes} min</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="opacity-60">Domain:</span>
+                  <span>{filteredModules[0].moduleData.domain}</span>
+                </div>
+                {filteredModules[0].moduleData.careerTrack && (
+                  <div className="flex items-center gap-2">
+                    <span className="opacity-60">Track:</span>
+                    <span>{filteredModules[0].moduleData.careerTrack}</span>
+                  </div>
+                )}
+              </div>
+            </div>
+            <Link
+              href={`/modules/${filteredModules[0].moduleData.id}`}
+              className="inline-flex items-center justify-center rounded-full bg-white px-8 py-4 text-sm font-bold text-indigo-600 shadow-lg hover:bg-indigo-50 transition-all active:scale-95"
+            >
+              Start Mission ⚔️
+            </Link>
+          </div>
+        </section>
+      )}
+
       <section className="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-sm">
         <div className="flex flex-col gap-4 xl:flex-row xl:items-end xl:justify-between">
           <div>
-            <div className="text-sm font-semibold uppercase tracking-[0.2em] text-slate-500">Filter modules</div>
-            <h2 className="mt-3 text-2xl font-semibold text-slate-900">Find the right module faster</h2>
+            <div className="text-sm font-semibold uppercase tracking-[0.2em] text-slate-500">Browse Catalogue</div>
+            <h2 className="mt-3 text-2xl font-semibold text-slate-900">Explore Skill Modules</h2>
             <p className="mt-2 text-sm leading-7 text-slate-600">
-              Core 2 topic modules are available as individual modules, but the default view keeps them out of the
-              main catalogue until you choose that filter.
+              Filter by career track, difficulty, or context to find your next learning milestone.
             </p>
           </div>
           <div className="rounded-3xl bg-slate-100 px-5 py-4 text-sm text-slate-700">
@@ -307,6 +361,8 @@ export default function ModulesPage() {
               estimatedMinutes={moduleData.estimatedMinutes}
               tags={moduleData.tags}
               progress={completion}
+              careerTrack={moduleData.careerTrack}
+              attributeFocus={moduleData.attributeFocus}
             />
           ))
         ) : (

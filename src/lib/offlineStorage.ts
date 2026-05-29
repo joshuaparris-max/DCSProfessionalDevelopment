@@ -1,4 +1,4 @@
-const DB_NAME = 'DCSPrepOffline';
+const DB_NAME = 'SupportOpsCareerLab';
 const STORE_NAME = 'modules';
 const SCENARIO_STORE_NAME = 'scenarios';
 const JOURNAL_STORE_NAME = 'journal';

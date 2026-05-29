@@ -166,187 +166,248 @@ export default function ScenariosPage() {
       <section className="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-sm">
         <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
           <div className="max-w-3xl">
-            <div className="text-sm font-semibold uppercase tracking-[0.2em] text-slate-500">Scenario lab</div>
+            <div className="text-sm font-semibold uppercase tracking-[0.2em] text-slate-500">Missions</div>
             <h1 className="mt-3 text-3xl font-semibold tracking-tight text-slate-900">
-              Scenario-based practice for DCS IT support
+              IT Support Missions
             </h1>
             <p className="mt-3 text-sm leading-7 text-slate-600">
-              Use structured scenarios to review incident handling, decision sequencing, escalation boundaries, and
-              documentation standards for common DCS support situations.
+              Complete practical troubleshooting missions to build your support skills. 
+              Each mission tests your triage, documentation, and technical judgement.
             </p>
           </div>
-          <div className="rounded-3xl bg-slate-100 px-5 py-4 text-sm text-slate-700">
-            {completedScenarios} scenario exercises recorded.
+          <div className="rounded-3xl bg-slate-100 px-5 py-4 text-sm text-slate-700 font-bold">
+            {completedScenarios} Missions Accomplished
           </div>
         </div>
       </section>
 
-      <section className="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-sm">
-        <MindfulnessPause />
-      </section>
-
       <div className="grid gap-6 lg:grid-cols-[340px_minmax(0,1fr)]">
         <aside className="space-y-4">
+          <div className="px-4 text-[10px] font-bold uppercase tracking-[0.2em] text-slate-400">Available Missions</div>
           {scenarios.map((entry) => (
             <button
               key={entry.id}
               onClick={() => restartScenario(entry.id)}
-              className={`w-full rounded-[2rem] border p-5 text-left shadow-sm ${
+              className={`w-full rounded-[2rem] border p-6 text-left shadow-sm transition-all active:scale-95 group ${
                 entry.id === scenario.id
-                  ? 'border-slate-900 bg-slate-900 text-white'
-                  : 'border-slate-200 bg-white text-slate-800'
+                  ? 'border-slate-900 bg-slate-900 text-white shadow-lg'
+                  : 'border-slate-200 bg-white text-slate-800 hover:border-slate-400'
               }`}
             >
-              <div className="text-xs uppercase tracking-[0.2em] opacity-70">{entry.estimatedMinutes} min</div>
-              <div className="mt-3 text-xl font-semibold">{entry.title}</div>
-              <p className="mt-2 text-sm leading-6 opacity-80">{entry.summary}</p>
+              <div className="flex justify-between items-start gap-2">
+                <div className={`text-[10px] font-bold uppercase tracking-[0.2em] ${entry.id === scenario.id ? 'text-indigo-300' : 'text-slate-400'}`}>
+                  {entry.missionType || 'Triage Mission'}
+                </div>
+                <div className="text-[10px] font-bold opacity-60">{entry.estimatedMinutes} min</div>
+              </div>
+              <div className="mt-4 text-xl font-bold leading-tight group-hover:text-indigo-500 transition-colors">{entry.title}</div>
+              <p className={`mt-2 text-sm leading-relaxed ${entry.id === scenario.id ? 'opacity-80' : 'text-slate-500'}`}>{entry.summary}</p>
             </button>
           ))}
         </aside>
 
-        <section className="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-sm">
+        <section className="rounded-[2rem] border border-slate-200 bg-white p-8 shadow-sm">
           {!finished ? (
-            <div className="space-y-6">
+            <div className="space-y-8">
               <div>
-                <div className="text-sm font-semibold uppercase tracking-[0.2em] text-slate-500">{scenario.title}</div>
-                <h2 className="mt-3 text-2xl font-semibold text-slate-900">{scenario.initialReport}</h2>
-                <ul className="mt-4 space-y-2 text-sm text-slate-700">
-                  {scenario.contextBullets.map((item) => (
-                    <li key={item}>- {item}</li>
-                  ))}
-                </ul>
-              </div>
-
-              <div className="rounded-3xl bg-slate-50 p-5">
-                <div className="text-xs uppercase tracking-[0.2em] text-slate-500">
-                  Step {stepIndex + 1} of {scenario.steps.length}
+                <div className="inline-flex items-center gap-2 rounded-full bg-slate-100 px-3 py-1 text-[10px] font-bold uppercase tracking-widest text-slate-500">
+                  {scenario.missionType || 'Triage Mission'}
                 </div>
-                <h3 className="mt-3 text-xl font-semibold text-slate-900">{currentStep?.title}</h3>
-                {currentStep?.newInformation ? (
-                  <p className="mt-3 text-sm leading-7 text-slate-700">{currentStep.newInformation}</p>
-                ) : null}
-                <p className="mt-3 text-sm leading-7 text-slate-700">{currentStep?.prompt}</p>
+                <h2 className="mt-4 text-3xl font-bold text-slate-900">{scenario.initialReport}</h2>
+                <div className="mt-6 flex flex-wrap gap-2">
+                  {scenario.contextBullets.map((item) => (
+                    <span key={item} className="rounded-xl bg-slate-50 border border-slate-100 px-4 py-2 text-xs text-slate-600">
+                      {item}
+                    </span>
+                  ))}
+                </div>
               </div>
 
-              <div className="space-y-3">
+              <div className="rounded-[2rem] bg-slate-900 p-8 text-white shadow-xl relative overflow-hidden">
+                <div className="relative z-10">
+                  <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-indigo-300">
+                    Step {stepIndex + 1} of {scenario.steps.length}
+                  </div>
+                  <h3 className="mt-3 text-2xl font-bold">{currentStep?.title}</h3>
+                  {currentStep?.newInformation ? (
+                    <div className="mt-4 p-4 rounded-2xl bg-white/10 border border-white/10 text-sm leading-relaxed">
+                      {currentStep.newInformation}
+                    </div>
+                  ) : null}
+                  <p className="mt-6 text-lg text-slate-300">{currentStep?.prompt}</p>
+                </div>
+                <div className="absolute right-[-10px] top-[-10px] text-8xl opacity-10 select-none pointer-events-none">
+                  🎯
+                </div>
+              </div>
+
+              <div className="grid gap-3">
                 {currentStep?.choices.map((choice) => (
                   <button
                     key={choice.id}
                     onClick={() => handleChoice(choice)}
-                    className={`w-full rounded-3xl border p-5 text-left ${
+                    className={`w-full rounded-3xl border p-6 text-left transition-all ${
                       revealedChoice?.id === choice.id
-                        ? 'border-slate-900 bg-slate-900 text-white'
-                        : 'border-slate-200 bg-white text-slate-800'
+                        ? choice.correct 
+                          ? 'border-emerald-500 bg-emerald-500 text-white shadow-lg' 
+                          : 'border-rose-500 bg-rose-500 text-white shadow-lg'
+                        : 'border-slate-200 bg-white text-slate-800 hover:border-slate-400'
                     }`}
                   >
-                    {choice.label}
+                    <div className="flex items-center gap-4">
+                      <div className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-full border ${
+                        revealedChoice?.id === choice.id ? 'border-white' : 'border-slate-300'
+                      }`}>
+                        {revealedChoice?.id === choice.id ? (choice.correct ? '✓' : '✗') : ''}
+                      </div>
+                      <span className="font-medium">{choice.label}</span>
+                    </div>
                   </button>
                 ))}
               </div>
 
               {revealedChoice ? (
-                <div className="rounded-3xl border border-slate-200 bg-slate-50 p-5">
-                  <div className="text-sm font-semibold text-slate-900">Outcome</div>
-                  <p className="mt-3 text-sm leading-7 text-slate-700">{revealedChoice.outcome}</p>
-                  <p className="mt-3 text-sm leading-7 text-slate-700">
-                    <span className="font-semibold text-slate-900">Risk note:</span> {revealedChoice.riskNote}
-                  </p>
+                <div className={`rounded-[2rem] border p-6 animate-in slide-in-from-bottom-4 duration-500 ${
+                  revealedChoice.correct ? 'border-emerald-100 bg-emerald-50' : 'border-rose-100 bg-rose-50'
+                }`}>
+                  <div className={`text-sm font-bold uppercase tracking-widest ${
+                    revealedChoice.correct ? 'text-emerald-700' : 'text-rose-700'
+                  }`}>
+                    {revealedChoice.correct ? 'Positive Outcome' : 'Risk Identified'}
+                  </div>
+                  <p className="mt-3 text-sm leading-relaxed text-slate-700">{revealedChoice.outcome}</p>
+                  {revealedChoice.riskNote && (
+                    <div className="mt-4 p-3 rounded-xl bg-white/50 text-xs italic text-slate-600 border border-black/5">
+                      Note: {revealedChoice.riskNote}
+                    </div>
+                  )}
                   <button
                     onClick={saveChoiceAndContinue}
-                    className="mt-4 rounded-full bg-slate-900 px-4 py-2 text-sm text-white"
+                    className="mt-6 w-full rounded-full bg-slate-900 py-4 text-sm font-bold text-white shadow-lg hover:bg-slate-800 transition-all active:scale-95"
                   >
-                    {stepIndex === scenario.steps.length - 1 ? 'Complete scenario' : 'Continue'}
+                    Continue Mission ⚔️
                   </button>
                 </div>
               ) : null}
             </div>
           ) : (
-            <div className="space-y-6">
-              <div>
-                <div className="text-sm font-semibold uppercase tracking-[0.2em] text-slate-500">Scenario complete</div>
-                <h2 className="mt-3 text-3xl font-semibold tracking-tight text-slate-900">{scenario.title}</h2>
-                <p className="mt-3 text-sm leading-7 text-slate-600">
-                  Compare your response with the recommended workflow and confirm that the escalation note remains
-                  clear, concise, and appropriate for operational review.
-                </p>
+            <div className="space-y-8 animate-in fade-in duration-700">
+              <div className="text-center">
+                <div className="text-6xl mb-4">🎉</div>
+                <h2 className="text-3xl font-bold text-slate-900">Mission Accomplished!</h2>
+                <p className="mt-2 text-slate-500">You have successfully navigated the {scenario.title} mission.</p>
               </div>
 
-              <div className="rounded-3xl bg-slate-50 p-5">
-                <div className="font-semibold text-slate-900">Ideal troubleshooting path</div>
-                <ul className="mt-3 space-y-2 text-sm text-slate-700">
-                  {scenario.idealTroubleshootingPath.map((step) => (
-                    <li key={step}>- {step}</li>
-                  ))}
-                </ul>
-              </div>
-
-              <div className="grid gap-4 md:grid-cols-2">
-                <div className="rounded-3xl bg-slate-50 p-5">
-                  <div className="font-semibold text-slate-900">Escalation point</div>
-                  <p className="mt-3 text-sm leading-7 text-slate-700">{scenario.escalationPoint}</p>
+              <div className="grid gap-4 md:grid-cols-3">
+                <div className="rounded-3xl bg-slate-50 border border-slate-100 p-6 text-center">
+                  <div className="text-[10px] font-bold uppercase tracking-widest text-slate-400">XP Earned</div>
+                  <div className="mt-2 text-3xl font-bold text-indigo-600">+50 XP</div>
                 </div>
-                <div className="rounded-3xl bg-slate-50 p-5">
-                  <div className="font-semibold text-slate-900">Risk or privacy note</div>
-                  <p className="mt-3 text-sm leading-7 text-slate-700">{scenario.riskNote}</p>
+                <div className="rounded-3xl bg-slate-50 border border-slate-100 p-6 text-center">
+                  <div className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Attribute Up</div>
+                  <div className="mt-2 text-xl font-bold text-slate-900">⚡ Agility +5</div>
+                </div>
+                <div className="rounded-3xl bg-slate-50 border border-slate-100 p-6 text-center">
+                  <div className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Outcome</div>
+                  <div className="mt-2 text-sm font-bold text-emerald-600">SUCCESS</div>
                 </div>
               </div>
 
-              <div className="rounded-3xl border border-slate-200 bg-white p-5">
-                <div className="font-semibold text-slate-900">Ticket note example</div>
-                <p className="mt-3 text-sm leading-7 text-slate-700">{scenario.ticketNoteExample}</p>
+              <div className="rounded-[2rem] border border-slate-200 bg-white p-8">
+                <h3 className="text-xl font-bold text-slate-900">Mission Feedback</h3>
+                <div className="mt-6 space-y-6">
+                  <div>
+                    <div className="text-xs font-bold uppercase tracking-widest text-slate-400 mb-2">Ideal Path</div>
+                    <ul className="space-y-2">
+                      {scenario.idealTroubleshootingPath.map((step, i) => (
+                        <li key={i} className="flex gap-3 text-sm text-slate-600">
+                          <span className="text-indigo-500 font-bold">{i + 1}.</span>
+                          <span>{step}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                  <div className="p-4 rounded-2xl bg-amber-50 border border-amber-100">
+                    <div className="text-xs font-bold uppercase tracking-widest text-amber-700 mb-2">Escalation Boundary</div>
+                    <p className="text-sm text-amber-800 leading-relaxed">{scenario.escalationPoint}</p>
+                  </div>
+                </div>
               </div>
 
-              <div className="rounded-3xl border border-emerald-200 bg-emerald-50 p-5">
-                <div className="font-semibold text-emerald-900">Jira-style note rubric (self-check)</div>
-                <p className="mt-2 text-sm leading-7 text-emerald-900">
-                  Tick what your own draft note covered—this stays local and trains escalation muscle memory.
-                </p>
-                <div className="mt-3 rounded-2xl bg-white p-4 text-sm text-slate-700">
-                  <div className="font-semibold text-slate-900">Weighted note score</div>
-                  <p className="mt-2">{currentNoteScorePercent}% of note quality criteria met.</p>
-                  <p className="mt-2 text-slate-600">
-                    A strong escalation note should score 85% or higher. Lower scores suggest a second pass to add clarity, scope, or safe wording.
+              {!scenarioSaved ? (
+                <div className="rounded-[2rem] border border-indigo-200 bg-indigo-50 p-8">
+                  <h3 className="text-xl font-bold text-slate-900">Log Career Evidence</h3>
+                  <p className="mt-2 text-sm text-slate-600">
+                    Review your ticket documentation against the rubric to finalise this mission.
                   </p>
-                </div>
-                <div className="mt-4 space-y-3">
-                  {scenarioNoteRubric.map((item) => (
-                    <label key={item.id} className="flex items-start gap-3 text-sm text-emerald-950">
-                      <input
-                        type="checkbox"
-                        className="mt-1 h-4 w-4 rounded border-emerald-400"
-                        checked={Boolean(rubricSelfCheck[item.id])}
-                        onChange={() =>
-                          setRubricSelfCheck((current) => ({
-                            ...current,
-                            [item.id]: !current[item.id]
+                  
+                  <div className="mt-8 space-y-4">
+                    {scenarioNoteRubric.map((check) => (
+                      <button
+                        key={check.id}
+                        onClick={() =>
+                          setRubricSelfCheck((prev) => ({
+                            ...prev,
+                            [check.id]: !prev[check.id]
                           }))
                         }
-                      />
-                      <span>{item.label}</span>
-                    </label>
-                  ))}
+                        className={`flex w-full items-center gap-4 rounded-2xl border p-4 text-left transition-all ${
+                          rubricSelfCheck[check.id]
+                            ? 'border-indigo-500 bg-white shadow-md'
+                            : 'border-slate-200 bg-white/50 text-slate-500'
+                        }`}
+                      >
+                        <div className={`flex h-5 w-5 shrink-0 items-center justify-center rounded border ${
+                          rubricSelfCheck[check.id] ? 'bg-indigo-600 border-indigo-600 text-white' : 'border-slate-300'
+                        }`}>
+                          {rubricSelfCheck[check.id] && '✓'}
+                        </div>
+                        <span className="text-sm font-medium">{check.label}</span>
+                      </button>
+                    ))}
+                  </div>
+
+                  <div className="mt-8 flex items-center justify-between">
+                    <div className="text-sm font-bold text-slate-700">Documentation Quality: {currentNoteScorePercent}%</div>
+                    <button
+                      onClick={saveScenarioResult}
+                      className="rounded-full bg-indigo-600 px-8 py-3 text-sm font-bold text-white shadow-lg hover:bg-indigo-700 transition-all active:scale-95"
+                    >
+                      Log Mission Results
+                    </button>
+                  </div>
                 </div>
-              </div>
+              ) : (
+                <div className="space-y-6">
+                  <div className="rounded-[2rem] bg-emerald-600 p-8 text-white shadow-xl text-center">
+                    <h3 className="text-2xl font-bold">Evidence Recorded!</h3>
+                    <p className="mt-2 opacity-90 text-sm">Your career attributes and progress have been updated.</p>
+                  </div>
+                  
+                  <ReflectionJournal 
+                    scenarioId={scenario.id}
+                    onSave={handleSaveReflection}
+                  />
 
-              <div className="flex flex-wrap gap-3">
-                <button
-                  onClick={saveScenarioResult}
-                  disabled={scenarioSaved}
-                  className="rounded-full bg-slate-900 px-4 py-2 text-sm text-white disabled:cursor-not-allowed disabled:bg-slate-400"
-                >
-                  {scenarioSaved ? 'Scenario result saved' : 'Save scenario result'}
-                </button>
-                <button onClick={() => restartScenario()} className="rounded-full bg-slate-100 px-4 py-2 text-sm text-slate-900">
-                  Restart scenario
-                </button>
-              </div>
-
-              <div className="mt-8">
-                <ReflectionJournal 
-                  scenarioId={scenario.id} 
-                  onSave={handleSaveReflection} 
-                />
-              </div>
+                  <div className="flex flex-col sm:flex-row gap-4">
+                    <button
+                      onClick={() => restartScenario()}
+                      className="flex-1 rounded-full border border-slate-200 bg-white py-4 text-sm font-bold text-slate-700 hover:bg-slate-50 transition-all"
+                    >
+                      Retry Mission 🔄
+                    </button>
+                    <button
+                      onClick={() => {
+                        const nextIndex = (scenarios.indexOf(scenario) + 1) % scenarios.length;
+                        restartScenario(scenarios[nextIndex].id);
+                      }}
+                      className="flex-1 rounded-full bg-slate-900 py-4 text-sm font-bold text-white shadow-lg hover:bg-slate-800 transition-all"
+                    >
+                      Next Mission ⚔️
+                    </button>
+                  </div>
+                </div>
+              )}
             </div>
           )}
         </section>

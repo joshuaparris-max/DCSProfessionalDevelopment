@@ -5,6 +5,7 @@ export const scenarios: Scenario[] = [
     id: 'display-black-screen',
     title: 'Classroom display black screen',
     summary: 'Troubleshoot a classroom display that powers on but shows no image.',
+    missionType: 'Triage Mission',
     estimatedMinutes: 12,
     initialReport: 'A teacher reports the classroom display is powered on but remains black with no signal.',
     contextBullets: [
@@ -67,9 +68,76 @@ export const scenarios: Scenario[] = [
     ticketNoteExample: 'Verified display power and input source. Switched to HDMI port 1 and confirmed image return. No student data reviewed.'
   },
   {
+    id: 'msp-m365-mfa-locked',
+    title: 'Client locked out by MFA',
+    summary: 'Handle a common MSP request where a client cannot access their M365 account due to MFA issues.',
+    missionType: 'User Communication Mission',
+    estimatedMinutes: 10,
+    initialReport: 'A client calls saying they have a new phone and can no longer receive their MFA code to log into Outlook.',
+    contextBullets: [
+      'Client is a high-priority account with strict security requirements.',
+      'You have access to the M365 Admin Center.',
+      'Verification of identity is required before any reset.'
+    ],
+    steps: [
+      {
+        id: 'mfa-step-1',
+        title: 'Verify Identity',
+        prompt: 'How should you verify the user\'s identity before proceeding?',
+        choices: [
+          {
+            id: 'mfa-c1',
+            label: 'Ask for their full name and job title, then proceed.',
+            outcome: 'This is not sufficient verification for a security-sensitive reset.',
+            riskNote: 'Publicly available info like name and title is easily spoofed.',
+            correct: false
+          },
+          {
+            id: 'mfa-c2',
+            label: 'Perform an out-of-band verification (e.g., call them back on a known number or verify via their manager).',
+            outcome: 'Identity verified safely. You have followed the MSP security protocol.',
+            riskNote: 'Always verify identity before touching MFA or password settings.',
+            correct: true
+          }
+        ]
+      },
+      {
+        id: 'mfa-step-2',
+        title: 'Perform Reset',
+        prompt: 'What is the correct action in the M365 Admin Center?',
+        choices: [
+          {
+            id: 'mfa-c3',
+            label: 'Require the user to re-register MFA and clear existing sessions.',
+            outcome: 'The user will be prompted to set up their new phone on the next login. Sessions are cleared for security.',
+            riskNote: 'Clearing sessions prevents unauthorized access from the old device.',
+            correct: true
+          },
+          {
+            id: 'mfa-c4',
+            label: 'Disable MFA for the user entirely to get them working quickly.',
+            outcome: 'This leaves the user account vulnerable and violates security policy.',
+            riskNote: 'Never disable security features permanently as a "fix".',
+            correct: false
+          }
+        ]
+      }
+    ],
+    idealTroubleshootingPath: [
+      'Verify user identity using an approved out-of-band method',
+      'Access M365 Admin Center and navigate to the user\'s security settings',
+      'Trigger MFA re-registration and revoke active sessions',
+      'Guide the user through the new setup process'
+    ],
+    escalationPoint: 'Escalate to a Security Lead if the user cannot be verified or if suspicious account activity is detected.',
+    riskNote: 'Do not record the user\'s private phone number or temporary codes in your notes.',
+    ticketNoteExample: 'User identity verified via manager callback. Triggered MFA re-registration and cleared active sessions. Guided user through Microsoft Authenticator setup. Access restored.'
+  },
+  {
     id: 'classroom-wifi-no-internet',
     title: 'One classroom has Wi-Fi but no internet',
     summary: 'Triage a room-level connectivity problem without jumping straight to network-wide assumptions.',
+    missionType: 'Triage Mission',
     estimatedMinutes: 12,
     initialReport: 'A teacher says the classroom devices show Wi-Fi connected, but websites will not load in one room.',
     contextBullets: [
@@ -132,9 +200,76 @@ export const scenarios: Scenario[] = [
     ticketNoteExample: 'Room-level Wi-Fi issue reported. Multiple devices in the same classroom show connected Wi-Fi but no internet access. Nearby room still working. SSID and scope checked. Escalating with room and impact details.'
   },
   {
+    id: 'msp-sharepoint-sync-conflict',
+    title: 'SharePoint Sync Conflict',
+    summary: 'Resolve a common file access issue where a client has sync errors in their OneDrive/SharePoint client.',
+    missionType: 'Troubleshooting Sequence Mission',
+    estimatedMinutes: 15,
+    initialReport: 'A user reports that their files are not updating in the shared "Finance" folder and they see a red X on their OneDrive icon.',
+    contextBullets: [
+      'The Finance folder is a shared SharePoint document library.',
+      'Other team members can see updates, but this user cannot.',
+      'The user is working from home on a stable internet connection.'
+    ],
+    steps: [
+      {
+        id: 'sync-step-1',
+        title: 'Identify the specific error',
+        prompt: 'What is the first thing you should ask the user to do?',
+        choices: [
+          {
+            id: 'sync-c1',
+            label: 'Ask them to click the OneDrive cloud icon and read the specific error message.',
+            outcome: 'The error says "A file with this name already exists" or "Conflict: 2 versions of this file".',
+            riskNote: 'The OneDrive activity center is the best source of truth for sync faults.',
+            correct: true
+          },
+          {
+            id: 'sync-c2',
+            label: 'Ask them to restart their computer.',
+            outcome: 'A restart might clear a hung process but won\'t fix a file conflict or naming error.',
+            riskNote: 'Avoid "reboot first" if there is a specific error message available.',
+            correct: false
+          }
+        ]
+      },
+      {
+        id: 'sync-step-2',
+        title: 'Resolve the conflict',
+        prompt: 'The user has a file named "Finance_Report_2024.xlsx" that is causing a conflict. What is the safest way to resolve it?',
+        choices: [
+          {
+            id: 'sync-c3',
+            label: 'Rename the local version of the file to "Finance_Report_2024_OLD.xlsx" and let the cloud version sync down.',
+            outcome: 'Conflict resolved. The user can now compare both versions and merge if needed without losing data.',
+            riskNote: 'Renaming is safer than deleting when you aren\'t sure which version is current.',
+            correct: true
+          },
+          {
+            id: 'sync-c4',
+            label: 'Delete the local file and tell them to download it again from the web.',
+            outcome: 'This risks losing any work the user did while they were offline or out of sync.',
+            riskNote: 'Never delete user files as a first-line resolution for sync errors.',
+            correct: false
+          }
+        ]
+      }
+    ],
+    idealTroubleshootingPath: [
+      'Read the specific error message in the OneDrive client',
+      'Identify the conflicting file(s)',
+      'Rename the local version to preserve work',
+      'Allow the cloud version to sync and verify the icon turns green'
+    ],
+    escalationPoint: 'Escalate to a Level 2 Cloud Tech if the OneDrive client requires a full reset or if the document library permissions appear broken.',
+    riskNote: 'Do not perform a "OneDrive /reset" without backup, as it can trigger massive re-downloads on slow connections.',
+    ticketNoteExample: 'OneDrive sync error on Finance folder. Conflict identified on "Finance_Report_2024.xlsx". Renamed local file to preserve changes. Sync resumed successfully. Confirmed user has access to latest version.'
+  },
+  {
     id: 'staff-offboarding-m365-visibility',
     title: 'Former staff member still appears active in Teams',
     summary: 'Handle offboarding visibility concerns without treating one symptom as authority to make identity changes.',
+    missionType: 'Security Judgement Mission',
     estimatedMinutes: 10,
     initialReport: 'A departed staff member still appears in Teams and a colleague wants it removed immediately.',
     contextBullets: [
@@ -200,6 +335,7 @@ export const scenarios: Scenario[] = [
     id: 'rbc-cybersecurity-phishing-triage',
     title: 'Phishing triage in a school context',
     summary: 'Review a suspicious email report and decide what to preserve, what to record, and what to escalate.',
+    missionType: 'Security Judgement Mission',
     estimatedMinutes: 12,
     initialReport: 'A teacher received a login request email that looks like it came from the school, and they want you to check if it is real.',
     contextBullets: [
@@ -265,6 +401,7 @@ export const scenarios: Scenario[] = [
     id: 'rbc-hardware-network-troubleshooting',
     title: 'Hardware/network troubleshooting for school devices',
     summary: 'Triage a room-level device problem and decide whether it is a hardware, network, or web issue.',
+    missionType: 'Triage Mission',
     estimatedMinutes: 12,
     initialReport: 'A teacher says a classroom laptop is on, connected to Wi-Fi, but cannot load the learning portal.',
     contextBullets: [
@@ -330,6 +467,7 @@ export const scenarios: Scenario[] = [
     id: 'rbc-script-readiness-logic',
     title: 'Script readiness and automation logic',
     summary: 'Assess a simple automation request and identify whether it is safe to run or should be reviewed further.',
+    missionType: 'Security Judgement Mission',
     estimatedMinutes: 10,
     initialReport: 'A technician asks whether a scheduled script can run tonight to update classroom devices.',
     contextBullets: [
@@ -395,6 +533,7 @@ export const scenarios: Scenario[] = [
     id: 'rbc-ethical-reflection-privacy',
     title: 'Ethics and privacy reflection for school IT support',
     summary: 'Decide how to keep documentation useful, ethical, and privacy-safe after a sensitive incident.',
+    missionType: 'Security Judgement Mission',
     estimatedMinutes: 10,
     initialReport: 'A support incident involved a student account issue and someone asked if the details could be saved in the study notes.',
     contextBullets: [
@@ -460,6 +599,7 @@ export const scenarios: Scenario[] = [
     id: 'smitb-cloud-ai-saas-ai-risk',
     title: 'Cloud app outage and AI data risk',
     summary: 'Triage a partial SaaS outage while handling an AI summarisation request safely.',
+    missionType: 'Security Judgement Mission',
     estimatedMinutes: 14,
     initialReport:
       'A staff portal loads normally, but file uploads fail for multiple staff. At the same time, a teacher asks whether an AI chatbot can summarise identifiable student notes.',
@@ -529,6 +669,7 @@ export const scenarios: Scenario[] = [
     id: 'hdmi-picture-no-audio-classroom',
     title: 'HDMI picture works but classroom audio is silent',
     summary: 'Separate display audio routing from total display failure while protecting class time.',
+    missionType: 'Triage Mission',
     estimatedMinutes: 10,
     initialReport: 'The laptop shows on the ViewBoard, but there is no sound through the room speakers.',
     contextBullets: [
@@ -598,6 +739,7 @@ export const scenarios: Scenario[] = [
     id: 'student-laptop-apipa-169254',
     title: 'Student laptop shows 169.254 address',
     summary: 'Treat APIPA as DHCP onboarding failure while comparing scope.',
+    missionType: 'Triage Mission',
     estimatedMinutes: 10,
     initialReport: 'A student laptop cannot reach the internet and shows a 169.254.x.x address.',
     contextBullets: [
@@ -666,6 +808,7 @@ export const scenarios: Scenario[] = [
     id: 'printer-queue-stuck-followme',
     title: 'Jobs stuck waiting at Follow-Me queue',
     summary: 'Differentiate release/auth layers from hardware faults.',
+    missionType: 'Triage Mission',
     estimatedMinutes: 10,
     initialReport: 'Teacher prints repeatedly but nothing prints at the copier—even though the queue moves.',
     contextBullets: [
@@ -732,6 +875,7 @@ export const scenarios: Scenario[] = [
     id: 'laser-toner-rubs-off',
     title: 'Laser output rubs off when touched',
     summary: 'Identify consumables/hardware bonding faults versus queue targeting.',
+    missionType: 'Triage Mission',
     estimatedMinutes: 9,
     initialReport: 'Printed worksheets smudge when students touch them—toner rubs off cleanly.',
     contextBullets: [
@@ -798,6 +942,7 @@ export const scenarios: Scenario[] = [
     id: 'guest-wifi-cannot-reach-printer',
     title: 'Guest Wi-Fi cannot reach internal printers',
     summary: 'Explain intentional segmentation without promising unsafe bypasses.',
+    missionType: 'User Communication Mission',
     estimatedMinutes: 9,
     initialReport: 'Visitor laptop on guest Wi-Fi cannot print to staff copiers.',
     contextBullets: [
@@ -864,6 +1009,7 @@ export const scenarios: Scenario[] = [
     id: 'parent-portal-invite-not-arriving',
     title: 'Parent Portal invitation not arriving',
     summary: 'Capture workflow timing and scope without owning authoritative enrolment edits.',
+    missionType: 'Triage Mission',
     estimatedMinutes: 10,
     initialReport: 'Parent says they never received the portal invitation email.',
     contextBullets: [
@@ -930,6 +1076,7 @@ export const scenarios: Scenario[] = [
     id: 'sentral-markbook-row-missing',
     title: 'Sentral markbook rows missing for one teacher',
     summary: 'Capture timetable linkage clues without editing authoritative cohort data.',
+    missionType: 'Triage Mission',
     estimatedMinutes: 11,
     initialReport: 'Teacher cannot see expected classes inside Sentral markbook screens.',
     contextBullets: [
@@ -996,6 +1143,7 @@ export const scenarios: Scenario[] = [
     id: 'password-lockout-after-travel',
     title: 'Account lockout after travel',
     summary: 'Coach reset pathways while watching compromise signals.',
+    missionType: 'User Communication Mission',
     estimatedMinutes: 10,
     initialReport: 'Teacher returned from overseas travel and now cannot sign in—possible lockout.',
     contextBullets: [

@@ -9,7 +9,7 @@
  * USE CASE: Local-only privacy assistance for non-sensitive professional development progress.
  * RESTRICTION: NEVER store real student, staff, parent, or credential data here.
  */
-const OBFUSCATION_KEY = 'dcsprep-local-obfuscation-only';
+const OBFUSCATION_KEY = 'supportops-local-obfuscation-only';
 
 function xorProcess(input: string): string {
   let output = '';

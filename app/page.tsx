@@ -43,7 +43,7 @@ export default function HomePage() {
 
   const getNextBestAction = (
     workContext: string,
-    dashboardRecommendation: { title: string; detail: string; ctaHref: string; ctaLabel: string }
+    dashboardRecommendation: { title: string; detail: string; ctaHref: string; ctaLabel: string; careerTrack?: string; attributeFocus?: string }
   ) => {
     const contextLabel = workContext ? ` aligned to ${workContext}` : '';
 
@@ -53,7 +53,9 @@ export default function HomePage() {
         detail: `You have ${dueFlashcards + dueQuestions} items due for retrieval practice${contextLabel}.`,
         ctaLabel: 'Review Now',
         ctaHref: '/due-today',
-        category: 'Confidence Builder'
+        category: 'Confidence Builder',
+        careerTrack: 'Support Fundamentals',
+        attributeFocus: 'Intelligence'
       };
     }
 
@@ -62,7 +64,9 @@ export default function HomePage() {
       detail: `${dashboardRecommendation.detail}${contextLabel}`,
       ctaLabel: dashboardRecommendation.ctaLabel,
       ctaHref: dashboardRecommendation.ctaHref,
-      category: 'Focus Recommendation'
+      category: 'Focus Recommendation',
+      careerTrack: dashboardRecommendation.careerTrack,
+      attributeFocus: dashboardRecommendation.attributeFocus
     };
   };
 
@@ -94,35 +98,25 @@ export default function HomePage() {
   const currentWeakestFocus = getCurrentWeakFocus(progress);
   const gamificationSummary = getGamificationSummary(progress, modules, gamificationState);
   const recentBadges = gamificationSummary.badges.filter((badge) => badge.earned).slice(0, 4);
-  const quietWindowActions = [
+  const quickActions = [
     {
-      label: 'Micro-learning card (single module drill)',
-      description: 'Jump into modules and finish one flashcard stack or quiz subsection.',
-      href: '/modules'
-    },
-    {
-      label: 'Start tiny: 5-minute task',
-      description: 'Clear one due item without opening a full study block.',
+      label: '5-minute review',
+      description: 'Clear due flashcards and quick retrieval items.',
       href: '/due-today?mode=tiny'
     },
     {
-      label: '20-minute focus block',
-      description: 'Use the main guided study block for one bounded session.',
-      href: dashboardRecommendation.ctaHref
-    },
-    {
-      label: 'Review due flashcards',
-      description: 'Go straight to flashcards and question reviews waiting today.',
-      href: '/due-today'
-    },
-    {
-      label: 'Do one scenario step',
-      description: 'Practice one troubleshooting decision in Scenario Lab.',
+      label: '10-minute mission',
+      description: 'Complete one practical troubleshooting scenario.',
       href: '/scenarios'
     },
     {
-      label: 'Log PD',
-      description: 'Record a quiet-window study block or reflection before you switch tasks.',
+      label: '20-minute focus block',
+      description: 'Use a timed study block for a deep learning session.',
+      href: dashboardRecommendation.ctaHref
+    },
+    {
+      label: 'Log PD Evidence',
+      description: 'Record your learning and build your career pack.',
       href: '/pd-log'
     }
   ];
@@ -131,76 +125,86 @@ export default function HomePage() {
     <div className="space-y-6">
       <section className="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-sm">
         <div className="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
-          <div>
-            <div className="text-sm font-semibold uppercase tracking-[0.2em] text-slate-500">{selectedWorkContext} profile</div>
-            <h1 className="mt-3 text-4xl font-semibold tracking-tight text-slate-900">Your IT career growth dashboard</h1>
+          <div className="flex-1">
+            <div className="text-sm font-semibold uppercase tracking-[0.2em] text-slate-500">SupportOps Career Lab</div>
+            <h1 className="mt-3 text-4xl font-semibold tracking-tight text-slate-900">Today</h1>
             <p className="mt-4 max-w-xl text-sm leading-7 text-slate-600">
-              Track your growth in IT support, MSP operations, M365, endpoint and networking practice, and professional service delivery.
-              Use this app to build privacy-safe evidence, scenario judgement, and career-ready readiness in a local-first workflow.
+              Welcome to your IT training cockpit. Complete missions to build practical support skills across M365, 
+              endpoint troubleshooting, and networking fundamentals.
             </p>
-            <Link
-              href="/settings"
-              className="mt-5 inline-flex items-center rounded-full bg-slate-900 px-4 py-2 text-sm font-semibold text-white"
-            >
-              Change profile
-            </Link>
-          </div>
-          <div className="w-full max-w-sm flex flex-col gap-4">
-            <div className="rounded-[2rem] bg-slate-100 p-5">
-              <div className="text-sm font-semibold uppercase tracking-[0.2em] text-slate-500">{nextAction.category}</div>
-              <h2 className="mt-3 text-2xl font-semibold text-slate-900">{nextAction.title}</h2>
-              <p className="mt-3 text-sm leading-7 text-slate-700">{nextAction.detail}</p>
-              <Link
-                href={nextAction.ctaHref}
-                className="mt-5 inline-flex rounded-full bg-slate-900 px-4 py-2 text-sm text-white font-semibold"
-              >
-                {nextAction.ctaLabel}
-              </Link>
+            
+            <div className="mt-8 flex flex-wrap gap-3">
+              <div className="rounded-2xl bg-slate-50 border border-slate-100 px-4 py-3">
+                <div className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Selected Path</div>
+                <div className="text-sm font-bold text-slate-900">{selectedWorkContext}</div>
+              </div>
+              <div className="rounded-2xl bg-slate-50 border border-slate-100 px-4 py-3">
+                <div className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Readiness</div>
+                <div className="text-sm font-bold text-slate-900">{overallProgress}%</div>
+              </div>
             </div>
-            <ScheduleSuggestions />
           </div>
-        </div>
-      </section>
 
-      <section className="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-sm">
-        <div className="flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
-          <div>
-            <div className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-500">Active Quest</div>
-            <h2 className="mt-3 text-2xl font-semibold text-slate-900">{dashboardRecommendation.title}</h2>
-            <p className="mt-3 max-w-3xl text-sm leading-7 text-slate-600">
-              {dashboardRecommendation.detail}
-              {selectedWorkContext ? ` This quest is tailored for your ${selectedWorkContext} path.` : ''}
-            </p>
+          <div className="w-full max-w-md">
+            <div className="rounded-[2.5rem] bg-slate-900 p-8 text-white shadow-2xl relative overflow-hidden group">
+              <div className="relative z-10">
+                <div className="flex justify-between items-start">
+                  <div className="text-xs font-bold uppercase tracking-[0.2em] text-indigo-300 mb-4">{nextAction.category}</div>
+                  {nextAction.attributeFocus && (
+                    <div className="text-[10px] bg-white/10 px-2 py-1 rounded-md text-indigo-200 font-bold uppercase tracking-widest">
+                      +{nextAction.attributeFocus}
+                    </div>
+                  )}
+                </div>
+                <h2 className="text-3xl font-bold leading-tight">Start next mission:</h2>
+                <h3 className="mt-2 text-xl font-medium text-slate-300">{nextAction.title}</h3>
+                <p className="mt-4 text-sm text-slate-400 leading-relaxed">{nextAction.detail}</p>
+                
+                {nextAction.careerTrack && (
+                  <div className="mt-4 inline-flex items-center gap-2 rounded-full bg-white/5 px-3 py-1 text-[10px] font-bold text-slate-400 uppercase tracking-widest">
+                    Track: {nextAction.careerTrack}
+                  </div>
+                )}
+
+                <Link
+                  href={nextAction.ctaHref}
+                  className="mt-8 w-full inline-flex items-center justify-center gap-2 rounded-full bg-white px-8 py-4 text-sm font-bold text-slate-900 shadow-lg hover:bg-slate-50 transition-all active:scale-95"
+                >
+                  <span>{nextAction.ctaLabel}</span>
+                  <span className="text-xs">⚔️</span>
+                </Link>
+              </div>
+              <div className="absolute right-[-20px] bottom-[-20px] text-[150px] opacity-10 select-none pointer-events-none group-hover:scale-110 transition-transform duration-700">
+                🚀
+              </div>
+            </div>
           </div>
-          <Link
-            href={dashboardRecommendation.ctaHref}
-            className="inline-flex rounded-full bg-slate-900 px-6 py-3 text-sm font-semibold text-white shadow-md hover:bg-slate-800 transition-all active:scale-95"
-          >
-            {dashboardRecommendation.ctaLabel} ⚔️
-          </Link>
         </div>
       </section>
 
       <RPGDashboard summary={gamificationSummary} />
 
-      <section className="grid gap-6 lg:grid-cols-2">
-        <div className="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-sm">
-          <div className="flex items-center justify-between mb-6">
-            <h3 className="text-sm font-bold uppercase tracking-widest text-slate-500">Available Side Missions</h3>
-            <span className="text-[10px] bg-amber-100 text-amber-700 px-2 py-0.5 rounded-full font-bold">BONUS XP</span>
+      <section className="grid gap-6 lg:grid-cols-3">
+        <div className="lg:col-span-2 rounded-[2rem] border border-slate-200 bg-white p-8 shadow-sm">
+          <div className="flex items-center justify-between mb-8">
+            <h3 className="text-sm font-bold uppercase tracking-widest text-slate-500">Quick Actions</h3>
+            <span className="text-[10px] bg-amber-100 text-amber-700 px-3 py-1 rounded-full font-bold">XP MULTIPLIER ACTIVE</span>
           </div>
-          <div className="grid gap-3">
-            {quietWindowActions.map((action, i) => (
+          <div className="grid gap-4 sm:grid-cols-2">
+            {quickActions.map((action, i) => (
               <Link
                 key={i}
                 href={action.href}
-                className="group flex items-start justify-between rounded-3xl border border-slate-100 bg-slate-50 p-4 transition hover:border-slate-300 hover:bg-white"
+                className="group flex flex-col justify-between rounded-[2rem] border border-slate-100 bg-slate-50 p-6 transition hover:border-blue-200 hover:bg-blue-50/30"
               >
-                <div className="max-w-[80%]">
-                  <div className="text-sm font-bold text-slate-900 group-hover:text-blue-600 transition-colors">{action.label}</div>
-                  <div className="mt-1 text-xs text-slate-500 leading-relaxed">{action.description}</div>
+                <div>
+                  <div className="text-lg font-bold text-slate-900 group-hover:text-blue-700 transition-colors">{action.label}</div>
+                  <div className="mt-2 text-xs text-slate-500 leading-relaxed">{action.description}</div>
                 </div>
-                <div className="text-slate-300 group-hover:text-slate-600 transition-colors">→</div>
+                <div className="mt-6 flex items-center justify-between">
+                  <span className="text-[10px] font-bold text-blue-600 uppercase tracking-widest">Start Mission</span>
+                  <span className="text-slate-300 group-hover:translate-x-1 transition-transform">→</span>
+                </div>
               </Link>
             ))}
           </div>
@@ -208,44 +212,77 @@ export default function HomePage() {
 
         <div className="space-y-6">
           <FocusForest state={gamificationState} onStateChange={setGamificationState} />
-          <DailyChallenge />
-          <StickersDisplay stickers={gamificationSummary.stickers} />
+          
+          <div className="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-sm overflow-hidden relative">
+            <h3 className="text-sm font-bold uppercase tracking-widest text-slate-500 mb-4">Next Unlock</h3>
+            <div className="flex items-center gap-4">
+              <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-indigo-50 text-3xl">
+                🎁
+              </div>
+              <div>
+                <div className="text-sm font-bold text-slate-900">{gamificationSummary.nextMilestone}</div>
+                <div className="mt-1 text-xs text-slate-500">Work towards your next badge or level milestone.</div>
+              </div>
+            </div>
+            <div className="mt-6">
+              <div className="h-1.5 w-full rounded-full bg-slate-100 overflow-hidden">
+                <div 
+                  className="h-full bg-indigo-500 transition-all duration-1000" 
+                  style={{ width: `${(gamificationSummary.xpInCurrentLevel / gamificationSummary.xpNeededForNextLevel) * 100}%` }}
+                />
+              </div>
+              <div className="mt-2 text-[10px] font-bold text-slate-400 uppercase tracking-widest text-right">
+                {gamificationSummary.xpNeededForNextLevel - gamificationSummary.xpInCurrentLevel} XP REMAINING
+              </div>
+            </div>
+          </div>
         </div>
       </section>
 
       <div className="grid gap-6 lg:grid-cols-2">
         <div className="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-sm">
-          <h3 className="text-sm font-bold uppercase tracking-widest text-slate-500 mb-6">Recent Achievements</h3>
-          <div className="grid gap-4 sm:grid-cols-2">
-            {recentBadges.length > 0 ? (
-              recentBadges.map((badge) => (
-                <div
-                  key={badge.id}
-                  className="flex items-center gap-4 rounded-3xl border border-slate-100 p-4"
-                >
-                  <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-indigo-50 text-2xl">
-                    🏆
-                  </div>
-                  <div>
-                    <div className="text-sm font-bold text-slate-900">{badge.title}</div>
-                    <div className="text-[10px] text-slate-500">{new Date(badge.awardedAtIso!).toLocaleDateString()}</div>
-                  </div>
-                </div>
-              ))
-            ) : (
-              <div className="col-span-2 py-8 text-center text-sm text-slate-400 italic">
-                No badges earned yet. Complete your first quest!
-              </div>
-            )}
+          <div className="flex items-center justify-between mb-6">
+            <h3 className="text-sm font-bold uppercase tracking-widest text-slate-500">Career Progress</h3>
+            <Link href="/progress" className="text-xs font-bold text-indigo-600 hover:underline">View All</Link>
           </div>
-          <Link 
-            href="/progress" 
-            className="mt-6 block text-center text-xs font-semibold text-indigo-600 hover:underline"
-          >
-            View all badges and history
-          </Link>
+          <div className="space-y-4">
+            {[
+              { label: 'MSP L1 Support', progress: overallProgress },
+              { label: 'M365 Admin', progress: Math.min(100, (gamificationSummary.attributes.intelligence / 200) * 100) },
+              { label: 'Networking', progress: Math.min(100, (gamificationSummary.attributes.agility / 200) * 100) }
+            ].map(track => (
+              <div key={track.label}>
+                <div className="flex justify-between text-xs font-bold text-slate-700 mb-2">
+                  <span>{track.label}</span>
+                  <span>{Math.round(track.progress)}%</span>
+                </div>
+                <div className="h-2 w-full rounded-full bg-slate-100 overflow-hidden">
+                  <div 
+                    className="h-full bg-slate-900 transition-all duration-700" 
+                    style={{ width: `${track.progress}%` }}
+                  />
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
-        <RecentChanges />
+        <div className="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-sm">
+          <h3 className="text-sm font-bold uppercase tracking-widest text-slate-500 mb-6">Quiet Window Support</h3>
+          <p className="text-sm text-slate-600 leading-relaxed italic">
+            &quot;Feeling low energy? Try a 5-minute review or log a quick reflection. Small steps build long-term momentum.&quot;
+          </p>
+          <div className="mt-6 flex flex-wrap gap-2">
+            <Link href="/due-today?mode=tiny" className="rounded-full bg-slate-50 border border-slate-200 px-4 py-2 text-xs font-bold text-slate-700 hover:bg-slate-100 transition-all">
+              5-Min Task ⏱️
+            </Link>
+            <Link href="/pd-log" className="rounded-full bg-slate-50 border border-slate-200 px-4 py-2 text-xs font-bold text-slate-700 hover:bg-slate-100 transition-all">
+              Log Reflection ✍️
+            </Link>
+            <Link href="/knowledge-base-lab" className="rounded-full bg-slate-50 border border-slate-200 px-4 py-2 text-xs font-bold text-slate-700 hover:bg-slate-100 transition-all">
+              Draft SOP 📝
+            </Link>
+          </div>
+        </div>
       </div>
     </div>
   );

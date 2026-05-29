@@ -42,10 +42,10 @@ const templates = [
   },
   {
     id: 'scenario-practice',
-    label: 'DCS scenario practice',
-    resource: 'DCSPrep Scenario Lab',
+    label: 'Scenario mission practice',
+    resource: 'SupportOps Scenario Lab',
     topic: 'Scenario practice',
-    learned: 'I completed a multi-step support scenario and identified an area for further review.'
+    learned: 'I completed a multi-step support mission and identified an area for further review.'
   },
   {
     id: 'ticket-reflection',
@@ -64,10 +64,10 @@ const templates = [
   {
     id: 'academic-pd',
     label: 'Academic PD alignment',
-    resource: 'DCSPrep Academic PD',
+    resource: 'SupportOps Academic PD',
     topic: 'RBC/SMITB alignment',
     learned:
-      'I converted an academic subject or SLG assessment task into informal, privacy-safe DCSPrep evidence without claiming formal credit.'
+      'I converted an academic subject or SLG assessment task into informal, privacy-safe career evidence without claiming formal credit.'
   }
 ];
 

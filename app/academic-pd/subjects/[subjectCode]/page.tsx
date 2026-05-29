@@ -29,7 +29,7 @@ function getFallbackWeeklyModules(subject: AcademicSubject): AcademicWeeklyModul
     week: index + 1,
     topicNumber: index + 1,
     title: `SILO ${silo.number} planning block`,
-    deliveryMode: 'DCSPrep topic block',
+    deliveryMode: 'SupportOps topic block',
     sourceDetail: 'Generated from SILO mapping until exact weekly SLG topic rows are added.',
     summary: silo.text,
     dcsPrepFocus: silo.plainEnglish,
@@ -39,11 +39,11 @@ function getFallbackWeeklyModules(subject: AcademicSubject): AcademicWeeklyModul
     assessment: {
       id: `${subject.id}-topic-${silo.number}-assessment`,
       title: `SILO ${silo.number} reflection check`,
-      prompt: silo.quizItems[0] ?? `Explain how SILO ${silo.number} connects to DCS support practice.`,
+      prompt: silo.quizItems[0] ?? `Explain how SILO ${silo.number} connects to support practice.`,
       questionType: 'reflection',
       rubric: [
         'Explains the academic concept in plain English.',
-        'Connects the concept to a real DCS support task.',
+        'Connects the concept to a real support task.',
         'Includes safe escalation or documentation judgement.'
       ],
       evidenceOutput: 'A short reflection note linked to this SILO.'
@@ -65,15 +65,15 @@ export default function AcademicSubjectPage({ params }: { params: Params }) {
       id: `${subject.id}-generated-assessment`,
       title: 'SILO reflection checks',
       timing: 'Use alongside each topic block',
-      purpose: 'Convert subject outcomes into short DCSPrep assessment evidence.',
+      purpose: 'Convert subject outcomes into short SupportOps assessment evidence.',
       tasks: [
         'Answer the assessment prompt inside each topic block.',
-        'Connect the response to at least one DCS support scenario.',
-        'Keep examples privacy-safe and free of live school incident details.'
+        'Connect the response to at least one support scenario.',
+        'Keep examples privacy-safe and free of live incident details.'
       ],
       rubric: [
         'Correctly explains the subject outcome.',
-        'Uses a practical school IT example.',
+        'Uses a practical IT example.',
         'Shows safe judgement, documentation, or escalation behaviour.'
       ],
       relatedWeekIds: weeklyModules.map((module) => module.id)

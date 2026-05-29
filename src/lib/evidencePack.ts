@@ -1,4 +1,7 @@
 import { getMonthlyPdSummary } from './pdSummary';
+import { getOverallProgress, getModuleCompletion } from './moduleMath';
+import { modules as moduleCatalogue } from '../data/modules';
+import { deriveGamificationState, loadGamificationState, getLevelTitle } from './gamification';
 import type { PDLogEntry, UserProgress } from './progress';
 
 function hasAcademicAlignmentEvidence(entries: PDLogEntry[]) {
@@ -17,6 +20,13 @@ function hasAcademicAlignmentEvidence(entries: PDLogEntry[]) {
 export function buildEvidencePackMarkdown(progress: UserProgress, monthKey: string) {
   const summary = getMonthlyPdSummary(progress, monthKey);
   const includesAcademicAlignment = hasAcademicAlignmentEvidence(summary.entries);
+  const overallProgress = Math.round(getOverallProgress(moduleCatalogue, progress));
+  
+  const gamificationState = deriveGamificationState(progress, moduleCatalogue, loadGamificationState());
+  const levelTitle = getLevelTitle(gamificationState.level, gamificationState.specialization);
+
+  const completedModules = moduleCatalogue.filter(m => getModuleCompletion(m.id, progress, m) >= 100);
+  const completedScenarios = progress.scenarioRuns.filter(r => r.completed);
 
   const settings = progress.evidencePackSettings ?? {
     includeCertificates: true,
@@ -25,60 +35,74 @@ export function buildEvidencePackMarkdown(progress: UserProgress, monthKey: stri
   };
 
   const lines = [
-    `# SupportOps Career Lab Career Evidence Pack — ${summary.monthKey}`,
+    `# SupportOps Career Lab — Career Evidence Pack`,
+    `**Reporting Period:** ${summary.monthKey}`,
+    `**Current Level:** ${gamificationState.level} (${levelTitle})`,
+    `**Overall Readiness:** ${overallProgress}%`,
     '',
-    '> This summary is generated from local PD activity. It contains no private student, staff, or incident data.',
+    '> This summary is a privacy-safe export of local IT career development activity. It contains no sensitive student, staff, network, or incident data.',
     '',
-    `- Total PD time: ${summary.totalMinutes} minutes`,
-    `- Entries logged: ${summary.entryCount}`,
-    `- Topics covered: ${summary.topicsCovered.length ? summary.topicsCovered.join(', ') : 'None yet'}`,
-    `- Weak areas touched: ${summary.weakTopicsTouched.length ? summary.weakTopicsTouched.join(', ') : 'None yet'}`,
-    `- Suggested next focus: ${summary.suggestedNextFocus}`,
-    `- Include optional links: ${settings.includeLinks ? 'Yes' : 'No'}`,
-    `- Include certificate references: ${settings.includeCertificates ? 'Yes' : 'No'}`,
-    `- Academic alignment evidence: ${includesAcademicAlignment ? 'Informal RBC/SMITB PD alignment included' : 'None logged this month'}`,
+    '## Executive Summary',
     '',
-    '## Career evidence overview',
+    `- **Total PD Time:** ${summary.totalMinutes} minutes`,
+    `- **Activity Count:** ${summary.entryCount} sessions`,
+    `- **Primary Focus:** ${summary.topicsCovered.length ? summary.topicsCovered.slice(0, 3).join(', ') : 'Foundational Learning'}`,
+    `- **Next Recommended Mission:** ${summary.suggestedNextFocus}`,
     '',
-    'This export highlights your practical growth, strongest and weakest skill areas, and portfolio-safe evidence for managers or interviews.',
+    '## Career Readiness & Skill Growth',
     '',
-    '## Academic alignment note',
+    '### Strongest Skill Areas',
+    ...Object.entries(gamificationState.attributes)
+      .sort(([, a], [, b]) => b - a)
+      .slice(0, 2)
+      .map(([attr, val]) => `- **${attr.charAt(0).toUpperCase() + attr.slice(1)}:** Level ${Math.floor(val / 10)} (${val} XP)`),
+    '',
+    '### Career Track Progress',
+    `- **Active Track:** ${gamificationState.specialization.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ')}`,
+    `- **Module Completion:** ${completedModules.length} modules verified`,
+    `- **Mission Success:** ${completedScenarios.length} practical scenarios completed`,
+    '',
+    '## Practical Output & Verification',
+    '',
+    '### Completed Modules',
+    completedModules.length 
+      ? completedModules.map(m => `- ${m.title} (${m.estimatedMinutes}m)`).join('\n')
+      : 'No modules completed in this period.',
+    '',
+    '### Scenario Missions & Ticket Quality',
+    completedScenarios.length
+      ? completedScenarios.map(r => {
+          const score = typeof r.noteScore === 'number' ? ` (Quality: ${Math.round(r.noteScore * 100)}%)` : '';
+          return `- ${r.scenarioId}${score}`;
+        }).join('\n')
+      : 'No scenarios completed in this period.',
+    '',
+    '## Academic & Certification Alignment',
     '',
     includesAcademicAlignment
-      ? 'RBC/SMITB references in this export are informal professional-development alignment notes. They do not claim formal university credit, certification, or official assessment completion unless separately evidenced in the external academic system.'
-      : 'No RBC/SMITB academic-alignment entries were detected for this export period.',
+      ? 'Informal alignment with RBC/SMITB academic frameworks detected. These references are for PD tracking and do not represent formal university credit unless separately verified.'
+      : 'No specific academic or formal certification alignment logged this period.',
     '',
-    '## Entry summary',
+    '## Detailed Activity Log',
     ''
   ];
 
   if (!summary.entries.length) {
-    lines.push('No PD entries logged for this month yet.');
+    lines.push('No detailed activities logged for this month.');
   } else {
     summary.entries.forEach((entry) => {
       lines.push(`### ${entry.date} — ${entry.minutes} min`);
-      lines.push('');
-      lines.push(`- **Type:** ${entry.type || 'reflection'}`);
+      lines.push(`- **Action:** ${entry.topic || 'General Learning'}`);
       if (entry.resource) lines.push(`- **Resource:** ${entry.resource}`);
-      if (entry.topic) lines.push(`- **Topic:** ${entry.topic}`);
-      if (entry.moduleIds?.length) lines.push(`- **Modules referenced:** ${entry.moduleIds.join(', ')}`);
-      if (entry.scenarioIds?.length) lines.push(`- **Scenarios:** ${entry.scenarioIds.join(', ')}`);
-      if (entry.weakTopicsTouched?.length) lines.push(`- **Weak topics touched:** ${entry.weakTopicsTouched.join(', ')}`);
-      if (entry.weakTopicsImproved?.length) lines.push(`- **Weak topics improved:** ${entry.weakTopicsImproved.join(', ')}`);
-      lines.push('');
-      lines.push(`**Evidence summary:** ${entry.learned}`);
-      if (entry.reflection) {
-        lines.push('');
-        lines.push(`**Reflection:** ${entry.reflection}`);
-      }
-      if (entry.evidenceLink) {
-        lines.push('');
-        lines.push(`- **Evidence:** ${settings.includeLinks ? entry.evidenceLink : '(links omitted as requested)'}`);
+      lines.push(`- **Practical Output:** ${entry.learned}`);
+      if (entry.reflection) lines.push(`- **Reflection:** ${entry.reflection}`);
+      if (entry.evidenceLink && settings.includeLinks) {
+        lines.push(`- **Evidence Reference:** ${entry.evidenceLink}`);
       }
       lines.push('');
     });
   }
 
-  lines.push('', '---', '', 'Generated by DCSPrep local PD tracking.');
+  lines.push('', '---', '', 'Generated by SupportOps Career Lab — Local-First IT Career Growth.');
   return lines.join('\n');
 }

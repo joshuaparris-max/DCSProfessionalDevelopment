@@ -1,4 +1,4 @@
-const CACHE_NAME = 'dcsprep-app-shell-v2';
+const CACHE_NAME = 'supportops-app-shell-v1';
 const APP_SHELL_URLS = [
   '/',
   '/modules',
@@ -69,7 +69,7 @@ self.addEventListener('fetch', (event) => {
 });
 
 self.addEventListener('sync', (event) => {
-  if (event.tag !== 'dcsprep-progress-sync') {
+  if (event.tag !== 'supportops-progress-sync') {
     return;
   }
 
@@ -77,8 +77,8 @@ self.addEventListener('sync', (event) => {
     self.clients.matchAll({ type: 'window' }).then((clients) => {
       clients.forEach((client) => {
         client.postMessage({
-          type: 'DCSPREP_BACKGROUND_SYNC_READY',
-          message: 'A queued DCSPrep sync can run when a backend endpoint is configured.'
+          type: 'SUPPORTOPS_BACKGROUND_SYNC_READY',
+          message: 'A queued SupportOps sync can run when a backend endpoint is configured.'
         });
       });
     })
@@ -87,9 +87,9 @@ self.addEventListener('sync', (event) => {
 
 self.addEventListener('push', (event) => {
   let payload = {
-    title: 'DCSPrep reminder',
+    title: 'SupportOps Career Lab reminder',
     body: 'A scheduled review is ready.',
-    tag: 'dcsprep-review-reminder'
+    tag: 'supportops-review-reminder'
   };
 
   if (event.data) {
@@ -100,13 +100,5 @@ self.addEventListener('push', (event) => {
     }
   }
 
-  event.waitUntil(
-    self.registration.showNotification(payload.title, {
-      body: payload.body,
-      tag: payload.tag,
-      icon: '/icon.svg',
-      badge: '/icon.svg',
-      data: payload.data ?? {}
-    })
-  );
+  event.waitUntil(self.registration.showNotification(payload.title, payload));
 });

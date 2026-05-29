@@ -1,6 +1,6 @@
 import type { AssessmentQuestion } from './assessment';
 
-export type ModuleLevel = 'A+' | 'L1' | 'L2' | 'IT Manager' | 'DCS Context' | 'RBC' | 'SMITB' | 'Stretch';
+export type ModuleLevel = 'A+' | 'L1' | 'L1 Support' | 'L2' | 'L2 Support' | 'IT Manager' | 'DCS Context' | 'RBC' | 'SMITB' | 'Stretch';
 
 export type ModuleDomain =
   | 'Foundations'
@@ -76,6 +76,8 @@ export type TrainingModule = {
   level: ModuleLevel;
   estimatedMinutes: number;
   tags: string[];
+  careerTrack?: string;
+  attributeFocus?: 'Strength' | 'Intelligence' | 'Agility' | 'Spirit';
   careerTags?: string[];
   contextTags?: string[];
   certificationTags?: string[];

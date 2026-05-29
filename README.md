@@ -1,145 +1,53 @@
-# DCSPrep
+# SupportOps Career Lab
 
-DCSPrep is a local-first Next.js professional development app for Josh's DCS IT support growth. It focuses on safe Level 1 learning, structured assessment, scenario practice, error review, and visible progress across real school-support themes.
+SupportOps Career Lab is a local-first IT career development dashboard for Josh to build practical support skills and track professional growth. It focuses on Level 1/2 support, MSP workflows, Microsoft 365 administration, networking fundamentals, and cybersecurity triage.
 
-The intended direction is question-first and retrieval-first:
+The app provides a guided training cockpit designed for question-first and retrieval-first learning:
 
-- flashcards
-- multiple-choice and short-answer practice
-- scenario-based troubleshooting
-- explanation and note-writing practice
-- short focused study blocks
+- Flashcards and retrieval checks
+- Multiple-choice and diagnostic practice
+- Scenario-based troubleshooting missions
+- Explanation and ticket note-writing practice
+- Focused study blocks and Focus Forest timer
 
-The app should stay privacy-safe while becoming more relevant to the actual DCS workflow areas supported through internal systems such as Sentral, OurDCS, Teams, and related school-owned resources.
+SupportOps Career Lab remains privacy-safe by keeping all study data and progress in local storage. While it includes specific contexts like Dubbo Christian School (DCS) for practical application, it is built to support a broader IT career path including CompTIA A+ readiness and MSP support operations.
 
-## Current App Areas
+## Career Development Areas
 
-- Professional Development Dashboard
-- Modules (DCS workflow + Academic PD)
-- Scenario Lab
-- Due Today
-- Personal progression badges, points, and streaks
-- Daily dashboard challenge
-- Live AI coaching with detailed feedback, tips, and next steps
-- Structured assessment
-- PD log
-- Error log
-- Readiness profiles
-- PD Scheduler
-- Usage Insights
-- Evidence Pack
-- Knowledge Base Lab
-- Academic PD (RBC + SMITB bridge)
-- Support tools
-- Code Playground (Python & HTML)
-- Career Paths
-- Final Projects
-- Mobile Audit (one-thumb friendly)
-- PWA app shell with install metadata and offline navigation fallback
-- Trainer guide
-- Settings
+- **Training Cockpit (Today)**: Obvious next actions and career progress tracking.
+- **Modules**: Guided IT training covering M365, networking, and support foundations.
+- **Scenario Missions**: Practical troubleshooting missions across various IT contexts.
+- **Evidence Pack**: Privacy-safe career evidence for portfolio or interview preparation.
+- **RPG Growth**: XP, attributes (Strength, Intelligence, Agility, Spirit), and unlocks.
+- **Focus Forest**: Focused study timer with virtual tree growth.
+- **Academic PD**: Bridge for RBC and SMITB academic alignment.
+- **Support Tools**: Practical checklists and templates for real-world support.
 
-## Current Content Coverage
+## Core Skill Coverage
 
-Core DCS workflow module areas currently implemented:
-
-- DCS IT Support Foundations
-- Ports and Protocols
-- DNS, DHCP, Gateway, and IP Basics
-- Printer Troubleshooting
-- Classroom Display and ViewBoard Troubleshooting
-- Login and Password Support
-- Permissions and Access Requests
-- Teams, SharePoint, and OneDrive Support
-- M365 Identity and Offboarding Basics
-- MDM, Intune, and Group Policy Concepts
-- VLANs and Network Segmentation
-- Cloud Models: SaaS, PaaS, IaaS, and DaaS
-- Ticket Notes and Escalation Quality
-- Device Imaging and Deployment Workflows
-- Parent Portal Registration
-- Parent Portal Details Updates
-- Sentral Support
-- OurDCS / Schoolbox Support
-- New User Onboarding
-- Website Filtering and Unblock Requests
-- iPad and Jamf Workflow Basics
-- Soft Skills for DCS Support
-
-Academic PD modules (RBC + SMITB integration):
-
-- CSE1IIT (Information and Information Technology)
-- CSE1ICB (Introduction to Computational Thinking)
-- STA1DCT (Data and Chance)
-- CSE1OOF (Office Software Fundamentals)
-- CSE1IS (Information Systems)
-- CSE3PE (Professional Environments)
-- SMITB subjects (Bendigo-specific academic integration)
-- A+ Core 1 and Core 2 support modules
-- RBC/SMITB academic-alignment modules
+- Level 1 & Early Level 2 IT Support
+- MSP Support Operations
+- Microsoft 365 Admin & Identity
+- Endpoint & Intune Support
+- Networking Fundamentals
+- Cybersecurity Triage
+- Ticket Documentation & User Communication
+- CompTIA A+ Readiness
+- DCS / School IT Context
 
 ## Development Commands
 
 Install dependencies:
-
 ```powershell
 npm install
 ```
 
 Run the dev server:
-
 ```powershell
 npm run dev
 ```
 
-Run lint:
-
-```powershell
-npm run lint
-```
-
-Run production build:
-
+Run build:
 ```powershell
 npm run build
 ```
-
-## Project Structure
-
-- `app/` - App Router routes
-- `src/components/` - UI and learning components
-- `src/data/modules.ts` - module content
-- `src/data/questions.ts` - strict assessment bank
-- `src/data/scenarios.ts` - scenario chains
-- `src/lib/progress.ts` - local progress storage and hydration-safe helpers
-- `src/lib/moduleMath.ts` - completion calculations
-- `src/lib/readinessMath.ts` - readiness-profile calculations
-- `src/lib/scenarioReview.ts` - scenario note rubric and scenario-to-module revisit mappings
-- `src/lib/gamification.ts` - local-first points, streaks, and badge milestone calculations
-- `src/lib/offlineStorage.ts` - IndexedDB module download storage
-- `src/lib/notifications.ts` - notification permission and local reminder helpers
-- `src/components/pwa/ServiceWorkerRegistration.tsx` - production service worker registration for offline app-shell caching
-- `app/manifest.ts` - installable PWA manifest metadata
-- `public/sw.js` - service worker for app-shell precache and offline navigation fallback
-- `src/types/` - shared types
-
-## Audit and Roadmap Docs
-
-Current audit and backlog documents:
-
-- [`docs/jira-vs-dcsprep-audit.md`](docs/jira-vs-dcsprep-audit.md)
-- [`docs/dcsprep-upskilling-roadmap.md`](docs/dcsprep-upskilling-roadmap.md)
-- [`docs/TODO.md`](docs/TODO.md)
-- [`docs/LeftToDo.md`](docs/LeftToDo.md)
-
-These documents map the app against the DCS Jira analysis, identify missing or shallow training areas, and define the next implementation priorities.
-
-## Notes
-
-- Progress is stored in `localStorage`.
-- The app is PD-only and should remain privacy-safe.
-- Do not enter live student, staff, parent, credential, network, or incident details.
-
-## OneDrive Note
-
-If the project stays inside OneDrive, Windows may occasionally interfere with `.next` writes during local development. If you hit dev-server file locking issues, excluding the project folder or `.next` from sync is safer than deleting build files repeatedly.

@@ -20,10 +20,10 @@ export function RPGDashboard({ summary }: RPGDashboardProps) {
   };
 
   const attributeLabels: Record<keyof RPGAttributes, string> = {
-    strength: 'Strength (Hardware/Ops)',
-    intelligence: 'Intelligence (Cloud/AI)',
-    agility: 'Agility (Networking/Speed)',
-    spirit: 'Spirit (Soft Skills/Reflection)'
+    strength: 'Strength (Persistence / Endpoint / Devices)',
+    intelligence: 'Intelligence (M365 / Networking / Knowledge)',
+    agility: 'Agility (Triage / Context Switching / Speed)',
+    spirit: 'Spirit (Communication / Calm / Privacy)'
   };
 
   return (

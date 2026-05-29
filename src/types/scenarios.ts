@@ -34,10 +34,19 @@ export type ScenarioRun = {
   completed: boolean;
 };
 
+export type MissionType = 
+  | 'Triage Mission' 
+  | 'Ticket Note Mission' 
+  | 'Escalation Mission' 
+  | 'User Communication Mission' 
+  | 'Security Judgement Mission' 
+  | 'Troubleshooting Sequence Mission';
+
 export type Scenario = {
   id: string;
   title: string;
   summary: string;
+  missionType?: MissionType;
   estimatedMinutes: number;
   initialReport: string;
   contextBullets: string[];

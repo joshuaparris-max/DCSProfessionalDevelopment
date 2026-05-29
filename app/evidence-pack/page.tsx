@@ -60,13 +60,13 @@ export default function EvidencePackPage() {
 
   return (
     <div className="space-y-6">
-      <section className="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-sm">
+      <section className="rounded-[2rem] border border-slate-200 bg-white p-8 shadow-sm">
         <div className="max-w-3xl">
-          <div className="text-sm font-semibold uppercase tracking-[0.2em] text-slate-500">Career Evidence Pack export</div>
-          <h1 className="mt-3 text-3xl font-semibold tracking-tight text-slate-900">Generate a manager-safe career evidence summary</h1>
-          <p className="mt-3 text-sm leading-7 text-slate-600">
-            Export a privacy-safe Markdown summary of your local career development activity for review,
-            reflection, or portfolio sharing.
+          <div className="text-sm font-semibold uppercase tracking-[0.2em] text-slate-500">Career Evidence Pack</div>
+          <h1 className="mt-3 text-4xl font-semibold tracking-tight text-slate-900">Career Progress Export</h1>
+          <p className="mt-4 text-sm leading-7 text-slate-600">
+            Generate a privacy-safe Markdown summary of your IT career growth, including completed missions, 
+            skill development, and practical evidence for performance reviews or portfolios.
           </p>
         </div>
       </section>

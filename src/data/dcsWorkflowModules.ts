@@ -11,6 +11,8 @@ export const dcsWorkflowModules: TrainingModule[] = [
     domain: 'Operations',
     level: 'L1',
     estimatedMinutes: 22,
+    careerTrack: 'School IT',
+    attributeFocus: 'Spirit',
     tags: ['Parent Portal', 'registration', 'access key', 'escalation'],
     learningObjectives: [
       'Separate ICT connectivity problems from administration-owned enrolment or identity workflows.',

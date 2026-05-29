@@ -6,10 +6,26 @@ export type ReadinessScore = {
   label: string;
   note: string;
   score: number;
+  confidence: 'low' | 'medium' | 'high';
+  evidenceCount: number;
+  topActions: string[];
 };
 
 function clampScore(value: number) {
   return Math.max(0, Math.min(100, Math.round(value)));
+}
+
+function getEvidenceStats(progress: UserProgress) {
+  const assessmentCount = progress.assessmentAttempts.length;
+  const weakTopicCount = Object.keys(progress.weakTopicReviews).length;
+  const scenarioCount = progress.scenarioRuns.filter(r => typeof r.noteScore === 'number').length;
+  const totalEvidence = assessmentCount + weakTopicCount + scenarioCount;
+  
+  let confidence: 'low' | 'medium' | 'high' = 'low';
+  if (totalEvidence >= 15) confidence = 'high';
+  else if (totalEvidence >= 5) confidence = 'medium';
+
+  return { totalEvidence, confidence };
 }
 
 function getAssessmentAverage(progress: UserProgress): number | null {
@@ -46,33 +62,66 @@ export type DashboardRecommendation = {
   detail: string;
   ctaHref: string;
   ctaLabel: string;
+  careerTrack?: string;
+  attributeFocus?: string;
 };
 
 export function getDashboardRecommendation(progress: UserProgress): DashboardRecommendation {
   const weakTopics = Object.values(progress.weakTopicReviews);
+  const context = progress.selectedWorkContext;
+
   if (weakTopics.length) {
     const lowest = weakTopics.reduce((current, next) => (next.averageScore < current.averageScore ? next : current));
     return {
       title: `Quest: Master ${weakTopicLabels[lowest.topic] ?? lowest.topic}`,
-      detail: 'Your performance here is low. Return to the core training to build your attributes.',
+      detail: `Your performance in ${weakTopicLabels[lowest.topic] ?? lowest.topic} is currently low for a ${context} role. Return to the core training to build your attributes.`,
       ctaHref: '/due-today',
-      ctaLabel: 'Start Review'
+      ctaLabel: 'Start Review',
+      careerTrack: 'Support Fundamentals',
+      attributeFocus: 'Intelligence'
     };
   }
 
-  // Find first incomplete module
-  const firstIncompleteModule = Object.entries(progress.modules).find(([id, data]) => {
-    // A module is incomplete if its overall completion is less than 100%
-    // This requires access to the module definitions to calculate completion correctly.
-    // For now, we'll fallback to the main foundations module.
-    return true; 
-  });
+  // Context-specific starting points
+  const contextStartingPoints: Record<string, { title: string; detail: string; href: string; track: string; attr: string }> = {
+    'DCS / School IT': {
+      title: 'Main Quest: DCS Foundations',
+      detail: 'Begin your journey by mastering the foundational IT support patterns at DCS.',
+      href: '/modules/dcs-it-support-foundations',
+      track: 'School IT',
+      attr: 'Spirit'
+    },
+    'MSP Support': {
+      title: 'Main Quest: MSP Foundations',
+      detail: 'Learn the core triage and documentation patterns required for high-volume MSP support.',
+      href: '/modules/dcs-it-support-foundations', // Fallback for now
+      track: 'MSP L1 Support',
+      attr: 'Agility'
+    },
+    'Certification Study': {
+      title: 'Main Quest: CompTIA A+',
+      detail: 'Focus on core hardware and software foundations for A+ readiness.',
+      href: '/modules/messer-core2-operating-systems-overview', // Updated to an existing module
+      track: 'CompTIA A+',
+      attr: 'Intelligence'
+    }
+  };
 
-  return {
+  const recommendation = contextStartingPoints[context] || {
     title: 'Main Quest: Foundations',
     detail: 'Begin your IT journey by mastering the foundational support modules.',
-    ctaHref: '/modules/dcs-it-support-foundations',
-    ctaLabel: 'Begin Quest'
+    href: '/modules/dcs-it-support-foundations',
+    track: 'Support Fundamentals',
+    attr: 'Intelligence'
+  };
+
+  return {
+    title: recommendation.title,
+    detail: recommendation.detail,
+    ctaHref: recommendation.href,
+    ctaLabel: 'Begin Quest',
+    careerTrack: recommendation.track,
+    attributeFocus: recommendation.attr
   };
 }
 
@@ -96,45 +145,43 @@ export function getReadinessProfile(
     | 'networkingFundamentals'
     | 'cybersecurityTriage'
     | 'ticketDocumentation'
-    | 'schoolItManager',
+    | 'userCommunication'
+    | 'schoolItContext',
   progress: UserProgress
-) {
+): ReadinessScore[] {
   const assessmentAverage = getAssessmentAverage(progress);
   const weakAverage = getWeakTopicAverage(progress);
   const scenarioNoteAverage = getScenarioNoteAverage(progress);
-  const assessmentEvidence = progress.assessmentAttempts.length >= 5;
-  const weakEvidence = Object.keys(progress.weakTopicReviews).length >= 2;
-  const scenarioEvidence = progress.scenarioRuns.some((run) => typeof run.noteScore === 'number');
-  const evidenceBacked = assessmentEvidence && weakEvidence && scenarioEvidence;
+  const { totalEvidence, confidence } = getEvidenceStats(progress);
 
   const blendedAssessment = assessmentAverage ?? 48;
   const blendedWeak = weakAverage ?? 52;
   const blendedScenario = scenarioNoteAverage ?? 50;
   const base = blendedAssessment * 0.45 + blendedWeak * 0.3 + blendedScenario * 0.25;
 
-  const evidenceNote = evidenceBacked
-    ? 'Grounded in recorded quiz attempts, weak-topic reviews, and scenario note-quality scores.'
-    : 'Estimate until more quiz attempts, weak-topic reviews, and scenario note-quality scores exist—scores blend conservative placeholders where data is missing.';
+  const evidenceNote = totalEvidence > 0
+    ? `Based on ${totalEvidence} evidence points.`
+    : 'No direct evidence found—using conservative baseline.';
 
   if (category === 'compTIAaPlus') {
     return [
       {
         id: 'a-plus-fundamentals',
-        label: 'A+ fundamentals',
-        note: `${evidenceNote} Focused on core hardware, networking, and support process knowledge.`,
-        score: clampScore(base * 0.92)
+        label: 'A+ Fundamentals',
+        note: `${evidenceNote} Core hardware and OS knowledge.`,
+        score: clampScore(base * 0.92),
+        confidence,
+        evidenceCount: totalEvidence,
+        topActions: ['Complete hardware modules', 'Review OS troubleshooting', 'Pass foundation quiz']
       },
       {
         id: 'hardware-ops',
-        label: 'Hardware & endpoint ops',
-        note: `${evidenceNote} Reflects device troubleshooting and support sequence performance.`,
-        score: clampScore(base * 0.9)
-      },
-      {
-        id: 'support-documentation',
-        label: 'Support documentation',
-        note: `${evidenceNote} Measures how clearly you capture symptoms, steps, and escalation points.`,
-        score: clampScore(base * 0.85)
+        label: 'Hardware & Endpoint Ops',
+        note: `${evidenceNote} Device troubleshooting performance.`,
+        score: clampScore(base * 0.9),
+        confidence,
+        evidenceCount: totalEvidence,
+        topActions: ['Run printer scenarios', 'Complete BIOS/UEFI module', 'Log device repair evidence']
       }
     ];
   }
@@ -143,44 +190,21 @@ export function getReadinessProfile(
     return [
       {
         id: 'msp1-triage',
-        label: 'MSP L1 triage',
-        note: `${evidenceNote} Weighted toward fast problem scope, service checks, and safe first-response work.`,
-        score: clampScore(base * 0.92)
-      },
-      {
-        id: 'msp1-device-support',
-        label: 'Device support',
-        note: `${evidenceNote} Builds on endpoint, printer, and user-device troubleshooting signals.`,
-        score: clampScore(base * 0.9)
+        label: 'MSP L1 Triage',
+        note: `${evidenceNote} Fast problem scope and first response.`,
+        score: clampScore(base * 0.92),
+        confidence,
+        evidenceCount: totalEvidence,
+        topActions: ['Practice triage missions', 'Review SLA guidelines', 'Master ticket intake']
       },
       {
         id: 'msp1-ticket-quality',
-        label: 'Ticket quality',
-        note: `${evidenceNote} Measures clear notes, escalation readiness, and safe service delivery.`,
-        score: clampScore(base * 0.88)
-      }
-    ];
-  }
-
-  if (category === 'mspL2') {
-    return [
-      {
-        id: 'msp2-technical-depth',
-        label: 'MSP L2 technical depth',
-        note: `${evidenceNote} Maps to deeper networking, identity and system problem patterns.`,
-        score: clampScore(base * 0.9)
-      },
-      {
-        id: 'msp2-escalation-judgement',
-        label: 'Escalation judgement',
-        note: `${evidenceNote} Influenced by scenario decisions and note quality in edge-case support.`,
-        score: clampScore(base * 0.88)
-      },
-      {
-        id: 'msp2-service-process',
-        label: 'Service process',
-        note: `${evidenceNote} Reflects whether you use safe handoff, approvals, and follow-up checks.`,
-        score: clampScore(base * 0.86)
+        label: 'Ticket Documentation',
+        note: `${evidenceNote} Quality of troubleshooting notes.`,
+        score: clampScore(base * 0.88),
+        confidence,
+        evidenceCount: totalEvidence,
+        topActions: ['Use escalation templates', 'Complete ticket note mission', 'Refine symptom capture']
       }
     ];
   }
@@ -188,22 +212,22 @@ export function getReadinessProfile(
   if (category === 'm365Admin') {
     return [
       {
-        id: 'm365-user-management',
-        label: 'M365 user management',
-        note: `${evidenceNote} Focused on identity, access, licensing, and service support patterns.`,
-        score: clampScore(base * 0.9)
+        id: 'm365-identity',
+        label: 'Identity & Access',
+        note: `${evidenceNote} Azure AD / Entra ID fundamentals.`,
+        score: clampScore(base * 0.85),
+        confidence,
+        evidenceCount: totalEvidence,
+        topActions: ['Review MFA setup', 'Complete password reset scenario', 'Learn group management']
       },
       {
-        id: 'm365-service-triage',
-        label: 'Service triage',
-        note: `${evidenceNote} Draws from scenarios dealing with Exchange, Teams, and SharePoint symptoms.`,
-        score: clampScore(base * 0.88)
-      },
-      {
-        id: 'm365-documentation',
-        label: 'Documentation & handoff',
-        note: `${evidenceNote} Reflects how clearly you capture system state and next steps for another admin.`,
-        score: clampScore(base * 0.85)
+        id: 'm365-services',
+        label: 'Core Services (Teams/SharePoint)',
+        note: `${evidenceNote} Service-specific troubleshooting.`,
+        score: clampScore(base * 0.8),
+        confidence,
+        evidenceCount: totalEvidence,
+        topActions: ['Complete SharePoint sync mission', 'Review Teams meeting room setup', 'Master OneDrive triage']
       }
     ];
   }
@@ -211,22 +235,22 @@ export function getReadinessProfile(
   if (category === 'endpointIntune') {
     return [
       {
-        id: 'endpoint-device-support',
-        label: 'Endpoint device support',
-        note: `${evidenceNote} Tracks device troubleshooting, imaging, and configuration repair knowledge.`,
-        score: clampScore(base * 0.9)
+        id: 'endpoint-deployment',
+        label: 'Device Enrollment',
+        note: `${evidenceNote} Autopilot and enrollment patterns.`,
+        score: clampScore(base * 0.82),
+        confidence,
+        evidenceCount: totalEvidence,
+        topActions: ['Review Autopilot flow', 'Complete enrollment module', 'Check device compliance rules']
       },
       {
-        id: 'endpoint-management',
-        label: 'Management tooling',
-        note: `${evidenceNote} Reflects familiarity with MDM, mobile device workflows, and remote support paths.`,
-        score: clampScore(base * 0.88)
-      },
-      {
-        id: 'endpoint-operational-safety',
-        label: 'Operational safety',
-        note: `${evidenceNote} Emphasises safe actions and clear escalation when device management is uncertain.`,
-        score: clampScore(base * 0.86)
+        id: 'endpoint-policy',
+        label: 'Policy Management',
+        note: `${evidenceNote} Configuration profiles and apps.`,
+        score: clampScore(base * 0.78),
+        confidence,
+        evidenceCount: totalEvidence,
+        topActions: ['Learn app deployment', 'Review security baselines', 'Check configuration sync']
       }
     ];
   }
@@ -234,22 +258,22 @@ export function getReadinessProfile(
   if (category === 'networkingFundamentals') {
     return [
       {
-        id: 'networking-core',
-        label: 'Networking fundamentals',
-        note: `${evidenceNote} Weighted toward connectivity, Wi-Fi, routing, and port/switch awareness.`,
-        score: clampScore(base * 0.92)
+        id: 'net-connectivity',
+        label: 'Connectivity Triage',
+        note: `${evidenceNote} IP, DNS, and DHCP troubleshooting.`,
+        score: clampScore(base * 0.88),
+        confidence,
+        evidenceCount: totalEvidence,
+        topActions: ['Run Wi-Fi missions', 'Review DNS records', 'Master ipconfig/ping tools']
       },
       {
-        id: 'networking-troubleshooting',
-        label: 'Network troubleshooting',
-        note: `${evidenceNote} Reflects diagnostic ordering and evidence-based network checks.`,
-        score: clampScore(base * 0.9)
-      },
-      {
-        id: 'networking-visibility',
-        label: 'Network visibility',
-        note: `${evidenceNote} Measures whether you document scope, affected devices, and network boundaries.`,
-        score: clampScore(base * 0.85)
+        id: 'net-infrastructure',
+        label: 'Network Infrastructure',
+        note: `${evidenceNote} Switches, APs, and cabling.`,
+        score: clampScore(base * 0.8),
+        confidence,
+        evidenceCount: totalEvidence,
+        topActions: ['Review VLAN basics', 'Check PoE status patterns', 'Master cabling standards']
       }
     ];
   }
@@ -257,67 +281,82 @@ export function getReadinessProfile(
   if (category === 'cybersecurityTriage') {
     return [
       {
-        id: 'security-triage',
-        label: 'Cybersecurity triage',
-        note: `${evidenceNote} Focused on phishing, suspicious service behavior, and safe evidence preservation.`,
-        score: clampScore(base * 0.92)
+        id: 'sec-phishing',
+        label: 'Threat Identification',
+        note: `${evidenceNote} Phishing and alert analysis.`,
+        score: clampScore(base * 0.9),
+        confidence,
+        evidenceCount: totalEvidence,
+        topActions: ['Complete phishing scenarios', 'Review email headers', 'Master alert triage']
       },
       {
-        id: 'security-risk-awareness',
-        label: 'Risk awareness',
-        note: `${evidenceNote} Reflects whether you treat sensitive flow, privacy, and escalation correctly.`,
-        score: clampScore(base * 0.9)
-      },
-      {
-        id: 'security-notes',
-        label: 'Security documentation',
-        note: `${evidenceNote} Measures whether you record clear incident context without exposing private data.`,
-        score: clampScore(base * 0.86)
+        id: 'sec-incident',
+        label: 'Incident Response',
+        note: `${evidenceNote} Escalation and containment.`,
+        score: clampScore(base * 0.82),
+        confidence,
+        evidenceCount: totalEvidence,
+        topActions: ['Learn containment steps', 'Review isolation policies', 'Master safe escalation']
       }
     ];
   }
 
-  if (category === 'ticketDocumentation') {
+  if (category === 'userCommunication') {
     return [
       {
-        id: 'ticket-clarity',
-        label: 'Ticket clarity',
-        note: `${evidenceNote} Based on scenario notes, log detail, and how well the issue is summarized.`,
-        score: clampScore(base * 0.92)
+        id: 'comm-clarity',
+        label: 'Communication Clarity',
+        note: `${evidenceNote} Clear, jargon-free user instruction.`,
+        score: clampScore(base * 0.92),
+        confidence,
+        evidenceCount: totalEvidence,
+        topActions: ['Run user comms missions', 'Review ticket note clarity', 'Master simple analogies']
       },
       {
-        id: 'ticket-scope',
-        label: 'Scope & impact',
-        note: `${evidenceNote} Weights how well you capture affected users, systems, and business impact.`,
-        score: clampScore(base * 0.9)
-      },
-      {
-        id: 'ticket-handoff',
-        label: 'Handoff readiness',
-        note: `${evidenceNote} Measures whether notes are useful for the next support level or manager review.`,
-        score: clampScore(base * 0.88)
+        id: 'comm-empathy',
+        label: 'Professional Empathy',
+        note: `${evidenceNote} Calm support under user pressure.`,
+        score: clampScore(base * 0.88),
+        confidence,
+        evidenceCount: totalEvidence,
+        topActions: ['Complete difficult user scenarios', 'Review soft skill modules', 'Master de-escalation']
       }
     ];
   }
 
+  if (category === 'schoolItContext') {
+    return [
+      {
+        id: 'school-ops',
+        label: 'School IT Operations',
+        note: `${evidenceNote} School-specific systems and workflows.`,
+        score: clampScore(base * 0.85),
+        confidence,
+        evidenceCount: totalEvidence,
+        topActions: ['Review DCS workflows', 'Master SIS basics', 'Complete ViewBoard module']
+      },
+      {
+        id: 'school-culture',
+        label: 'Educational IT Context',
+        note: `${evidenceNote} Supporting teachers and students.`,
+        score: clampScore(base * 0.9),
+        confidence,
+        evidenceCount: totalEvidence,
+        topActions: ['Learn teacher support patterns', 'Review student privacy rules', 'Master classroom AV']
+      }
+    ];
+  }
+
+  // Fallback / default
   return [
     {
-      id: 'strategic-awareness',
-      label: 'Strategic awareness',
-      note: `${evidenceNote} Broad situational judgement from mixed assessments.`,
-      score: clampScore(base * 0.8)
-    },
-    {
-      id: 'privacy-risk',
-      label: 'Privacy & risk',
-      note: `${evidenceNote} Reinforced when privacy/security questions score well.`,
-      score: clampScore(base * 0.85)
-    },
-    {
-      id: 'process-adaptability',
-      label: 'Process adaptability',
-      note: `${evidenceNote} Strengthens as PD log + modules show sustained engagement.`,
-      score: clampScore(base * 0.75)
+      id: 'general-readiness',
+      label: 'General IT Readiness',
+      note: evidenceNote,
+      score: clampScore(base),
+      confidence,
+      evidenceCount: totalEvidence,
+      topActions: ['Complete more modules', 'Run more scenarios', 'Log daily PD activity']
     }
   ];
 }

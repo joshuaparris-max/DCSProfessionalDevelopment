@@ -5,13 +5,24 @@ import type { UserProgress } from './progress';
 export const GAMIFICATION_STORAGE_KEY = 'supportOpsGamification';
 const LEGACY_GAMIFICATION_STORAGE_KEY = 'dcsPrepGamification';
 
-export type ITSpecialization = 'support-tech' | 'network-engineer' | 'm365-admin' | 'security-analyst' | 'generalist';
+export type ITSpecialization = 
+  | 'msp-l1' 
+  | 'msp-l2' 
+  | 'm365-admin' 
+  | 'endpoint-intune' 
+  | 'networking-foundations' 
+  | 'cybersecurity-triage' 
+  | 'documentation-expert' 
+  | 'user-comm' 
+  | 'a-plus-ready' 
+  | 'school-it'
+  | 'generalist';
 
 export type RPGAttributes = {
-  strength: number;    // Hardware, Troubleshooting, Physical Support
-  intelligence: number; // Cloud, M365, Software Architecture
-  agility: number;      // Networking, Ports, Protocols, Speed of triage
-  spirit: number;       // Soft Skills, Journaling, Professional Practice
+  strength: number;    // Hardware, Persistence, Complex Troubleshooting, Endpoint
+  intelligence: number; // Cloud, M365, Software, Networking Knowledge
+  agility: number;      // Quick Triage, Prioritisation, Context Switching
+  spirit: number;       // Communication, Calm, Privacy, Wise Escalation
 };
 
 export type GamificationBadge = {
@@ -133,32 +144,43 @@ function getSpecializationFromProgress(progress: UserProgress): ITSpecialization
   const m365 = progress.assessmentAttempts.filter((a) => a.domain.includes('M365') || a.domain.includes('Cloud')).length;
   const network = progress.assessmentAttempts.filter((a) => a.domain.includes('Networking')).length;
   const security = progress.assessmentAttempts.filter((a) => a.domain.includes('Cybersecurity') || a.domain.includes('Security')).length;
+  const documentation = progress.scenarioRuns.filter(r => (r.noteScore ?? 0) >= 0.8).length;
+  const schoolIt = progress.selectedWorkContext === 'DCS / School IT' ? 1 : 0;
 
   const scores = [
-    { spec: 'support-tech' as ITSpecialization, count: aPlus },
+    { spec: 'a-plus-ready' as ITSpecialization, count: aPlus },
     { spec: 'm365-admin' as ITSpecialization, count: m365 },
-    { spec: 'network-engineer' as ITSpecialization, count: network },
-    { spec: 'security-analyst' as ITSpecialization, count: security }
+    { spec: 'networking-foundations' as ITSpecialization, count: network },
+    { spec: 'cybersecurity-triage' as ITSpecialization, count: security },
+    { spec: 'documentation-expert' as ITSpecialization, count: documentation },
+    { spec: 'school-it' as ITSpecialization, count: schoolIt }
   ];
 
   const top = scores.sort((a, b) => b.count - a.count)[0];
   return top.count > 0 ? top.spec : 'generalist';
 }
 
-function getLevelTitle(level: number, specialization: ITSpecialization): string {
-  const specPrefix = {
-    'support-tech': '🖥️',
+export function getLevelTitle(level: number, specialization: ITSpecialization): string {
+  const specPrefix: Record<ITSpecialization, string> = {
+    'msp-l1': '📞',
+    'msp-l2': '🛠️',
     'm365-admin': '☁️',
-    'network-engineer': '🌐',
-    'security-analyst': '🛡️',
+    'endpoint-intune': '📱',
+    'networking-foundations': '🌐',
+    'cybersecurity-triage': '🛡️',
+    'documentation-expert': '📝',
+    'user-comm': '🗣️',
+    'a-plus-ready': '🎓',
+    'school-it': '🏫',
     'generalist': '📚'
   };
 
-  if (level < 5) return `${specPrefix[specialization]} Novice ${specialization.replace('-', ' ')}`;
-  if (level < 10) return `${specPrefix[specialization]} Junior ${specialization.replace('-', ' ')}`;
-  if (level < 20) return `${specPrefix[specialization]} Professional ${specialization.replace('-', ' ')}`;
-  if (level < 35) return `${specPrefix[specialization]} Senior ${specialization.replace('-', ' ')}`;
-  if (level < 50) return `${specPrefix[specialization]} Expert ${specialization.replace('-', ' ')}`;
+  const titleBase = specialization.replace('-', ' ');
+  if (level < 5) return `${specPrefix[specialization]} Novice ${titleBase}`;
+  if (level < 10) return `${specPrefix[specialization]} Junior ${titleBase}`;
+  if (level < 20) return `${specPrefix[specialization]} Professional ${titleBase}`;
+  if (level < 35) return `${specPrefix[specialization]} Senior ${titleBase}`;
+  if (level < 50) return `${specPrefix[specialization]} Expert ${titleBase}`;
   return `${specPrefix[specialization]} IT Legend`;
 }
 
@@ -333,28 +355,38 @@ function calculateAttributes(progress: UserProgress): RPGAttributes {
     spirit: 0
   };
 
-  // Map assessment attempts to attributes
+  // Intelligence: Cloud, Identity, Networking, Software
+  // Agility: Quick Triage, Prioritisation (Foundations, Operations)
+  // Strength: Hardware, Endpoint, Complex Troubleshooting
+  // Spirit: Communication, Soft Skills, Journaling
+
   progress.assessmentAttempts.forEach((attempt) => {
     const score = attempt.scoreBreakdown.total;
-    const weight = score >= 0.7 ? 10 : 2; // More attribute gain for passing
+    const weight = score >= 0.7 ? 10 : 2;
 
-    if (attempt.domain.includes('Endpoint') || attempt.domain.includes('Operations') || attempt.domain.includes('Foundations')) {
-      attributes.strength += weight;
-    }
-    if (attempt.domain.includes('Cloud') || attempt.domain.includes('Identity') || attempt.domain.includes('Data')) {
+    const domain = attempt.domain.toLowerCase();
+    
+    if (domain.includes('cloud') || domain.includes('identity') || domain.includes('networking') || domain.includes('data')) {
       attributes.intelligence += weight;
     }
-    if (attempt.domain.includes('Networking')) {
+    if (domain.includes('foundations') || domain.includes('operations')) {
       attributes.agility += weight;
     }
-    if (attempt.domain.includes('Professional') || attempt.domain.includes('Practice')) {
+    if (domain.includes('endpoint') || domain.includes('hardware') || domain.includes('troubleshooting')) {
+      attributes.strength += weight;
+    }
+    if (domain.includes('professional') || domain.includes('practice') || domain.includes('soft skills')) {
       attributes.spirit += weight;
     }
   });
 
-  // Spirit gained from journaling
+  // Spirit gained from journaling and reflections
   const journalEntries = Object.keys(progress.reflectionJournal || {}).length;
   attributes.spirit += journalEntries * 5;
+
+  // Agility gained from scenario runs
+  const scenarioRuns = progress.scenarioRuns.filter(r => r.completed).length;
+  attributes.agility += scenarioRuns * 5;
 
   return attributes;
 }

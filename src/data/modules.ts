@@ -61,28 +61,30 @@ export const legacyModuleAliases: Record<string, string> = {
 export const modules: TrainingModule[] = [
   {
     id: 'dcs-it-support-foundations',
-    title: 'DCS IT Support Foundations',
+    title: 'SupportOps Foundations (DCS Context)',
     description:
-      'A Level 1 operating approach for professional development during approved professional development periods: triage clearly, act safely, and stop immediately when live support takes priority.',
+      'A Level 1 operating approach for professional development: triage clearly, act safely, and stop immediately when live support takes priority.',
     domain: 'Foundations',
-    level: 'DCS Context',
+    level: 'L1 Support',
     estimatedMinutes: 18,
-    tags: ['approved PD periods', 'triage', 'Level 1', 'support-first'],
+    careerTrack: 'Support Fundamentals',
+    attributeFocus: 'Intelligence',
+    tags: ['triage', 'Level 1', 'support-first', 'foundations'],
     learningObjectives: [
       'Use a 60-second triage pattern before touching settings.',
       'Recognise the boundary between safe Level 1 action and escalation.',
-      'Capture clean notes that help Paul or a Level 2 tech move faster.'
+      'Capture clean notes that help a senior tech move faster.'
     ],
     dcsRelevance: [
       'Fits the stop-start rhythm of walk-ups, calls, and classroom interruptions.',
-      'Keeps professional development aligned with day-to-day DCS helpdesk responsibilities.',
-      'Builds safer judgement for shared school devices and visible campus support.'
+      'Keeps professional development aligned with day-to-day helpdesk responsibilities.',
+      'Builds safer judgement for shared devices and visible campus support.'
     ],
     sections: [
       {
         id: 'foundations-1',
-        title: 'Support first, PD second',
-        bodyMarkdown: `Professional development should only take place during approved professional development periods with no active support demand.\n\nIf a ticket, walk-up, call, classroom issue, or direct instruction arrives, the professional development session stops immediately and operational support resumes. That is part of the role, not a sign of poor discipline.\n\nA sound DCS Level 1 rhythm is: identify the issue, stabilise the situation, ask the clearest next question, then either complete a safe basic fix or escalate clearly.`
+        title: 'Support first, learning second',
+        bodyMarkdown: `Professional development should only take place during approved periods with no active support demand.\n\nIf a ticket, walk-up, call, or direct instruction arrives, the learning session stops immediately and operational support resumes. That is part of the role, not a sign of poor discipline.\n\nA sound Level 1 rhythm is: identify the issue, stabilise the situation, ask the clearest next question, then either complete a safe basic fix or escalate clearly.`
       },
       {
         id: 'foundations-2',
@@ -96,8 +98,8 @@ export const modules: TrainingModule[] = [
       },
       {
         id: 'foundations-4',
-        title: 'Multi-campus rhythm and where workflow knowledge lives',
-        bodyMarkdown: `Many symptoms repeat across campuses but fixes still route through the right owners. Note campus or site in tickets early because VLAN paths, room naming, and local contacts differ.\n\nTrustworthy operational knowledge usually lives in approved channels such as internal ticketing history, authorised Teams channels, published intranet articles, and leadership-approved procedures—not informal guesses.\n\nJosh stays credible when he cites what was verified locally versus what still needs the authoritative owner.`
+        title: 'Operational knowledge and where it lives',
+        bodyMarkdown: `Symptoms often repeat across different sites but fixes still route through the right owners. Note site or campus in tickets early because VLAN paths, naming conventions, and local contacts differ.\n\nTrustworthy operational knowledge usually lives in approved channels such as internal ticketing history, authorised Teams channels, published intranet articles, and leadership-approved procedures—not informal guesses.\n\nJosh stays credible when he cites what was verified locally versus what still needs the authoritative owner.`
       }
     ],
     interactiveLabs: [

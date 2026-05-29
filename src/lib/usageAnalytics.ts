@@ -11,8 +11,8 @@ import type {
   UsageSummary
 } from '../types/usageAnalytics';
 
-export const USAGE_STORAGE_KEY = 'dcsprep_usage_events';
-export const USAGE_TRACKING_ENABLED_KEY = 'dcsprep_usage_tracking_enabled';
+export const USAGE_STORAGE_KEY = 'supportops_usage_events';
+export const USAGE_TRACKING_ENABLED_KEY = 'supportops_usage_tracking_enabled';
 
 const MAX_EVENTS = 5000;
 const MAX_AGE_DAYS = 180;

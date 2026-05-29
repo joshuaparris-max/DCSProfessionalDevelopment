@@ -1,19 +1,58 @@
-export const navigationItems = [
-  { href: '/', label: 'Dashboard' },
-  { href: '/modules', label: 'Modules' },
-  { href: '/scheduler', label: 'PD Scheduler' },
-  { href: '/usage-insights', label: 'Usage Insights' },
-  { href: '/academic-pd', label: 'Academic PD' },
-  { href: '/search', label: 'Search' },
-  { href: '/rbc', label: 'RBC + SMITB' },
-  { href: '/scenarios', label: 'Scenario Lab' },
-  { href: '/due-today', label: 'Due Today' },
-  { href: '/strict-quiz', label: 'Strict Quiz' },
-  { href: '/assessment-feedback', label: 'Assessment Feedback' },
-  { href: '/pd-log', label: 'PD Log' },
-  { href: '/knowledge-base-lab', label: 'Knowledge Base Lab' },
-  { href: '/error-log', label: 'Error Log' },
-  { href: '/readiness', label: 'Readiness' },
-  { href: '/trainer-guide', label: 'Trainer Guide' },
-  { href: '/settings', label: 'Settings' }
+export type NavItem = {
+  href: string;
+  label: string;
+  icon?: string;
+};
+
+export type NavGroup = {
+  label: string;
+  items: NavItem[];
+};
+
+export const navigationGroups: NavGroup[] = [
+  {
+    label: 'Today',
+    items: [
+      { href: '/', label: 'Dashboard' },
+      { href: '/due-today', label: 'Due Today' },
+      { href: '/scheduler', label: 'Quiet Window' },
+      { href: '/due-today?mode=tiny', label: 'Overwhelmed Mode' }
+    ]
+  },
+  {
+    label: 'Learn',
+    items: [
+      { href: '/modules', label: 'Modules' },
+      { href: '/academic-pd', label: 'Academic PD' },
+      { href: '/search', label: 'Search' }
+    ]
+  },
+  {
+    label: 'Practise',
+    items: [
+      { href: '/scenarios', label: 'Missions' },
+      { href: '/support-tools', label: 'Support Tools' },
+      { href: '/playground', label: 'Code Playground' }
+    ]
+  },
+  {
+    label: 'Evidence',
+    items: [
+      { href: '/progress', label: 'Progress' },
+      { href: '/readiness', label: 'Readiness' },
+      { href: '/pd-log', label: 'PD Log' },
+      { href: '/error-log', label: 'Error Log' },
+      { href: '/evidence-pack', label: 'Career Evidence Pack' }
+    ]
+  },
+  {
+    label: 'Settings',
+    items: [
+      { href: '/settings', label: 'Settings' },
+      { href: '/usage-insights', label: 'Usage Insights' },
+      { href: '/trainer-guide', label: 'Trainer Guide' }
+    ]
+  }
 ];
+
+export const navigationItems: NavItem[] = navigationGroups.flatMap((group) => group.items);

@@ -7,7 +7,7 @@ const implementationPhases = [
     title: 'Phase 1: Foundation',
     weeks: 'Weeks 1-4',
     tasks: [
-      'Set up subject module structure in DCSPrep.',
+      'Set up subject module structure in SupportOps Career Lab.',
       'Define the academic subject, weekly topic, and assessment data model.',
       'Implement basic Academic PD navigation.'
     ]
@@ -25,7 +25,7 @@ const implementationPhases = [
     title: 'Phase 3: Advanced Features',
     weeks: 'Weeks 13-20',
     tasks: [
-      'Connect subject progress to existing DCSPrep tracking.',
+      'Connect subject progress to existing SupportOps Career Lab tracking.',
       'Plan certificate/evidence-pack wording without overstating formal credit.',
       'Add richer media/resource players where the content justifies it.'
     ]
