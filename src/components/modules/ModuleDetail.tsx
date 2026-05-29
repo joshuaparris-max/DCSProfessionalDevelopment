@@ -7,6 +7,7 @@ import { MindfulnessPause } from '../MindfulnessPause';
 import { trackUsageInteraction } from '../../hooks/useUsageTracking';
 import { useOfflineDownload } from '../../hooks/useOfflineDownload';
 import { LabRunner } from '../LabRunner';
+import { ModuleFlashcard } from './ModuleFlashcard';
 import { getModuleCompletion } from '../../lib/moduleMath';
 import {
   getStoredProgressSnapshot,
@@ -15,7 +16,8 @@ import {
   type UserProgress,
   updateModulePracticalOutput,
   updateModuleSectionProgress,
-  updateModuleLabProgress
+  updateModuleLabProgress,
+  recordFlashcardReview
 } from '../../lib/progress';
 import type { AssessmentQuestion } from '../../types/assessment';
 import type { TrainingModule } from '../../types/training';
@@ -606,14 +608,43 @@ export default function ModuleDetail({
 
             <div id="module-flashcards" className="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-sm scroll-mt-24">
               <h2 className="text-2xl font-semibold text-slate-900">Flashcards</h2>
-              <div className="mt-4 space-y-3 text-sm text-slate-700">
-                {moduleData.flashcards.map((card) => (
-                  <div key={card.id} className="rounded-3xl bg-slate-50 p-4">
-                    <div className="font-semibold text-slate-900">{card.front}</div>
-                    <div className="mt-2 text-slate-600">{card.back}</div>
-                  </div>
-                ))}
+              <p className="mt-2 text-sm text-slate-600 mb-6">
+                Test your knowledge with these retrieval cards. Reveal the answer, then rate how well you knew it.
+              </p>
+              <div className="mt-4 grid gap-4 sm:grid-cols-2">
+                {moduleData.flashcards.map((card) => {
+                  const cardProgress = moduleProgress.flashcards[card.id];
+                  return (
+                    <ModuleFlashcard
+                      key={card.id}
+                      id={card.id}
+                      front={card.front}
+                      back={card.back}
+                      isMastered={cardProgress?.state === 'mastered'}
+                      onRate={(rating) => {
+                        setProgress((current) => recordFlashcardReview(current, moduleData.id, card.id, rating));
+                      }}
+                    />
+                  );
+                })}
               </div>
+
+              {moduleData.flashcards.length > 0 && (
+                <div className="mt-12 flex justify-center border-t border-slate-100 pt-8">
+                  <button
+                    onClick={() => setActiveTab('Assessment')}
+                    disabled={!hasAssessment}
+                    className={`inline-flex items-center gap-2 rounded-full px-8 py-4 text-sm font-bold shadow-lg transition-all active:scale-95 ${
+                      hasAssessment 
+                        ? 'bg-slate-900 text-white hover:bg-slate-800' 
+                        : 'bg-slate-100 text-slate-400 cursor-not-allowed'
+                    }`}
+                  >
+                    <span>{hasAssessment ? 'Continue to Final Assessment' : 'Assessment Unavailable'}</span>
+                    <span className="text-xs opacity-50">→</span>
+                  </button>
+                </div>
+              )}
             </div>
           </div>
 
@@ -696,13 +727,22 @@ export default function ModuleDetail({
 
             <div className="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-sm">
               <h2 className="text-2xl font-semibold text-slate-900">Flashcard review</h2>
-              <div className="mt-4 space-y-3 text-sm text-slate-700">
-                {moduleData.flashcards.map((card) => (
-                  <div key={card.id} className="rounded-3xl bg-slate-50 p-4">
-                    <div className="font-semibold text-slate-900">{card.front}</div>
-                    <div className="mt-2 text-slate-600">{card.back}</div>
-                  </div>
-                ))}
+              <div className="mt-4 grid gap-4 sm:grid-cols-2">
+                {moduleData.flashcards.map((card) => {
+                  const cardProgress = moduleProgress.flashcards[card.id];
+                  return (
+                    <ModuleFlashcard
+                      key={card.id}
+                      id={card.id}
+                      front={card.front}
+                      back={card.back}
+                      isMastered={cardProgress?.state === 'mastered'}
+                      onRate={(rating) => {
+                        setProgress((current) => recordFlashcardReview(current, moduleData.id, card.id, rating));
+                      }}
+                    />
+                  );
+                })}
               </div>
             </div>
 
