@@ -10,6 +10,7 @@ import { LabRunner } from '../LabRunner';
 import { getModuleCompletion } from '../../lib/moduleMath';
 import {
   getStoredProgressSnapshot,
+  getInitialProgressSnapshot,
   saveProgress,
   type UserProgress,
   updateModulePracticalOutput,
@@ -18,7 +19,7 @@ import {
 } from '../../lib/progress';
 import type { AssessmentQuestion } from '../../types/assessment';
 import type { TrainingModule } from '../../types/training';
-import { triggerXPGain } from '../XPToast';
+import { triggerXPGain } from '../../lib/xpEvents';
 
 const AssessmentSession = dynamic(() => import('../assessment/AssessmentSession'), {
   loading: () => (
@@ -49,7 +50,7 @@ export default function ModuleDetail({
   const [revealedDiagnostics, setRevealedDiagnostics] = useState<Record<string, boolean>>({});
   const [activeRecallRevealed, setActiveRecallRevealed] = useState(false);
   const [feynmanRubric, setFeynmanRubric] = useState({ clarity: 0, correctness: 0, relevance: 0 });
-  const [progress, setProgress] = useState<UserProgress>(() => getStoredProgressSnapshot([moduleData]));
+  const [progress, setProgress] = useState<UserProgress>(() => getInitialProgressSnapshot([moduleData]));
   const [hasHydratedProgress, setHasHydratedProgress] = useState(false);
   const { isDownloaded, isDownloading, toggleDownload } = useOfflineDownload(moduleData);
   const questions = quizQuestions;
@@ -112,10 +113,17 @@ export default function ModuleDetail({
   const moduleProgress = progress.modules[moduleData.id] ?? {
     sectionsRead: {},
     flashcards: {},
-    practicalOutputs: {}
+    practicalOutputs: {},
+    interactiveLabs: {}
   };
 
-  const moduleCompletion = Math.round(getModuleCompletion(moduleData.id, progress, moduleData));
+  const [moduleCompletion, setModuleCompletion] = useState(0);
+
+  useEffect(() => {
+    if (hasHydratedProgress) {
+      setModuleCompletion(Math.round(getModuleCompletion(moduleData.id, progress, moduleData)));
+    }
+  }, [hasHydratedProgress, progress, moduleData]);
 
   function toggleSectionRead(sectionId: string, autoScroll = false) {
     const currentRead = Boolean(progress.modules[moduleData.id]?.sectionsRead?.[sectionId]);
@@ -161,6 +169,10 @@ export default function ModuleDetail({
     setProgress((current) => updateModulePracticalOutput(current, moduleData.id, outputId, !currentCompleted));
   }
 
+  function handleLabComplete(labId: string) {
+    setProgress((current) => updateModuleLabProgress(current, moduleData.id, labId, true));
+  }
+
   const hasAssessment = questions.length > 0;
   const diagnosticQuestions = questions.slice(0, Math.min(2, questions.length));
 
@@ -181,10 +193,10 @@ export default function ModuleDetail({
     } catch {
       // ignore invalid cache entries
     }
-  }, [moduleData.id]);
+  }, [moduleData.id, hasHydratedProgress]);
 
   useEffect(() => {
-    if (typeof window === 'undefined') {
+    if (!hasHydratedProgress || typeof window === 'undefined') {
       return;
     }
     const key = `module-study-technique:${moduleData.id}`;
@@ -195,7 +207,7 @@ export default function ModuleDetail({
         updatedAtIso: new Date().toISOString()
       })
     );
-  }, [feynmanRubric, moduleData.id]);
+  }, [feynmanRubric, moduleData.id, hasHydratedProgress]);
 
   return (
     <div className="space-y-6 relative">
@@ -586,9 +598,7 @@ export default function ModuleDetail({
                   <LabRunner 
                     key={lab.id} 
                     lab={lab} 
-                    onComplete={() => {
-                      setProgress(current => updateModuleLabProgress(current, moduleData.id, lab.id, true));
-                    }}
+                    onComplete={() => handleLabComplete(lab.id)}
                   />
                 ))}
               </div>

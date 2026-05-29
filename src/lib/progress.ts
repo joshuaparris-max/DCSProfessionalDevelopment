@@ -119,10 +119,11 @@ function getDefaultModuleProgress(module: ModuleData): ModuleProgress {
   return {
     sectionsRead: Object.fromEntries(module.sections.map((section) => [section.id, false])),
     flashcards: Object.fromEntries(
-      module.flashcards.map((card) => [card.id, { state: 'new', reviewCount: 0, dueDateIso: new Date().toISOString() }])
+      module.flashcards.map((card) => [card.id, { state: 'new', reviewCount: 0, dueDateIso: '' }])
     ),
     quizAttempts: [],
-    practicalOutputs: Object.fromEntries(module.practicalOutputs.map((output) => [output.id, false]))
+    practicalOutputs: Object.fromEntries(module.practicalOutputs.map((output) => [output.id, false])),
+    interactiveLabs: Object.fromEntries((module.interactiveLabs ?? []).map((lab) => [lab.id, false]))
   };
 }
 
@@ -235,6 +236,10 @@ export function getStoredProgressSnapshot(modules: ModuleData[] = []): UserProgr
       practicalOutputs: {
         ...defaults.practicalOutputs,
         ...existing.practicalOutputs
+      },
+      interactiveLabs: {
+        ...defaults.interactiveLabs,
+        ...(existing.interactiveLabs ?? {})
       },
       quizAttempts: existing.quizAttempts ?? defaults.quizAttempts
     };

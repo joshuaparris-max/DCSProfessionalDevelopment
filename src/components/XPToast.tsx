@@ -51,8 +51,5 @@ export function XPToast() {
   );
 }
 
-export function triggerXPGain(amount: number, reason: string) {
-  if (typeof window !== 'undefined') {
-    window.dispatchEvent(new CustomEvent('gain-xp', { detail: { amount, reason } }));
-  }
-}
+// Re-export for convenience but preferred to use src/lib/xpEvents.ts
+export { triggerXPGain } from '../lib/xpEvents';

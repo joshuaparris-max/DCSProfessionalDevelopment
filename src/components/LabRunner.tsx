@@ -4,7 +4,7 @@ import { useState } from 'react';
 import type { InteractiveLab } from '../types/training';
 import { ReflectionJournal } from './ReflectionJournal';
 import { saveJournalEntry } from '../lib/offlineStorage';
-import { triggerXPGain } from './XPToast';
+import { triggerXPGain } from '../lib/xpEvents';
 
 type LabRunnerProps = {
   lab: InteractiveLab;
