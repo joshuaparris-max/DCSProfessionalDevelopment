@@ -91,6 +91,7 @@ export const onboardingModule: TrainingModule = {
       difficulty: 'foundation',
       explanation: 'ICT cannot create accounts without a formal request.',
       modelAnswer: 'Politely explain that the account hasn\'t been created yet and check if the Business Office has processed their paperwork.',
+      commonMistakes: ['Creating guest accounts', 'Using other staff logins'],
       options: [
         { id: 'a', label: 'Create a temporary guest account for them.' },
         { id: 'b', label: 'Tell them to use another teacher\'s login for today.' },
@@ -101,7 +102,21 @@ export const onboardingModule: TrainingModule = {
       dcsContext: 'Prac teachers at DCS must follow the same onboarding security as regular staff.',
       reviewSchedule,
       recommendedModuleId: 'new-user-onboarding-access-checks',
-      weakTopic: 'new-user-onboarding'
+      weakTopic: 'dcs-onboarding'
+    }
+  ],
+  scenarioPrompts: [
+    {
+      id: 'onboarding-s1',
+      title: 'Missing HR Request',
+      prompt: 'A new staff member is standing at the IT desk on their first day, but no account request was ever sent by the Business Office. Roleplay a professional response.'
+    }
+  ],
+  practicalOutputs: [
+    {
+      id: 'onboarding-p1',
+      title: 'Day One Readiness Checklist',
+      description: 'Draft a 5-point checklist Josh can use to verify a new user is fully "ready" before they leave the IT office.'
     }
   ]
 };

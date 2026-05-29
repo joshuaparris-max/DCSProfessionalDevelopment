@@ -6,7 +6,7 @@ export const m365FilesModule: TrainingModule = {
   id: 'm365-teams-sharepoint-onedrive-basics',
   title: 'Teams, SharePoint, OneDrive, and File Access Basics',
   description: 'Troubleshooting shared file access, sync issues, and understanding the relationship between M365 storage locations.',
-  domain: 'Cloud Services',
+  domain: 'Cloud and Platforms',
   level: 'L1',
   estimatedMinutes: 22,
   tags: ['M365', 'Teams', 'SharePoint', 'OneDrive', 'Sync'],
@@ -87,10 +87,11 @@ export const m365FilesModule: TrainingModule = {
       type: 'mcq',
       id: 'm365-q1',
       prompt: 'A user wants to free up space on their laptop but still see their OneDrive files. What should you do?',
-      domain: 'Cloud Services',
+      domain: 'Cloud and Platforms',
       difficulty: 'foundation',
       explanation: 'Files On-Demand allows seeing files without downloading them.',
       modelAnswer: 'Use the "Free up space" option in OneDrive settings, which turns files into "Online Only" (blue cloud icon).',
+      commonMistakes: ['Deleting the files manually', 'Turning off sync entirely'],
       options: [
         { id: 'a', label: 'Delete the files they don\'t need right now.' },
         { id: 'b', label: 'Turn off OneDrive sync.' },
@@ -101,7 +102,21 @@ export const m365FilesModule: TrainingModule = {
       dcsContext: 'This is a common request for staff with smaller SSDs.',
       reviewSchedule,
       recommendedModuleId: 'm365-teams-sharepoint-onedrive-basics',
-      weakTopic: 'cloud-services'
+      weakTopic: 'dcs-teams-sharepoint-onedrive'
+    }
+  ],
+  scenarioPrompts: [
+    {
+      id: 'm365-s1',
+      title: 'Cloud vs Local Sync',
+      prompt: 'Explain to a teacher why deleting a file from their "Synced" Teams folder on their desktop deletes it for everyone in the department.'
+    }
+  ],
+  practicalOutputs: [
+    {
+      id: 'm365-p1',
+      title: 'OneDrive Icon Cheat Sheet',
+      description: 'Create a one-page visual guide for the library desk showing what each OneDrive cloud icon means.'
     }
   ]
 };

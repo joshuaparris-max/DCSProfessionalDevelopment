@@ -2,7 +2,6 @@ import type { AssessmentQuestion, AssessmentSource } from '../types/assessment';
 import type { TrainingModule } from '../types/training';
 import { dcsWorkflowModules } from './dcsWorkflowModules';
 import { messerCore2Modules } from './messerCore2Modules';
-import { printerModule } from './printerModule';
 import { m365FilesModule } from './m365FilesModule';
 import { onboardingModule } from './onboardingModule';
 

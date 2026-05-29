@@ -31,8 +31,8 @@ export default function JournalPage() {
     if (scenario) return scenario.title;
 
     // Then check interactive labs in modules
-    for (const module of modules) {
-      const lab = module.interactiveLabs?.find(l => l.id === scenarioId);
+    for (const mod of modules) {
+      const lab = mod.interactiveLabs?.find(l => l.id === scenarioId);
       if (lab) return lab.title;
     }
 

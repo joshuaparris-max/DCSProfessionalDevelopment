@@ -118,10 +118,10 @@ function calculateLevelFromXp(totalXp: number): { level: number; xpInCurrentLeve
 }
 
 function getSpecializationFromProgress(progress: UserProgress): ITSpecialization {
-  const aPlus = progress.assessmentAttempts.filter((a) => a.category === 'CompTIA A+').length;
-  const m365 = progress.assessmentAttempts.filter((a) => a.category === 'M365').length;
-  const network = progress.assessmentAttempts.filter((a) => a.category === 'Networking').length;
-  const security = progress.assessmentAttempts.filter((a) => a.category === 'Cybersecurity').length;
+  const aPlus = progress.assessmentAttempts.filter((a) => a.domain.includes('A+')).length;
+  const m365 = progress.assessmentAttempts.filter((a) => a.domain.includes('M365') || a.domain.includes('Cloud')).length;
+  const network = progress.assessmentAttempts.filter((a) => a.domain.includes('Networking')).length;
+  const security = progress.assessmentAttempts.filter((a) => a.domain.includes('Cybersecurity') || a.domain.includes('Security')).length;
 
   const scores = [
     { spec: 'support-tech' as ITSpecialization, count: aPlus },
