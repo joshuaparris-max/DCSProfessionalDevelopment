@@ -103,33 +103,29 @@ export default function ModuleDetail({
   const moduleCompletion = Math.round(getModuleCompletion(moduleData.id, progress, moduleData));
 
   function toggleSectionRead(sectionId: string) {
-    setProgress((current) => {
-      const currentRead = Boolean(current.modules[moduleData.id]?.sectionsRead?.[sectionId]);
-      if (!currentRead) {
-        triggerXPGain(20, 'Module Section Mastered');
-      }
-      return updateModuleSectionProgress(current, moduleData.id, sectionId, !currentRead);
-    });
+    const currentRead = Boolean(progress.modules[moduleData.id]?.sectionsRead?.[sectionId]);
+    if (!currentRead) {
+      triggerXPGain(20, 'Module Section Mastered');
+    }
+    setProgress((current) => updateModuleSectionProgress(current, moduleData.id, sectionId, !currentRead));
   }
 
   function togglePracticalOutput(outputId: string) {
-    setProgress((current) => {
-      const currentCompleted = Boolean(current.modules[moduleData.id]?.practicalOutputs?.[outputId]);
-      if (!currentCompleted) {
-        triggerXPGain(150, 'Practical Output Evidence Created');
-      }
-      trackUsageInteraction({
-        eventType: 'section_view',
-        route: `/modules/${moduleData.id}`,
-        label: 'Module practical output',
-        contentType: 'module',
-        contentId: moduleData.id,
-        activityCategory: 'building',
-        completed: !currentCompleted,
-        metadata: { domain: moduleData.domain, source: 'built-in' }
-      });
-      return updateModulePracticalOutput(current, moduleData.id, outputId, !currentCompleted);
+    const currentCompleted = Boolean(progress.modules[moduleData.id]?.practicalOutputs?.[outputId]);
+    if (!currentCompleted) {
+      triggerXPGain(150, 'Practical Output Evidence Created');
+    }
+    trackUsageInteraction({
+      eventType: 'section_view',
+      route: `/modules/${moduleData.id}`,
+      label: 'Module practical output',
+      contentType: 'module',
+      contentId: moduleData.id,
+      activityCategory: 'building',
+      completed: !currentCompleted,
+      metadata: { domain: moduleData.domain, source: 'built-in' }
     });
+    setProgress((current) => updateModulePracticalOutput(current, moduleData.id, outputId, !currentCompleted));
   }
 
   const hasAssessment = questions.length > 0;
