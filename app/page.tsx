@@ -37,8 +37,12 @@ export default function HomePage() {
   const dueQuestions = progress.assessmentAttempts.filter((attempt) => isDue(attempt.nextReviewDateIso)).length;
 
   const selectedWorkContext = progress.selectedWorkContext;
+  const dashboardRecommendation = getDashboardRecommendation(progress);
 
-  const getNextBestAction = (workContext: string) => {
+  const getNextBestAction = (
+    workContext: string,
+    dashboardRecommendation: { title: string; detail: string; ctaHref: string; ctaLabel: string }
+  ) => {
     const contextLabel = workContext ? ` aligned to ${workContext}` : '';
 
     if (dueFlashcards > 0 || dueQuestions > 0) {
@@ -51,23 +55,16 @@ export default function HomePage() {
       };
     }
 
-    const criticalLabs = [
-      { id: 'lab-display-troubleshooting', title: 'Display & AV troubleshooting' },
-      { id: 'lab-network-scope', title: 'Network scope diagnostics' },
-      { id: 'lab-print-job-queue', title: 'Printer queue recovery' }
-    ];
-    const randomLab = criticalLabs[Math.floor(Math.random() * criticalLabs.length)];
-
     return {
-      title: `Practice: ${randomLab.title}`,
-      detail: `Next best 10-minute action: run a simulated support scenario${contextLabel}.`,
-      ctaLabel: 'Run Lab',
-      ctaHref: '/modules',
-      category: '10-Minute Action'
+      title: dashboardRecommendation.title,
+      detail: `${dashboardRecommendation.detail}${contextLabel}`,
+      ctaLabel: dashboardRecommendation.ctaLabel,
+      ctaHref: dashboardRecommendation.ctaHref,
+      category: 'Focus Recommendation'
     };
   };
 
-  const nextAction = getNextBestAction(selectedWorkContext);
+  const nextAction = getNextBestAction(selectedWorkContext, dashboardRecommendation);
 
   useEffect(() => {
     const storedProgress = getStoredProgressSnapshot(modules);
@@ -91,7 +88,6 @@ export default function HomePage() {
   const monthlyMinutes = progress.pdLogEntries
     .filter((entry) => entry.date.startsWith(getMonthKey(new Date())))
     .reduce((sum, entry) => sum + entry.minutes, 0);
-  const dashboardRecommendation = getDashboardRecommendation(progress);
   const overallProgress = Math.round(getOverallProgress(modules, progress));
   const currentWeakestFocus = getCurrentWeakFocus(progress);
   const gamificationSummary = getGamificationSummary(progress, modules, gamificationState);
@@ -140,6 +136,12 @@ export default function HomePage() {
               Track your growth in IT support, MSP operations, M365, endpoint and networking practice, and professional service delivery.
               Use this app to build privacy-safe evidence, scenario judgement, and career-ready readiness in a local-first workflow.
             </p>
+            <Link
+              href="/settings"
+              className="mt-5 inline-flex items-center rounded-full bg-slate-900 px-4 py-2 text-sm font-semibold text-white"
+            >
+              Change profile
+            </Link>
           </div>
           <div className="w-full max-w-sm flex flex-col gap-4">
             <div className="rounded-[2rem] bg-slate-100 p-5">
@@ -155,6 +157,25 @@ export default function HomePage() {
             </div>
             <ScheduleSuggestions />
           </div>
+        </div>
+      </section>
+
+      <section className="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-sm">
+        <div className="flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
+          <div>
+            <div className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-500">Today’s focus</div>
+            <h2 className="mt-3 text-2xl font-semibold text-slate-900">{dashboardRecommendation.title}</h2>
+            <p className="mt-3 max-w-3xl text-sm leading-7 text-slate-600">
+              {dashboardRecommendation.detail}
+              {selectedWorkContext ? ` This is tailored for your ${selectedWorkContext} growth path.` : ''}
+            </p>
+          </div>
+          <Link
+            href={dashboardRecommendation.ctaHref}
+            className="inline-flex rounded-full bg-slate-900 px-4 py-2 text-sm font-semibold text-white"
+          >
+            {dashboardRecommendation.ctaLabel}
+          </Link>
         </div>
       </section>
 
@@ -261,8 +282,6 @@ export default function HomePage() {
           </Link>
         </div>
       </section>
-
-      <DailyChallenge />
 
       <section className="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-sm">
         <div className="flex items-center justify-between">

@@ -3,7 +3,10 @@ import type { ReviewRating } from './spacedRepetition';
 import type { ScenarioRun, ScenarioRunChoice } from '../types/scenarios';
 import type { AssessmentAttempt as StoredAssessmentAttempt } from '../types/assessment';
 
-const STORAGE_KEY = 'dcsPrepProgress';
+const STORAGE_KEY = 'supportOpsProgress';
+const LEGACY_STORAGE_KEY = 'dcsPrepProgress';
+const LAST_SAVED_KEY = 'supportOpsLastSaved';
+const LEGACY_LAST_SAVED_KEY = 'dcsPrepLastSaved';
 export const STORAGE_VERSION = 2;
 
 export type FlashcardState = 'new' | 'learning' | 'reviewing' | 'mastered';
@@ -187,12 +190,12 @@ export function getStoredProgressSnapshot(modules: ModuleData[] = []): UserProgr
     return getInitialProgressSnapshot(modules);
   }
 
-  const stored = safeParseProgress(window.localStorage.getItem(STORAGE_KEY));
-  if (!stored) {
+  const rawStored = safeParseProgress(window.localStorage.getItem(STORAGE_KEY)) ?? safeParseProgress(window.localStorage.getItem(LEGACY_STORAGE_KEY));
+  if (!rawStored) {
     return getInitialProgressSnapshot(modules);
   }
 
-  const migrated = migrateProgress(stored, modules);
+  const migrated = migrateProgress(rawStored, modules);
 
   if (modules.length === 0) {
     return migrated;
@@ -255,9 +258,9 @@ export function saveProgress(progress: UserProgress) {
     })
   );
 
-  if (typeof window !== 'undefined') {
-    window.localStorage.setItem('dcsPrepLastSaved', new Date().toISOString());
-  }
+  window.localStorage.setItem(LAST_SAVED_KEY, new Date().toISOString());
+  window.localStorage.removeItem(LEGACY_STORAGE_KEY);
+  window.localStorage.removeItem(LEGACY_LAST_SAVED_KEY);
 }
 
 export function resetProgress() {
@@ -266,6 +269,9 @@ export function resetProgress() {
   }
 
   window.localStorage.removeItem(STORAGE_KEY);
+  window.localStorage.removeItem(LEGACY_STORAGE_KEY);
+  window.localStorage.removeItem(LAST_SAVED_KEY);
+  window.localStorage.removeItem(LEGACY_LAST_SAVED_KEY);
 }
 
 function adjustDueDate(rating: ReviewRating): string {
