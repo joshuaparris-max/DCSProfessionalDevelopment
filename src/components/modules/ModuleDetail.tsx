@@ -2,7 +2,7 @@
 
 import dynamic from 'next/dynamic';
 import Link from 'next/link';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { MindfulnessPause } from '../MindfulnessPause';
 import { trackUsageInteraction } from '../../hooks/useUsageTracking';
 import { useOfflineDownload } from '../../hooks/useOfflineDownload';
@@ -52,6 +52,20 @@ export default function ModuleDetail({
   const [hasHydratedProgress, setHasHydratedProgress] = useState(false);
   const { isDownloaded, isDownloading, toggleDownload } = useOfflineDownload(moduleData);
   const questions = quizQuestions;
+  const contentTopRef = useRef<HTMLDivElement>(null);
+
+  const scrollToContent = () => {
+    if (contentTopRef.current) {
+      contentTopRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  };
+
+  useEffect(() => {
+    // Scroll to top of content when tab changes
+    if (hasHydratedProgress) {
+      scrollToContent();
+    }
+  }, [activeTab, hasHydratedProgress]);
 
   useEffect(() => {
     setProgress(getStoredProgressSnapshot([moduleData]));
@@ -257,15 +271,23 @@ export default function ModuleDetail({
         </div>
       </section>
 
-      <section className="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-sm">
+      <section className="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-sm" ref={contentTopRef}>
         <div className="flex flex-wrap gap-3">
           {(['Start Here', 'Learn', 'Review', 'Assessment'] as const).map((tab) => (
             <button
               key={tab}
               type="button"
-              onClick={() => setActiveTab(tab)}
-              className={`rounded-full px-4 py-2 text-sm ${
-                activeTab === tab ? 'bg-slate-900 text-white' : 'border border-slate-200 bg-white text-slate-700'
+              onClick={() => {
+                if (activeTab === tab) {
+                  scrollToContent();
+                } else {
+                  setActiveTab(tab);
+                }
+              }}
+              className={`rounded-full px-4 py-2 text-sm transition-all ${
+                activeTab === tab 
+                  ? 'bg-slate-900 text-white shadow-md' 
+                  : 'border border-slate-200 bg-white text-slate-700 hover:bg-slate-50'
               } ${tab === 'Assessment' && !hasAssessment ? 'cursor-not-allowed opacity-60' : ''}`}
               disabled={tab === 'Assessment' && !hasAssessment}
             >
@@ -294,6 +316,16 @@ export default function ModuleDetail({
                 Attempt the prompt first, then reveal the guided answer. This keeps the module question-first even when
                 the explanation content sits later in the flow.
               </p>
+              <button 
+                onClick={() => {
+                  const firstPrompt = document.getElementById('diagnostic-prompt-0');
+                  if (firstPrompt) firstPrompt.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }}
+                className="mt-6 inline-flex items-center gap-2 rounded-full bg-slate-900 px-6 py-3 text-sm font-bold text-white shadow-lg active:scale-95 transition-all"
+              >
+                <span>Begin First Prompt</span>
+                <span className="text-xs opacity-50">↓</span>
+              </button>
             </div>
 
             {diagnosticQuestions.length ? (
@@ -301,7 +333,7 @@ export default function ModuleDetail({
                 const isRevealed = Boolean(revealedDiagnostics[question.id]);
 
                 return (
-                  <article key={question.id} className="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-sm">
+                  <article key={question.id} id={`diagnostic-prompt-${index}`} className="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-sm scroll-mt-24 transition-all">
                     <div className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">
                       Prompt {index + 1}
                     </div>
