@@ -75,7 +75,8 @@ function buildMessages(input: z.infer<typeof requestSchema>) {
 async function callGroq(messages: { system: string; user: string }) {
   const apiKey = process.env.GROQ_API_KEY;
   if (!apiKey) {
-    return { ok: false as const, status: 500, body: { error: 'GROQ_API_KEY is not configured on the server.' } };
+    console.error('GROQ_API_KEY is missing from environment variables.');
+    return { ok: false as const, status: 500, body: { error: 'AI feedback is currently unavailable (API key missing).' } };
   }
 
   const preferredModel = process.env.GROQ_MODEL ?? 'llama-3.3-70b-versatile';
@@ -83,81 +84,101 @@ async function callGroq(messages: { system: string; user: string }) {
   const modelsToTry = [preferredModel, ...fallbackModels.filter((model) => model !== preferredModel)];
 
   for (const model of modelsToTry) {
-    const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
-      method: 'POST',
-      headers: {
-        Authorization: `Bearer ${apiKey}`,
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        model,
-        temperature: 0.2,
-        max_tokens: 220,
-        response_format: { type: 'json_object' },
-        messages: [
-          { role: 'system', content: messages.system },
-          { role: 'user', content: messages.user }
-        ]
-      })
-    });
+    try {
+      console.log(`Attempting AI feedback with model: ${model}`);
+      const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${apiKey}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          model,
+          temperature: 0.2,
+          max_tokens: 220,
+          response_format: { type: 'json_object' },
+          messages: [
+            { role: 'system', content: messages.system },
+            { role: 'user', content: messages.user }
+          ]
+        })
+      });
 
-    if (response.ok) {
-      const data = (await response.json()) as any;
-      const content: string | undefined = data?.choices?.[0]?.message?.content;
-      if (!content) {
-        return { ok: false as const, status: 502, body: { error: 'Groq returned an empty response.' } };
+      if (response.ok) {
+        const data = (await response.json()) as any;
+        const content: string | undefined = data?.choices?.[0]?.message?.content;
+        if (!content) {
+          console.error('Groq returned an empty response body.');
+          return { ok: false as const, status: 502, body: { error: 'AI returned an empty response.' } };
+        }
+
+        return { ok: true as const, status: 200, body: { content } };
       }
 
-      return { ok: true as const, status: 200, body: { content } };
-    }
+      const errorText = await response.text().catch(() => '');
+      console.error(`Groq API Error (${response.status}):`, errorText);
 
-    const errorText = await response.text().catch(() => '');
-    const decommissioned = /model_decommissioned|decommissioned|no longer supported/i.test(errorText);
-    if (!decommissioned) {
-      return {
-        ok: false as const,
-        status: response.status,
-        body: { error: 'Groq request failed', detail: errorText || `HTTP ${response.status}` }
-      };
+      const decommissioned = /model_decommissioned|decommissioned|no longer supported/i.test(errorText);
+      if (!decommissioned) {
+        return {
+          ok: false as const,
+          status: response.status,
+          body: { error: 'AI request failed', detail: `HTTP ${response.status}` }
+        };
+      }
+    } catch (e: any) {
+      console.error(`Fetch error during AI request to model ${model}:`, e);
+      // Continue to next model if available
     }
   }
 
   return {
     ok: false as const,
-    status: 400,
+    status: 503,
     body: {
-      error: 'Groq model is decommissioned.',
-      detail: 'Update GROQ_MODEL in .env.local to a currently supported model, e.g. llama-3.3-70b-versatile.'
+      error: 'AI service is temporarily unavailable.',
+      detail: 'All attempts to reach the feedback engine failed.'
     }
   };
 }
 
 export async function POST(request: Request) {
-  const json = await request.json().catch(() => null);
-  const parsed = requestSchema.safeParse(json);
-
-  if (!parsed.success) {
-    return NextResponse.json({ error: 'Invalid request', issues: parsed.error.issues }, { status: 400 });
-  }
-
-  const messages = buildMessages(parsed.data);
-  const groq = await callGroq(messages);
-
-  if (!groq.ok) {
-    return NextResponse.json(groq.body, { status: groq.status });
-  }
-
-  let feedback: FeedbackResponse | null = null;
   try {
-    feedback = JSON.parse(groq.body.content) as FeedbackResponse;
-  } catch {
-    return NextResponse.json({ error: 'AI returned invalid JSON.' }, { status: 502 });
-  }
+    const json = await request.json().catch(() => null);
+    const parsed = requestSchema.safeParse(json);
 
-  if (!feedback || !feedback.summary || !feedback.suggestedNextEdit || !feedback.coachingTip || !feedback.encouragement || !feedback.nextSteps) {
-    return NextResponse.json({ error: 'AI response was missing required fields.' }, { status: 502 });
-  }
+    if (!parsed.success) {
+      return NextResponse.json({ error: 'Invalid request', issues: parsed.error.issues }, { status: 400 });
+    }
 
-  return NextResponse.json(feedback);
+    const messages = buildMessages(parsed.data);
+    const groq = await callGroq(messages);
+
+    if (!groq.ok) {
+      return NextResponse.json(groq.body, { status: groq.status });
+    }
+
+    let feedback: FeedbackResponse | null = null;
+    try {
+      feedback = JSON.parse(groq.body.content) as FeedbackResponse;
+    } catch {
+      return NextResponse.json({ error: 'AI returned invalid JSON.' }, { status: 502 });
+    }
+
+    if (!feedback || !feedback.summary || !feedback.suggestedNextEdit || !feedback.coachingTip || !feedback.encouragement || !feedback.nextSteps) {
+      return NextResponse.json({ error: 'AI response was missing required fields.' }, { status: 502 });
+    }
+
+    return NextResponse.json(feedback);
+  } catch (error: any) {
+    console.error('AI Feedback Route Error:', error);
+    return NextResponse.json(
+      { 
+        error: 'An unexpected error occurred in the feedback engine.', 
+        detail: error?.message || 'Unknown error' 
+      }, 
+      { status: 500 }
+    );
+  }
 }
 

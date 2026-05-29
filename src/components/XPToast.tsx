@@ -50,6 +50,3 @@ export function XPToast() {
     </div>
   );
 }
-
-// Re-export for convenience but preferred to use src/lib/xpEvents.ts
-export { triggerXPGain } from '../lib/xpEvents';
