@@ -274,6 +274,60 @@ export function resetProgress() {
   window.localStorage.removeItem(LEGACY_LAST_SAVED_KEY);
 }
 
+export function updateModulePracticalOutput(
+  progress: UserProgress,
+  moduleId: string,
+  outputId: string,
+  completed: boolean
+): UserProgress {
+  const moduleProgress = progress.modules[moduleId] ?? {
+    sectionsRead: {},
+    flashcards: {},
+    practicalOutputs: {}
+  };
+
+  return {
+    ...progress,
+    modules: {
+      ...progress.modules,
+      [moduleId]: {
+        ...moduleProgress,
+        practicalOutputs: {
+          ...(moduleProgress.practicalOutputs ?? {}),
+          [outputId]: completed
+        }
+      }
+    }
+  };
+}
+
+export function updateModuleSectionProgress(
+  progress: UserProgress,
+  moduleId: string,
+  sectionId: string,
+  read: boolean
+): UserProgress {
+  const moduleProgress = progress.modules[moduleId] ?? {
+    sectionsRead: {},
+    flashcards: {},
+    practicalOutputs: {}
+  };
+
+  return {
+    ...progress,
+    modules: {
+      ...progress.modules,
+      [moduleId]: {
+        ...moduleProgress,
+        sectionsRead: {
+          ...(moduleProgress.sectionsRead ?? {}),
+          [sectionId]: read
+        }
+      }
+    }
+  };
+}
+
 function adjustDueDate(rating: ReviewRating): string {
   const now = new Date();
 
@@ -396,33 +450,6 @@ export function recordPracticalOutputReview(
         completed,
         reviewCount: existing.reviewCount + 1,
         dueDateIso: now.toISOString()
-      }
-    }
-  };
-}
-
-export function updateModulePracticalOutput(
-  progress: UserProgress,
-  moduleId: string,
-  outputId: string,
-  completed: boolean
-): UserProgress {
-  const moduleProgress = progress.modules[moduleId] ?? {
-    sectionsRead: {},
-    flashcards: {},
-    practicalOutputs: {}
-  };
-
-  return {
-    ...progress,
-    modules: {
-      ...progress.modules,
-      [moduleId]: {
-        ...moduleProgress,
-        practicalOutputs: {
-          ...moduleProgress.practicalOutputs,
-          [outputId]: completed
-        }
       }
     }
   };

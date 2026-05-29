@@ -176,7 +176,7 @@ export default function HomePage() {
             href={dashboardRecommendation.ctaHref}
             className="inline-flex rounded-full bg-slate-900 px-6 py-3 text-sm font-semibold text-white shadow-md hover:bg-slate-800 transition-all active:scale-95"
           >
-            Start Quest ⚔️
+            {dashboardRecommendation.ctaLabel} ⚔️
           </Link>
         </div>
       </section>

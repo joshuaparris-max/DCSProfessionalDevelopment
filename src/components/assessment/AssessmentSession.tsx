@@ -10,6 +10,8 @@ import type {
   AssessmentSelfRating,
   ConfidenceLevel
 } from '../../types/assessment';
+import { useRouter } from 'next/navigation';
+import { triggerXPGain } from '../XPToast';
 
 type AssessmentSessionProps = {
   questions: AssessmentQuestion[];
@@ -91,6 +93,7 @@ export default function AssessmentSession({
   const [currentIndex, setCurrentIndex] = useState(0);
   const [draft, setDraft] = useState<DraftResponse | null>(questions[0] ? buildInitialDraft(questions[0]) : null);
   const [reviewMode, setReviewMode] = useState(false);
+  const router = useRouter();
   const [sessionAttempts, setSessionAttempts] = useState<AssessmentAttempt[]>([]);
   const [liveFeedbackEnabled, setLiveFeedbackEnabled] = useState(true);
   const [liveFeedback, setLiveFeedback] = useState<LiveFeedback | null>(null);
@@ -99,8 +102,29 @@ export default function AssessmentSession({
   const liveFeedbackAbortRef = useRef<AbortController | null>(null);
   const quizStartedRef = useRef(false);
 
+  const isBossBattle = source === 'strict-quiz';
   const question = questions[currentIndex];
   const sessionComplete = currentIndex >= questions.length;
+  const averageScore = sessionAttempts.length
+    ? Math.round(
+        (sessionAttempts.reduce((sum, attempt) => sum + attempt.scoreBreakdown.total, 0) / sessionAttempts.length) *
+          100
+      )
+    : 0;
+  const isVictory = averageScore >= 70;
+
+  // Trigger XP gain once when session completes
+  useEffect(() => {
+    if (sessionComplete) {
+      if (isBossBattle && isVictory) {
+        triggerXPGain(100, 'Boss Defeated: ' + title);
+      } else if (isVictory) {
+        triggerXPGain(50, 'Quest Victory: ' + title);
+      } else {
+        triggerXPGain(20, 'Combat Experience: ' + title);
+      }
+    }
+  }, [sessionComplete, isBossBattle, isVictory, title]);
 
   const supportsLiveFeedback = Boolean(question);
 
@@ -242,15 +266,7 @@ export default function AssessmentSession({
   }
 
   if (sessionComplete) {
-    const averageScore = sessionAttempts.length
-      ? Math.round(
-          (sessionAttempts.reduce((sum, attempt) => sum + attempt.scoreBreakdown.total, 0) / sessionAttempts.length) *
-            100
-        )
-      : 0;
     const revisitCount = sessionAttempts.filter((attempt) => attempt.shouldRevisit).length;
-    const isBossBattle = source === 'strict-quiz';
-    const isVictory = averageScore >= 70;
 
     return (
       <div className={`space-y-6 rounded-[2rem] border p-8 shadow-lg transition-all ${

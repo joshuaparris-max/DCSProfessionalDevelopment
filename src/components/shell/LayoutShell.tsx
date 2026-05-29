@@ -3,6 +3,7 @@
 import { useUI } from '../../contexts/UIContext';
 import Topbar from './Topbar';
 import Sidebar from './Sidebar';
+import { XPToast } from '../XPToast';
 
 export function LayoutShell({ children }: { children: React.ReactNode }) {
   const { focusMode, toggleFocusMode } = useUI();
@@ -28,6 +29,8 @@ export function LayoutShell({ children }: { children: React.ReactNode }) {
           {children}
         </div>
       </main>
+
+      <XPToast />
 
       {!focusMode && (
         <footer className="border-t border-slate-200 bg-white/80 px-4 py-5 text-sm text-slate-500 dark:border-slate-700 dark:bg-slate-950/80 dark:text-slate-400">

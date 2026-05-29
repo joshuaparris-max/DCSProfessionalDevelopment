@@ -4,6 +4,7 @@ import { useState } from 'react';
 import type { InteractiveLab } from '../types/training';
 import { ReflectionJournal } from './ReflectionJournal';
 import { saveJournalEntry } from '../lib/offlineStorage';
+import { triggerXPGain } from './XPToast';
 
 type LabRunnerProps = {
   lab: InteractiveLab;
@@ -25,6 +26,7 @@ export function LabRunner({ lab }: LabRunnerProps) {
       emotions: entry.emotions,
       createdAtIso: new Date().toISOString()
     });
+    triggerXPGain(50, 'Mission Accomplished: ' + lab.title);
     setLabStep('complete');
   }
 

@@ -12,10 +12,12 @@ import {
   getStoredProgressSnapshot,
   saveProgress,
   type UserProgress,
-  updateModulePracticalOutput
+  updateModulePracticalOutput,
+  updateModuleSectionProgress
 } from '../../lib/progress';
 import type { AssessmentQuestion } from '../../types/assessment';
 import type { TrainingModule } from '../../types/training';
+import { triggerXPGain } from '../XPToast';
 
 const AssessmentSession = dynamic(() => import('../assessment/AssessmentSession'), {
   loading: () => (
@@ -100,9 +102,22 @@ export default function ModuleDetail({
 
   const moduleCompletion = Math.round(getModuleCompletion(moduleData.id, progress, moduleData));
 
+  function toggleSectionRead(sectionId: string) {
+    setProgress((current) => {
+      const currentRead = Boolean(current.modules[moduleData.id]?.sectionsRead?.[sectionId]);
+      if (!currentRead) {
+        triggerXPGain(20, 'Module Section Mastered');
+      }
+      return updateModuleSectionProgress(current, moduleData.id, sectionId, !currentRead);
+    });
+  }
+
   function togglePracticalOutput(outputId: string) {
     setProgress((current) => {
       const currentCompleted = Boolean(current.modules[moduleData.id]?.practicalOutputs?.[outputId]);
+      if (!currentCompleted) {
+        triggerXPGain(150, 'Practical Output Evidence Created');
+      }
       trackUsageInteraction({
         eventType: 'section_view',
         route: `/modules/${moduleData.id}`,
@@ -154,7 +169,61 @@ export default function ModuleDetail({
   }, [feynmanRubric, moduleData.id]);
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 relative">
+      {/* Quest Status Bar */}
+      <div className="sticky top-0 z-50 -mx-4 px-4 py-3 bg-white/80 backdrop-blur-md border-b border-slate-200 flex items-center justify-between shadow-sm lg:rounded-full lg:mx-0 lg:px-6 lg:mb-6">
+        <div className="flex items-center gap-3">
+          <div className="hidden sm:flex h-8 w-8 items-center justify-center rounded-full bg-slate-900 text-white text-xs font-bold">
+            Q
+          </div>
+          <div>
+            <div className="text-[10px] font-bold uppercase tracking-widest text-slate-500">Active Quest</div>
+            <div className="text-sm font-bold text-slate-900 truncate max-w-[150px] sm:max-w-none">{moduleData.title}</div>
+          </div>
+        </div>
+        
+        <div className="flex items-center gap-4">
+          <div className="flex flex-col items-end">
+            <div className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Progress</div>
+            <div className="flex items-center gap-2">
+              <div className="h-1.5 w-24 rounded-full bg-slate-200 overflow-hidden">
+                <div 
+                  className="h-full bg-indigo-600 transition-all duration-500" 
+                  style={{ width: `${moduleCompletion}%` }}
+                />
+              </div>
+              <span className="text-xs font-bold text-slate-700">{moduleCompletion}%</span>
+            </div>
+          </div>
+          {moduleCompletion === 100 && (
+            <div className="flex items-center gap-2 animate-bounce">
+              <span className="text-xl">🏆</span>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {moduleCompletion === 100 && (
+        <div className="rounded-[2rem] bg-gradient-to-br from-indigo-600 to-blue-700 p-8 text-white shadow-xl">
+          <div className="flex flex-col md:flex-row items-center gap-6">
+            <div className="text-6xl">🎉</div>
+            <div className="flex-1 text-center md:text-left">
+              <h2 className="text-2xl font-bold">Quest Complete: {moduleData.title}</h2>
+              <p className="mt-2 text-indigo-100">
+                You&apos;ve mastered all sections, completed the practical evidence, and finished the labs for this module. 
+                Your IT Career attributes have been permanently increased.
+              </p>
+            </div>
+            <Link 
+              href="/"
+              className="rounded-full bg-white px-8 py-3 text-sm font-bold text-indigo-600 shadow-lg hover:bg-indigo-50 transition-all active:scale-95"
+            >
+              Claim Rewards & Return 🏠
+            </Link>
+          </div>
+        </div>
+      )}
+
       <section className="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-sm">
         <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
           <div>
@@ -384,12 +453,27 @@ export default function ModuleDetail({
             <div className="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-sm">
               <h2 className="text-2xl font-semibold text-slate-900">Module sections</h2>
               <div className="mt-4 space-y-6 text-sm text-slate-700">
-                {moduleData.sections.map((section) => (
-                  <article key={section.id} className="rounded-3xl bg-slate-50 p-6">
-                    <h3 className="text-xl font-semibold text-slate-900">{section.title}</h3>
-                    {renderMarkdownParagraphs(section.bodyMarkdown)}
-                  </article>
-                ))}
+                {moduleData.sections.map((section) => {
+                  const isRead = Boolean(moduleProgress.sectionsRead?.[section.id]);
+                  return (
+                    <article key={section.id} className={`rounded-3xl p-6 border transition-all ${isRead ? 'bg-emerald-50 border-emerald-100' : 'bg-slate-50 border-transparent'}`}>
+                      <div className="flex justify-between items-start mb-4">
+                        <h3 className="text-xl font-semibold text-slate-900">{section.title}</h3>
+                        <button
+                          onClick={() => toggleSectionRead(section.id)}
+                          className={`px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest transition-all ${
+                            isRead 
+                              ? 'bg-emerald-600 text-white' 
+                              : 'bg-white border border-slate-200 text-slate-500 hover:border-slate-400'
+                          }`}
+                        >
+                          {isRead ? '✓ Completed' : 'Mark as Read'}
+                        </button>
+                      </div>
+                      {renderMarkdownParagraphs(section.bodyMarkdown)}
+                    </article>
+                  );
+                })}
               </div>
             </div>
 

@@ -53,27 +53,24 @@ export function getDashboardRecommendation(progress: UserProgress): DashboardRec
   if (weakTopics.length) {
     const lowest = weakTopics.reduce((current, next) => (next.averageScore < current.averageScore ? next : current));
     return {
-      title: `Review ${weakTopicLabels[lowest.topic] ?? lowest.topic}`,
-      detail: 'Focus on the weakest recorded area with a short supported module activity.',
+      title: `Quest: Master ${weakTopicLabels[lowest.topic] ?? lowest.topic}`,
+      detail: 'Your performance here is low. Return to the core training to build your attributes.',
       ctaHref: '/due-today',
-      ctaLabel: 'Review due items'
+      ctaLabel: 'Start Review'
     };
   }
 
-  if (progress.assessmentAttempts.length) {
-    return {
-      title: 'Practice assessment review',
-      detail: 'Use assessment questions to find the next weak topic and build evidence.',
-      ctaHref: '/strict-quiz',
-      ctaLabel: 'Start a quiz'
-    };
-  }
+  // Find first incomplete module
+  const firstIncompleteModule = Object.entries(progress.modules).find(([id, data]) => {
+    // This is a bit simplified, ideally we'd pass the actual module definitions here
+    return true; 
+  });
 
   return {
-    title: 'Start with a module',
-    detail: 'Open a core module to begin structured learning and build a progress baseline.',
-    ctaHref: '/modules',
-    ctaLabel: 'Browse modules'
+    title: 'Main Quest: Foundations',
+    detail: 'Begin your IT journey by mastering the foundational support modules.',
+    ctaHref: '/modules/messer-220-1101-foundations', // Hardcoding a logical start for now
+    ctaLabel: 'Begin Quest'
   };
 }
 
