@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from 'react';
+import Link from 'next/link';
 import { modules } from '../../src/data/modules';
 import { scenarios } from '../../src/data/scenarios';
 import { weakTopicLabels } from '../../src/data/skillDomains';
@@ -211,6 +212,15 @@ export default function PdLogPage() {
             RBC/SMITB entries should be described as informal academic alignment or PD evidence. Do not describe them as
             university credit, certification, or official assessment completion unless that happened in the external system.
           </p>
+          <div className="mt-6">
+            <Link 
+              href="/pd-log/journal"
+              className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-slate-900 text-white text-sm font-semibold hover:bg-slate-800 transition-colors"
+            >
+              <span>View Reflection Journal</span>
+              <span className="text-xs opacity-60">→</span>
+            </Link>
+          </div>
         </div>
       </section>
 

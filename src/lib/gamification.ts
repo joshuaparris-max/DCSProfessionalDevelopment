@@ -2,7 +2,10 @@ import type { ModuleData } from '../data/modules';
 import { getModuleCompletion } from './moduleMath';
 import type { UserProgress } from './progress';
 
-export const GAMIFICATION_STORAGE_KEY = 'dcsPrepGamification';
+export const GAMIFICATION_STORAGE_KEY = 'supportOpsGamification';
+const LEGACY_GAMIFICATION_STORAGE_KEY = 'dcsPrepGamification';
+
+export type ITSpecialization = 'support-tech' | 'network-engineer' | 'm365-admin' | 'security-analyst' | 'generalist';
 
 export type GamificationBadge = {
   id: string;
@@ -19,26 +22,150 @@ export type GamificationSticker = {
   awardedAtIso: string;
 };
 
+export type LevelMilestone = {
+  level: number;
+  title: string;
+  specialization?: ITSpecialization;
+  description: string;
+  unlockedAtIso?: string;
+};
+
 export type GamificationState = {
   points: number;
+  level: number;
+  xpInCurrentLevel: number;
+  totalXpEarned: number;
   studyStreakDays: number;
+  specialization: ITSpecialization;
   badges: Record<string, { awardedAtIso: string }>;
   stickers: GamificationSticker[];
+  levelMilestones: Record<number, { unlockedAtIso: string }>;
+  bossBattlesWon: number;
   lastCalculatedAtIso: string;
 };
 
 export type GamificationSummary = {
   points: number;
+  level: number;
+  xpInCurrentLevel: number;
+  xpNeededForNextLevel: number;
+  totalXpEarned: number;
+  specialization: ITSpecialization;
   studyStreakDays: number;
   completedBadgeCount: number;
   badges: GamificationBadge[];
   stickers: GamificationSticker[];
+  bossBattlesWon: number;
   nextMilestone: string;
+  nextLevelTitle: string;
 };
 
 type GamificationOptions = {
   nowIso?: string;
 };
+
+// XP thresholds for each level (cumulative)
+const LEVEL_THRESHOLDS: Record<number, number> = {
+  1: 0,
+  2: 100,
+  3: 250,
+  4: 450,
+  5: 700,
+  6: 1000,
+  7: 1350,
+  8: 1750,
+  9: 2200,
+  10: 2700,
+  11: 3250,
+  12: 3850,
+  13: 4500,
+  14: 5200,
+  15: 5950,
+  16: 6750,
+  17: 7600,
+  18: 8500,
+  19: 9450,
+  20: 10450,
+  25: 16000,
+  30: 23000,
+  35: 31500,
+  40: 41500,
+  45: 53000,
+  50: 67000
+};
+
+const MAX_LEVEL = 50;
+
+function getXpThresholdForLevel(level: number): number {
+  if (level <= 1) return 0;
+  if (level > MAX_LEVEL) return LEVEL_THRESHOLDS[MAX_LEVEL] ?? 67000;
+  return LEVEL_THRESHOLDS[level] ?? 0;
+}
+
+function calculateLevelFromXp(totalXp: number): { level: number; xpInCurrentLevel: number } {
+  let level = 1;
+  for (let l = MAX_LEVEL; l >= 2; l--) {
+    if (totalXp >= getXpThresholdForLevel(l)) {
+      level = l;
+      break;
+    }
+  }
+
+  const currentLevelThreshold = getXpThresholdForLevel(level);
+  const xpInCurrentLevel = totalXp - currentLevelThreshold;
+
+  return { level, xpInCurrentLevel };
+}
+
+function getSpecializationFromProgress(progress: UserProgress): ITSpecialization {
+  const aPlus = progress.assessmentAttempts.filter((a) => a.category === 'CompTIA A+').length;
+  const m365 = progress.assessmentAttempts.filter((a) => a.category === 'M365').length;
+  const network = progress.assessmentAttempts.filter((a) => a.category === 'Networking').length;
+  const security = progress.assessmentAttempts.filter((a) => a.category === 'Cybersecurity').length;
+
+  const scores = [
+    { spec: 'support-tech' as ITSpecialization, count: aPlus },
+    { spec: 'm365-admin' as ITSpecialization, count: m365 },
+    { spec: 'network-engineer' as ITSpecialization, count: network },
+    { spec: 'security-analyst' as ITSpecialization, count: security }
+  ];
+
+  const top = scores.sort((a, b) => b.count - a.count)[0];
+  return top.count > 0 ? top.spec : 'generalist';
+}
+
+function getLevelTitle(level: number, specialization: ITSpecialization): string {
+  const specPrefix = {
+    'support-tech': '🖥️',
+    'm365-admin': '☁️',
+    'network-engineer': '🌐',
+    'security-analyst': '🛡️',
+    'generalist': '📚'
+  };
+
+  if (level < 5) return `${specPrefix[specialization]} Novice ${specialization.replace('-', ' ')}`;
+  if (level < 10) return `${specPrefix[specialization]} Junior ${specialization.replace('-', ' ')}`;
+  if (level < 20) return `${specPrefix[specialization]} Professional ${specialization.replace('-', ' ')}`;
+  if (level < 35) return `${specPrefix[specialization]} Senior ${specialization.replace('-', ' ')}`;
+  if (level < 50) return `${specPrefix[specialization]} Expert ${specialization.replace('-', ' ')}`;
+  return `${specPrefix[specialization]} IT Legend`;
+}
+
+export function getInitialGamificationState(nowIso = new Date().toISOString()): GamificationState {
+  return {
+    points: 0,
+    level: 1,
+    xpInCurrentLevel: 0,
+    totalXpEarned: 0,
+    studyStreakDays: 0,
+    specialization: 'generalist',
+    badges: {},
+    stickers: [],
+    levelMilestones: {},
+    bossBattlesWon: 0,
+    lastCalculatedAtIso: nowIso
+  };
+}
 
 function safeParseState(value: string | null): Partial<GamificationState> | null {
   if (!value) {
@@ -52,29 +179,28 @@ function safeParseState(value: string | null): Partial<GamificationState> | null
   }
 }
 
-export function getInitialGamificationState(nowIso = new Date().toISOString()): GamificationState {
-  return {
-    points: 0,
-    studyStreakDays: 0,
-    badges: {},
-    stickers: [],
-    lastCalculatedAtIso: nowIso
-  };
-}
-
 export function loadGamificationState(nowIso = new Date().toISOString()): GamificationState {
   if (typeof window === 'undefined') {
     return getInitialGamificationState(nowIso);
   }
 
-  const stored = safeParseState(window.localStorage.getItem(GAMIFICATION_STORAGE_KEY));
+  const stored = safeParseState(window.localStorage.getItem(GAMIFICATION_STORAGE_KEY)) ??
+                 safeParseState(window.localStorage.getItem(LEGACY_GAMIFICATION_STORAGE_KEY));
 
-  return {
+  const state = {
     ...getInitialGamificationState(nowIso),
     ...stored,
     badges: stored?.badges ?? {},
-    stickers: stored?.stickers ?? []
+    stickers: stored?.stickers ?? [],
+    levelMilestones: stored?.levelMilestones ?? {}
   };
+
+  // Clean up legacy storage key
+  if (window.localStorage.getItem(LEGACY_GAMIFICATION_STORAGE_KEY)) {
+    window.localStorage.removeItem(LEGACY_GAMIFICATION_STORAGE_KEY);
+  }
+
+  return state;
 }
 
 export function saveGamificationState(state: GamificationState) {
@@ -170,6 +296,43 @@ function calculatePoints(progress: UserProgress, modules: ModuleData[], stickers
 
   return modulePoints + pdPoints + completedScenarioPoints + strongScenarioNotePoints + assessmentPoints + practicalOutputPoints + stickerPoints;
 }
+
+function calculateTotalXp(progress: UserProgress, modules: ModuleData[], stickers: GamificationSticker[] = []): number {
+  // XP calculation for different activities
+  let totalXp = 0;
+
+  // Module study XP: 2 XP per 1% of module completion across all modules
+  modules.forEach((moduleData) => {
+    const completion = getModuleCompletion(moduleData.id, progress, moduleData);
+    totalXp += Math.floor(completion * 2);
+  });
+
+  // PD log entries: 5 XP per 5 minutes studied (up to 90 minutes = 90 XP per entry)
+  totalXp += progress.pdLogEntries.reduce((sum, entry) => {
+    return sum + Math.floor(Math.min(entry.minutes, 90) / 5) * 5;
+  }, 0);
+
+  // Scenario completions: 50 XP per completion
+  totalXp += progress.scenarioRuns.filter((run) => run.completed).length * 50;
+
+  // Boss battle bonus (exam attempts): 75 XP for passing assessment, 30 XP for attempt
+  totalXp += progress.assessmentAttempts.reduce((sum, attempt) => {
+    const score = attempt.scoreBreakdown.total;
+    return sum + (score >= 0.7 ? 75 : 30); // 75 XP for passing (70%+), 30 for attempt
+  }, 0);
+
+  // Practical outputs: 100 XP per completed output
+  totalXp += countCompletedPracticalOutputs(progress) * 100;
+
+  // Strong scenario notes (85%+ quality): 30 XP bonus
+  totalXp += progress.scenarioRuns.filter((run) => (run.noteScore ?? 0) >= 0.85).length * 30;
+
+  // Sticker achievements: 15 XP per sticker
+  totalXp += stickers.length * 15;
+
+  return totalXp;
+}
+
 
 function getBadgeDefinitions(progress: UserProgress, modules: ModuleData[]) {
   const completions = modules.map((moduleData) => getModuleCompletion(moduleData.id, progress, moduleData));
@@ -283,11 +446,31 @@ export function deriveGamificationState(
     addSticker('intune-hero', 'Intune Hero', '💻');
   }
 
+  // Calculate XP and level
+  const totalXpEarned = calculateTotalXp(progress, modules, stickers);
+  const { level, xpInCurrentLevel } = calculateLevelFromXp(totalXpEarned);
+  const specialization = getSpecializationFromProgress(progress);
+
+  // Track level milestones
+  const levelMilestones = { ...previousState.levelMilestones };
+  if (!levelMilestones[level]) {
+    levelMilestones[level] = { unlockedAtIso: nowIso };
+  }
+
+  // Count boss battles won (assessments with 70%+ score)
+  const bossBattlesWon = progress.assessmentAttempts.filter((a) => a.scoreBreakdown.total >= 0.7).length;
+
   return {
     points: calculatePoints(progress, modules, stickers),
+    level,
+    xpInCurrentLevel,
+    totalXpEarned,
     studyStreakDays: calculateStudyStreakDays(progress),
+    specialization,
     badges,
     stickers,
+    levelMilestones,
+    bossBattlesWon,
     lastCalculatedAtIso: nowIso
   };
 }
@@ -302,12 +485,24 @@ export function getGamificationSummary(
     awardedAtIso: state.badges[badge.id]?.awardedAtIso
   }));
 
+  const nextLevelThreshold = getXpThresholdForLevel(state.level + 1);
+  const currentLevelThreshold = getXpThresholdForLevel(state.level);
+  const xpNeededForNextLevel = nextLevelThreshold - currentLevelThreshold;
+
   return {
     points: state.points,
+    level: state.level,
+    xpInCurrentLevel: state.xpInCurrentLevel,
+    xpNeededForNextLevel,
+    totalXpEarned: state.totalXpEarned,
+    specialization: state.specialization,
     studyStreakDays: state.studyStreakDays,
     completedBadgeCount: badges.filter((badge) => badge.earned).length,
     badges,
     stickers: state.stickers,
-    nextMilestone: getNextMilestone(badges)
+    bossBattlesWon: state.bossBattlesWon,
+    nextMilestone: getNextMilestone(badges),
+    nextLevelTitle: getLevelTitle(state.level + 1, state.specialization)
   };
 }
+

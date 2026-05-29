@@ -1,9 +1,10 @@
 const DB_NAME = 'DCSPrepOffline';
 const STORE_NAME = 'modules';
 const SCENARIO_STORE_NAME = 'scenarios';
+const JOURNAL_STORE_NAME = 'journal';
 const ASSET_STORE_NAME = 'assets';
 const SYNC_QUEUE_STORE_NAME = 'syncQueue';
-const DB_VERSION = 2;
+const DB_VERSION = 3;
 
 export type OfflineAsset = {
   id: string;
@@ -11,6 +12,14 @@ export type OfflineAsset = {
   contentType: string;
   body: Blob;
   cachedAtIso: string;
+};
+
+export type JournalEntry = {
+  id: string;
+  scenarioId: string;
+  content: string;
+  emotions: string[];
+  createdAtIso: string;
 };
 
 export type OfflineSyncQueueItem = {
@@ -36,6 +45,7 @@ export async function openDB() {
         const db = (event.target as IDBOpenDBRequest).result;
         createStoreIfMissing(db, STORE_NAME, { keyPath: 'id' });
         createStoreIfMissing(db, SCENARIO_STORE_NAME, { keyPath: 'id' });
+        createStoreIfMissing(db, JOURNAL_STORE_NAME, { keyPath: 'id' });
         createStoreIfMissing(db, ASSET_STORE_NAME, { keyPath: 'id' });
         createStoreIfMissing(db, SYNC_QUEUE_STORE_NAME, { keyPath: 'id' });
       };
@@ -116,6 +126,23 @@ export async function getScenarioPackOffline(scenarioId: string) {
 
 export async function removeScenarioPackOffline(scenarioId: string) {
   return deleteRecord(SCENARIO_STORE_NAME, scenarioId);
+}
+
+export async function saveJournalEntry(entry: JournalEntry) {
+  return putRecord(JOURNAL_STORE_NAME, entry);
+}
+
+export async function getAllJournalEntries() {
+  return openDB().then(
+    (db) =>
+      new Promise<JournalEntry[]>((resolve, reject) => {
+        const transaction = db.transaction(JOURNAL_STORE_NAME, 'readonly');
+        const store = transaction.objectStore(JOURNAL_STORE_NAME);
+        const request = store.getAll();
+        request.onerror = () => reject(request.error);
+        request.onsuccess = () => resolve(request.result as JournalEntry[]);
+      })
+  );
 }
 
 export async function saveOfflineAsset(asset: OfflineAsset) {

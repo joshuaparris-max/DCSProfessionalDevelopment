@@ -2,6 +2,8 @@
 
 import { useState } from 'react';
 import type { InteractiveLab } from '../types/training';
+import { ReflectionJournal } from './ReflectionJournal';
+import { saveJournalEntry } from '../lib/offlineStorage';
 
 type LabRunnerProps = {
   lab: InteractiveLab;
@@ -11,9 +13,20 @@ export function LabRunner({ lab }: LabRunnerProps) {
   const [currentStep, setCurrentStep] = useState(0);
   const [selectedOption, setSelectedOption] = useState<string | null>(null);
   const [showFeedback, setShowResult] = useState(false);
-  const [labStep, setLabStep] = useState<'decision' | 'dcs' | 'retrieval' | 'reflection'>('decision');
+  const [labStep, setLabStep] = useState<'decision' | 'dcs' | 'retrieval' | 'reflection' | 'complete'>('decision');
 
   const currentDecision = lab.decisionPoints[currentStep];
+
+  async function handleSaveReflection(entry: { content: string; emotions: string[] }) {
+    await saveJournalEntry({
+      id: `journal-${Date.now()}`,
+      scenarioId: lab.id,
+      content: entry.content,
+      emotions: entry.emotions,
+      createdAtIso: new Date().toISOString()
+    });
+    setLabStep('complete');
+  }
 
   function handleOptionSelect(optionId: string) {
     setSelectedOption(optionId);
@@ -131,11 +144,19 @@ export function LabRunner({ lab }: LabRunnerProps) {
         )}
 
         {labStep === 'reflection' && (
+          <div className="space-y-6">
+            <ReflectionJournal 
+              scenarioId={lab.id} 
+              onSave={handleSaveReflection}
+            />
+          </div>
+        )}
+
+        {labStep === 'complete' && (
           <div className="space-y-4">
-            <h4 className="text-md font-bold text-slate-900">Final Reflection</h4>
-            <p className="text-sm text-slate-700 leading-relaxed italic">
-              &quot;{lab.reflectionPrompt}&quot;
-            </p>
+            <div className="p-4 rounded-2xl bg-emerald-100 border border-emerald-200 text-emerald-900 text-xs font-semibold">
+              Lab Complete! You have successfully applied this concept to a DCS workflow and recorded your reflection.
+            </div>
             <div className="p-4 rounded-2xl bg-slate-100 border border-slate-200">
               <h5 className="text-xs font-bold uppercase tracking-wider text-slate-500 mb-2">Ticket Note Example</h5>
               <div className="text-[10px] text-slate-400 italic mb-2">
@@ -147,9 +168,6 @@ export function LabRunner({ lab }: LabRunnerProps) {
                 Checks: [SAFE CHECKS PERFORMED].<br/>
                 Status: [RESOLVED / ESCALATED TO PAUL].
               </p>
-            </div>
-            <div className="p-4 rounded-2xl bg-emerald-100 border border-emerald-200 text-emerald-900 text-xs font-semibold">
-              Lab Complete! You have successfully applied this concept to a DCS workflow.
             </div>
             <div className="mt-2 text-[10px] text-slate-400 italic">
               Privacy Reminder: Do not enter real student, staff, parent, credential, or network-sensitive information in your notes or reflections.

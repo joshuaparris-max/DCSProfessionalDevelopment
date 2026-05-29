@@ -2,6 +2,9 @@ import type { AssessmentQuestion, AssessmentSource } from '../types/assessment';
 import type { TrainingModule } from '../types/training';
 import { dcsWorkflowModules } from './dcsWorkflowModules';
 import { messerCore2Modules } from './messerCore2Modules';
+import { printerModule } from './printerModule';
+import { m365FilesModule } from './m365FilesModule';
+import { onboardingModule } from './onboardingModule';
 
 export type ModuleData = TrainingModule;
 
@@ -628,23 +631,78 @@ export const modules: TrainingModule[] = [
     sections: [
       {
         id: 'printer-1',
-        title: 'Three broad printer fault buckets',
-        bodyMarkdown: `Most printer pain lands in one of three buckets: the user sent the job to the wrong place, the queue or spool path is stuck, or the device itself has a hardware or consumable issue.\n\nStart there before chasing rare causes.`
+        title: 'The Printing Path: Laptop to PaperCut to Printer',
+        bodyMarkdown: `At DCS, printing follows a specific path:\n\n1. **The Laptop**: Sends the job to the "Follow-Me" virtual queue.\n2. **The Server (PaperCut)**: Holds the job until you authenticate at a printer.\n3. **The Printer**: Releases the job after you tap your card or log in.\n\n**Triage Rule:** If the job isn't showing at the printer, the problem is usually between the laptop and the server. If the job is there but won't print, the problem is usually the printer hardware.`
       },
       {
         id: 'printer-2',
-        title: 'What the symptom is trying to tell you',
-        bodyMarkdown: `No print at all often points to wrong target, queue, offline status, or a broad service path. Smudging, rubbing off, or faint output points more toward toner, drum, paper, or fuser-style issues.\n\nDifferent symptoms deserve different escalation language.`
+        title: 'Common Software Blockers',
+        bodyMarkdown: `**Stuck Queues:** If a job is "Spooling" or "Error" on the laptop, restart the Print Spooler service or clear the local queue.\n\n**Wrong Printer:** Ensure the user has the "Follow-Me-Print" (or campus specific) queue selected, not a direct IP printer that might be offline.\n\n**PaperCut Credit:** Occasionally, a staff or student account might have a restricted balance or a sync error. Check the PaperCut admin console if you have access, or escalate.`
       },
       {
         id: 'printer-3',
-        title: 'Printer fixes with boundaries',
-        bodyMarkdown: `Safe Level 1 work includes confirming the correct printer, checking the queue, checking paper and obvious jams, and comparing whether other users are affected.\n\nDo not improvise deep driver surgery or device-admin changes if the environment belongs to someone else.`
+        title: 'Hardware: Jams, Toner, and Drums',
+        bodyMarkdown: `**Paper Jams:** Always follow the on-screen diagram. Pull gently in the direction of the paper path to avoid tearing. Check for tiny scraps in sensors.\n\n**Print Quality:** \n- **Vertical lines:** Usually a dirty scanner glass or a failing drum.\n- **Toner rubs off:** The fuser (the heat element) is not reaching the correct temperature. This is a service-call issue.\n- **Ghosting:** The drum is not clearing properly.`
       },
       {
         id: 'printer-4',
-        title: 'PaperCut-style release, photocopiers, and service calls',
-        bodyMarkdown: `Many fleets need authentication or release steps before jobs leave the queue—confirm the user signed in or released on the panel.\n\nPhotocopiers add finishing trays, staple jams, and thermal faults that differ from small desktop lasers.\n\nWhen symptoms persist after queue/device basics, capture counters and error codes for vendor service rather than improvising hardware repairs.`
+        title: 'When to Escalate (Service Calls)',
+        bodyMarkdown: `Do not attempt to disassemble printers beyond the basic user-accessible panels. \n\n**Escalate immediately if:**\n- There is a "Service Call" or "C-XXXX" error code on the screen.\n- You hear loud grinding or screeching noises.\n- The fuser is smoking or smells like burning plastic.\n- You have cleared a jam but the "Jam" error persists (possible sensor fault).\n\n**Capture for Paul:** Printer Model, Serial Number (or Asset Tag), and the EXACT error code.`
+      }
+    ],
+    interactiveLabs: [
+      {
+        id: 'lab-printer-queue-stuck',
+        title: 'Stuck Print Queue',
+        scenario: 'A teacher says, "I sent my document to the printer five minutes ago, but when I tap my card at the Follow-Me printer, it says No Jobs Found."',
+        decisionPoints: [
+          {
+            id: 'd1',
+            question: 'Where should you check FIRST?',
+            options: [
+              { id: 'o1', label: 'Check the teacher\'s laptop print queue.', feedback: 'Correct. If it\'s not at the printer, it likely never left the laptop or is stuck in the local spooler.', isCorrect: true },
+              { id: 'o2', label: 'Restart the printer.', feedback: 'Too invasive and unlikely to help if the job isn\'t in the server queue yet.', isCorrect: false },
+              { id: 'o3', label: 'Replace the toner.', feedback: 'Toner status wouldn\'t prevent a job from showing up in the PaperCut queue.', isCorrect: false }
+            ]
+          },
+          {
+            id: 'd2',
+            question: 'The laptop queue shows the job as "Error - Sent to Printer". What is a safe next step?',
+            options: [
+              { id: 'o1', label: 'Cancel the job and try printing a small 1-page test PDF.', feedback: 'Correct. This determines if it was just a "heavy" file or a total queue blockage.', isCorrect: true },
+              { id: 'o2', label: 'Reinstall the printer drivers immediately.', feedback: 'Too time-consuming. Try a test print first.', isCorrect: false }
+            ]
+          }
+        ],
+        dcsApplication: 'At DCS, "No Jobs Found" usually means the user isn\'t logged into the PaperCut client on their laptop or they used the wrong queue.',
+        retrievalQuestion: 'What is the name of the DCS virtual print queue?',
+        reflectionPrompt: 'How do you explain the "Follow-Me" concept to a new staff member who is used to direct printers?'
+      },
+      {
+        id: 'lab-toner-smudge',
+        title: 'Toner Rubbing Off',
+        scenario: 'A staff member brings you a page where the black text smears and rubs off when touched.',
+        decisionPoints: [
+          {
+            id: 'd1',
+            question: 'What does this symptom usually indicate?',
+            options: [
+              { id: 'o1', label: 'Low toner level.', feedback: 'Incorrect. Low toner causes faint print, not smearing.', isCorrect: false },
+              { id: 'o2', label: 'Fuser unit failure.', feedback: 'Correct. The fuser isn\'t heating enough to "bake" the toner onto the paper.', isCorrect: true }
+            ]
+          },
+          {
+            id: 'd2',
+            question: 'Is this a Level 1 fix?',
+            options: [
+              { id: 'o1', label: 'Yes, I should open the fuser and clean the rollers.', feedback: 'NO. Fusers are hot and fragile. This is a service-call item.', isCorrect: false },
+              { id: 'o2', label: 'No, I should record the error/serial and escalate for a service call.', feedback: 'Correct. Safe Level 1 action ends here.', isCorrect: true }
+            ]
+          }
+        ],
+        dcsApplication: 'Record the Asset Tag of the printer and report it to Paul so a service technician can be booked.',
+        retrievalQuestion: 'Which part of the printer "melts" the toner onto the page?',
+        reflectionPrompt: 'Why is it important to stop a user from printing more pages if the fuser is failing?'
       }
     ],
     flashcards: [
@@ -4991,7 +5049,9 @@ These are the building blocks of almost every script or automation task.`
     sourceSubjects: [{ code: 'CSE5CV', title: 'Computer Vision', course: 'SMITB', silos: ['Vision workflows'], alignmentNote: 'Applies CV context to practical first-line camera and Hello troubleshooting.', slgCurrency: 'Source reference map; verify current delivery before formal claims.' }]
   },
   ...messerCore2Modules,
-  ...dcsWorkflowModules
+  ...dcsWorkflowModules,
+  m365FilesModule,
+  onboardingModule
 ];
 
 export function getModuleById(moduleId: string) {
