@@ -116,12 +116,30 @@ export default function ModuleDetail({
 
   const moduleCompletion = Math.round(getModuleCompletion(moduleData.id, progress, moduleData));
 
-  function toggleSectionRead(sectionId: string) {
+  function toggleSectionRead(sectionId: string, autoScroll = false) {
     const currentRead = Boolean(progress.modules[moduleData.id]?.sectionsRead?.[sectionId]);
     if (!currentRead) {
       triggerXPGain(20, 'Module Section Mastered');
     }
     setProgress((current) => updateModuleSectionProgress(current, moduleData.id, sectionId, !currentRead));
+
+    if (autoScroll && !currentRead) {
+      // Find the next section to scroll to
+      const currentIndex = moduleData.sections.findIndex(s => s.id === sectionId);
+      if (currentIndex < moduleData.sections.length - 1) {
+        const nextId = moduleData.sections[currentIndex + 1].id;
+        setTimeout(() => {
+          const nextEl = document.getElementById(`section-${nextId}`);
+          if (nextEl) nextEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }, 100);
+      } else {
+        // If it's the last section, scroll to labs or flashcards
+        setTimeout(() => {
+          const labsEl = document.getElementById('module-labs');
+          if (labsEl) labsEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }, 100);
+      }
+    }
   }
 
   function togglePracticalOutput(outputId: string) {
@@ -253,7 +271,9 @@ export default function ModuleDetail({
             </div>
           </div>
           <div className="flex flex-col items-end gap-3">
-            <div className="rounded-3xl bg-slate-100 px-5 py-4 text-sm text-slate-700">
+            <div className={`rounded-3xl px-5 py-4 text-sm font-bold transition-all ${
+              moduleCompletion > 0 ? 'bg-indigo-100 text-indigo-700 border border-indigo-200' : 'bg-slate-100 text-slate-700'
+            }`}>
               Estimated {moduleData.estimatedMinutes} minutes · {moduleCompletion}% complete
             </div>
             <button
@@ -426,16 +446,26 @@ export default function ModuleDetail({
       ) : activeTab === 'Learn' ? (
         <section className="grid gap-4 lg:grid-cols-[1fr_320px]">
           <div className="space-y-4">
-            <div className="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-sm">
-              <h2 className="text-2xl font-semibold text-slate-900">What you will learn</h2>
-              <ul className="mt-4 space-y-3 text-sm text-slate-700">
-                {moduleData.learningObjectives.map((objective) => (
-                  <li key={objective} className="rounded-3xl bg-slate-50 p-4">
-                    {objective}
-                  </li>
-                ))}
-              </ul>
-            </div>
+      <section className="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-sm">
+        <h2 className="text-2xl font-semibold text-slate-900">What you will learn</h2>
+        <ul className="mt-4 space-y-3 text-sm text-slate-700">
+          {moduleData.learningObjectives.map((objective) => (
+            <li key={objective} className="rounded-3xl bg-slate-50 p-4">
+              {objective}
+            </li>
+          ))}
+        </ul>
+        <button 
+          onClick={() => {
+            const firstSection = document.getElementById(`section-${moduleData.sections[0].id}`);
+            if (firstSection) firstSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          }}
+          className="mt-6 inline-flex items-center gap-2 rounded-full bg-slate-900 px-6 py-3 text-sm font-bold text-white shadow-lg active:scale-95 transition-all"
+        >
+          <span>Start Reading Sections</span>
+          <span className="text-xs opacity-50">↓</span>
+        </button>
+      </section>
 
             <div className="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-sm">
               <h2 className="text-2xl font-semibold text-slate-900">Why this matters in DCS</h2>
@@ -480,25 +510,63 @@ export default function ModuleDetail({
 
             <div className="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-sm">
               <h2 className="text-2xl font-semibold text-slate-900">Module sections</h2>
-              <div className="mt-4 space-y-6 text-sm text-slate-700">
-                {moduleData.sections.map((section) => {
+              <p className="mt-2 text-sm text-slate-600 mb-6">
+                Read each section carefully. Click &quot;Complete &amp; Continue&quot; to move to the next objective and earn XP.
+              </p>
+              <div className="mt-4 space-y-8 text-sm text-slate-700">
+                {moduleData.sections.map((section, index) => {
                   const isRead = Boolean(moduleProgress.sectionsRead?.[section.id]);
                   return (
-                    <article key={section.id} className={`rounded-3xl p-6 border transition-all ${isRead ? 'bg-emerald-50 border-emerald-100' : 'bg-slate-50 border-transparent'}`}>
-                      <div className="flex justify-between items-start mb-4">
-                        <h3 className="text-xl font-semibold text-slate-900">{section.title}</h3>
+                    <article 
+                      key={section.id} 
+                      id={`section-${section.id}`}
+                      className={`rounded-3xl p-8 border transition-all scroll-mt-24 ${
+                        isRead 
+                          ? 'bg-emerald-50/50 border-emerald-100 opacity-80' 
+                          : 'bg-slate-50 border-transparent shadow-sm'
+                      }`}
+                    >
+                      <div className="flex justify-between items-center mb-6">
+                        <div className="flex items-center gap-3">
+                          <div className={`flex h-8 w-8 items-center justify-center rounded-full text-xs font-bold ${
+                            isRead ? 'bg-emerald-600 text-white' : 'bg-slate-900 text-white'
+                          }`}>
+                            {index + 1}
+                          </div>
+                          <h3 className="text-xl font-bold text-slate-900">{section.title}</h3>
+                        </div>
+                        {isRead && (
+                          <span className="text-[10px] font-bold uppercase tracking-widest text-emerald-600 bg-emerald-100 px-2 py-0.5 rounded-full">
+                            Section Mastered
+                          </span>
+                        )}
+                      </div>
+                      
+                      <div className="prose prose-slate max-w-none">
+                        {renderMarkdownParagraphs(section.bodyMarkdown)}
+                      </div>
+
+                      <div className="mt-8 pt-6 border-t border-slate-200/60">
                         <button
-                          onClick={() => toggleSectionRead(section.id)}
-                          className={`px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest transition-all ${
+                          onClick={() => toggleSectionRead(section.id, true)}
+                          className={`w-full sm:w-auto px-8 py-3 rounded-full text-sm font-bold transition-all active:scale-95 flex items-center justify-center gap-2 ${
                             isRead 
-                              ? 'bg-emerald-600 text-white' 
-                              : 'bg-white border border-slate-200 text-slate-500 hover:border-slate-400'
+                              ? 'bg-white border border-emerald-200 text-emerald-700 hover:bg-emerald-50' 
+                              : 'bg-slate-900 text-white shadow-lg hover:bg-slate-800'
                           }`}
                         >
-                          {isRead ? '✓ Completed' : 'Mark as Read'}
+                          {isRead ? (
+                            <>
+                              <span>✓ Section Completed</span>
+                            </>
+                          ) : (
+                            <>
+                              <span>Complete & Continue</span>
+                              <span className="text-xs opacity-50">→</span>
+                            </>
+                          )}
                         </button>
                       </div>
-                      {renderMarkdownParagraphs(section.bodyMarkdown)}
                     </article>
                   );
                 })}
@@ -506,7 +574,13 @@ export default function ModuleDetail({
             </div>
 
             {moduleData.interactiveLabs?.length ? (
-              <div className="space-y-6">
+              <div id="module-labs" className="space-y-6 scroll-mt-24">
+                <div className="rounded-[2rem] border border-blue-100 bg-blue-50/30 p-6 shadow-sm">
+                  <h2 className="text-2xl font-semibold text-slate-900">Interactive Practice</h2>
+                  <p className="mt-2 text-sm text-slate-600">
+                    Apply what you&apos;ve learned in these DCS-specific scenarios.
+                  </p>
+                </div>
                 {moduleData.interactiveLabs.map((lab) => (
                   <LabRunner key={lab.id} lab={lab} />
                 ))}
