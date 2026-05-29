@@ -20,6 +20,8 @@ import { StickersDisplay } from '../src/components/StickersDisplay';
 import { showNotification } from '../src/lib/notifications';
 import { ScheduleSuggestions } from '../src/components/ScheduleSuggestions';
 import { RecentChanges } from '../src/components/RecentChanges';
+import { RPGDashboard } from '../src/components/RPGDashboard';
+import { FocusForest } from '../src/components/FocusForest';
 
 function getMonthKey(date: Date) {
   return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
@@ -163,159 +165,88 @@ export default function HomePage() {
       <section className="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-sm">
         <div className="flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
           <div>
-            <div className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-500">Today’s focus</div>
+            <div className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-500">Active Quest</div>
             <h2 className="mt-3 text-2xl font-semibold text-slate-900">{dashboardRecommendation.title}</h2>
             <p className="mt-3 max-w-3xl text-sm leading-7 text-slate-600">
               {dashboardRecommendation.detail}
-              {selectedWorkContext ? ` This is tailored for your ${selectedWorkContext} growth path.` : ''}
+              {selectedWorkContext ? ` This quest is tailored for your ${selectedWorkContext} path.` : ''}
             </p>
           </div>
           <Link
             href={dashboardRecommendation.ctaHref}
-            className="inline-flex rounded-full bg-slate-900 px-4 py-2 text-sm font-semibold text-white"
+            className="inline-flex rounded-full bg-slate-900 px-6 py-3 text-sm font-semibold text-white shadow-md hover:bg-slate-800 transition-all active:scale-95"
           >
-            {dashboardRecommendation.ctaLabel}
+            Start Quest ⚔️
           </Link>
         </div>
       </section>
 
-      <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-        <div className="rounded-[2rem] border border-slate-200 bg-white p-5 shadow-sm">
-          <div className="text-sm text-slate-500">Current weak focus area</div>
-          <div className="mt-3 text-2xl font-semibold text-slate-900">{currentWeakestFocus}</div>
-          <p className="mt-2 text-sm text-slate-600">Use this to choose the next quiet-window study block.</p>
+      <RPGDashboard summary={gamificationSummary} />
+
+      <section className="grid gap-6 lg:grid-cols-2">
+        <div className="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-sm">
+          <div className="flex items-center justify-between mb-6">
+            <h3 className="text-sm font-bold uppercase tracking-widest text-slate-500">Available Side Missions</h3>
+            <span className="text-[10px] bg-amber-100 text-amber-700 px-2 py-0.5 rounded-full font-bold">BONUS XP</span>
+          </div>
+          <div className="grid gap-3">
+            {quietWindowActions.map((action, i) => (
+              <Link
+                key={i}
+                href={action.href}
+                className="group flex items-start justify-between rounded-3xl border border-slate-100 bg-slate-50 p-4 transition hover:border-slate-300 hover:bg-white"
+              >
+                <div className="max-w-[80%]">
+                  <div className="text-sm font-bold text-slate-900 group-hover:text-blue-600 transition-colors">{action.label}</div>
+                  <div className="mt-1 text-xs text-slate-500 leading-relaxed">{action.description}</div>
+                </div>
+                <div className="text-slate-300 group-hover:text-slate-600 transition-colors">→</div>
+              </Link>
+            ))}
+          </div>
         </div>
-        <div className="rounded-[2rem] border border-slate-200 bg-white p-5 shadow-sm">
-          <div className="text-sm text-slate-500">Overall progress</div>
-          <div className="mt-3 text-2xl font-semibold text-slate-900">{overallProgress}%</div>
-          <p className="mt-2 text-sm text-slate-600">Across modules, flashcards, practical outputs, and assessment sessions.</p>
-        </div>
-        <div className="rounded-[2rem] border border-slate-200 bg-white p-5 shadow-sm">
-          <div className="text-sm text-slate-500">Due today</div>
-          <div className="mt-3 text-2xl font-semibold text-slate-900">{dueFlashcards + dueQuestions}</div>
-          <p className="mt-2 text-sm text-slate-600">{dueFlashcards} flashcards and {dueQuestions} question reviews are waiting.</p>
-        </div>
-        <div className="rounded-[2rem] border border-slate-200 bg-white p-5 shadow-sm">
-          <div className="text-sm text-slate-500">This month&apos;s logged PD</div>
-          <div className="mt-3 text-2xl font-semibold text-slate-900">{monthlyMinutes} min</div>
-          <p className="mt-2 text-sm text-slate-600">{completedScenarios} scenario exercises recorded so far.</p>
+
+        <div className="space-y-6">
+          <FocusForest state={gamificationState} onStateChange={setGamificationState} />
+          <DailyChallenge />
+          <StickersDisplay stickers={gamificationSummary.stickers} />
         </div>
       </section>
 
-      <section className="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-sm">
-        <div className="flex flex-col gap-5 lg:flex-row lg:items-start lg:justify-between">
-          <div>
-            <div className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-500">Personal progression</div>
-            <h2 className="mt-3 text-2xl font-semibold text-slate-900">Points, streaks, and career progress badges</h2>
-            <p className="mt-2 max-w-3xl text-sm leading-7 text-slate-600">
-              Progress is earned from module milestones, scenario work, PD logging, assessment attempts, and practical
-              outputs. Badge dates are saved locally on this device.
-            </p>
-          </div>
-
-          <div className="grid w-full gap-3 sm:grid-cols-3 lg:max-w-lg">
-            <div className="rounded-3xl bg-slate-50 px-4 py-3">
-              <div className="text-xs font-semibold uppercase tracking-[0.16em] text-slate-500">Points</div>
-              <div className="mt-2 text-2xl font-semibold text-slate-900">{gamificationSummary.points}</div>
-            </div>
-            <div className="rounded-3xl bg-slate-50 px-4 py-3">
-              <div className="text-xs font-semibold uppercase tracking-[0.16em] text-slate-500">Streak</div>
-              <div className="mt-2 text-2xl font-semibold text-slate-900">{gamificationSummary.studyStreakDays} day</div>
-            </div>
-            <div className="rounded-3xl bg-slate-50 px-4 py-3">
-              <div className="text-xs font-semibold uppercase tracking-[0.16em] text-slate-500">Badges</div>
-              <div className="mt-2 text-2xl font-semibold text-slate-900">{gamificationSummary.completedBadgeCount}</div>
-            </div>
-          </div>
-        </div>
-
-        <div className="mt-5 grid gap-3 md:grid-cols-2 xl:grid-cols-4">
-          {(recentBadges.length > 0 ? recentBadges : gamificationSummary.badges.slice(0, 4)).map((badge) => (
-            <div
-              key={badge.id}
-              className={`rounded-3xl border px-4 py-4 ${
-                badge.earned ? 'border-emerald-200 bg-emerald-50' : 'border-slate-200 bg-slate-50'
-              }`}
-            >
-              <div className={`text-xs font-semibold uppercase tracking-[0.16em] ${badge.earned ? 'text-emerald-700' : 'text-slate-500'}`}>
-                {badge.earned ? 'Earned' : 'Next badge'}
+      <div className="grid gap-6 lg:grid-cols-2">
+        <div className="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-sm">
+          <h3 className="text-sm font-bold uppercase tracking-widest text-slate-500 mb-6">Recent Achievements</h3>
+          <div className="grid gap-4 sm:grid-cols-2">
+            {recentBadges.length > 0 ? (
+              recentBadges.map((badge) => (
+                <div
+                  key={badge.id}
+                  className="flex items-center gap-4 rounded-3xl border border-slate-100 p-4"
+                >
+                  <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-indigo-50 text-2xl">
+                    🏆
+                  </div>
+                  <div>
+                    <div className="text-sm font-bold text-slate-900">{badge.title}</div>
+                    <div className="text-[10px] text-slate-500">{new Date(badge.awardedAtIso!).toLocaleDateString()}</div>
+                  </div>
+                </div>
+              ))
+            ) : (
+              <div className="col-span-2 py-8 text-center text-sm text-slate-400 italic">
+                No badges earned yet. Complete your first quest!
               </div>
-              <div className="mt-2 text-sm font-semibold text-slate-900">{badge.title}</div>
-              <p className="mt-2 text-xs leading-6 text-slate-600">{badge.description}</p>
-            </div>
-          ))}
-        </div>
-
-        <StickersDisplay stickers={gamificationSummary.stickers} />
-
-        <div className="mt-4 text-xs font-medium text-slate-500">Next milestone: {gamificationSummary.nextMilestone}</div>
-      </section>
-
-      <DailyChallenge />
-
-      <RecentChanges />
-
-      <section className="rounded-[2rem] border border-rose-100 bg-rose-50 p-6 shadow-sm">
-        <div className="text-xs font-semibold uppercase tracking-[0.2em] text-rose-700">I&apos;m overwhelmed mode</div>
-        <h2 className="mt-3 text-2xl font-semibold text-slate-900">Three tiny moves when everything feels loud</h2>
-        <p className="mt-2 text-sm leading-7 text-slate-700">
-          Pick one action only. Live support still wins—this is for micro pockets between interruptions.
-        </p>
-        <div className="mt-5 grid gap-3 md:grid-cols-3">
-          <Link
-            href="/due-today?mode=tiny"
-            className="rounded-3xl border border-rose-200 bg-white px-5 py-4 text-sm font-semibold text-slate-900 shadow-sm"
-          >
-            Clear one due review (tiny)
-          </Link>
-          <Link
-            href="/pd-log"
-            className="rounded-3xl border border-rose-200 bg-white px-5 py-4 text-sm font-semibold text-slate-900 shadow-sm"
-          >
-            Log a 5-minute reflection
-          </Link>
-          <Link
-            href="/modules"
-            className="rounded-3xl border border-rose-200 bg-white px-5 py-4 text-sm font-semibold text-slate-900 shadow-sm"
-          >
-            Open modules—pick the shortest card
-          </Link>
-        </div>
-      </section>
-
-      <section className="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-sm">
-        <div className="flex items-center justify-between">
-          <div>
-            <h2 className="text-2xl font-semibold text-slate-900">Quiet-window quick actions</h2>
-            <p className="mt-2 text-sm text-slate-600">
-              Keep the next action bounded. These buttons are designed for short quiet windows, not open-ended browsing.
-            </p>
+            )}
           </div>
+          <Link 
+            href="/progress" 
+            className="mt-6 block text-center text-xs font-semibold text-indigo-600 hover:underline"
+          >
+            View all badges and history
+          </Link>
         </div>
-
-        <div className="mt-5 grid gap-4 md:grid-cols-2 xl:grid-cols-5">
-          {quietWindowActions.map((action) => (
-            <Link
-              key={action.label}
-              href={action.href}
-              className="rounded-3xl border border-slate-200 bg-slate-50 px-5 py-6 transition hover:bg-slate-100"
-            >
-              <div className="text-sm font-medium text-slate-800">{action.label}</div>
-              <p className="mt-2 text-xs leading-6 text-slate-600">{action.description}</p>
-            </Link>
-          ))}
-        </div>
-      </section>
-
-      <section className="rounded-[2rem] border border-emerald-200 bg-emerald-50 p-6 shadow-sm">
-        <div className="text-sm font-semibold uppercase tracking-[0.2em] text-emerald-700">Operational priority</div>
-        <p className="mt-3 max-w-3xl text-sm leading-7 text-emerald-900">
-          Use this application only during available time that does not conflict with live support responsibilities.
-          Tickets, walk-ups, calls, and Paul&apos;s instructions take priority over professional development. This app is
-          for personal development only and should never contain sensitive DCS, student, staff, parent, credential,
-          or network detail.
-        </p>
-      </section>
+        <RecentChanges />
+      </div>
     </div>
   );
 }

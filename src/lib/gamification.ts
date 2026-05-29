@@ -7,6 +7,13 @@ const LEGACY_GAMIFICATION_STORAGE_KEY = 'dcsPrepGamification';
 
 export type ITSpecialization = 'support-tech' | 'network-engineer' | 'm365-admin' | 'security-analyst' | 'generalist';
 
+export type RPGAttributes = {
+  strength: number;    // Hardware, Troubleshooting, Physical Support
+  intelligence: number; // Cloud, M365, Software Architecture
+  agility: number;      // Networking, Ports, Protocols, Speed of triage
+  spirit: number;       // Soft Skills, Journaling, Professional Practice
+};
+
 export type GamificationBadge = {
   id: string;
   title: string;
@@ -37,10 +44,12 @@ export type GamificationState = {
   totalXpEarned: number;
   studyStreakDays: number;
   specialization: ITSpecialization;
+  attributes: RPGAttributes;
   badges: Record<string, { awardedAtIso: string }>;
   stickers: GamificationSticker[];
   levelMilestones: Record<number, { unlockedAtIso: string }>;
   bossBattlesWon: number;
+  focusTreesPlanted: number;
   lastCalculatedAtIso: string;
 };
 
@@ -51,11 +60,13 @@ export type GamificationSummary = {
   xpNeededForNextLevel: number;
   totalXpEarned: number;
   specialization: ITSpecialization;
+  attributes: RPGAttributes;
   studyStreakDays: number;
   completedBadgeCount: number;
   badges: GamificationBadge[];
   stickers: GamificationSticker[];
   bossBattlesWon: number;
+  focusTreesPlanted: number;
   nextMilestone: string;
   nextLevelTitle: string;
 };
@@ -159,10 +170,17 @@ export function getInitialGamificationState(nowIso = new Date().toISOString()): 
     totalXpEarned: 0,
     studyStreakDays: 0,
     specialization: 'generalist',
+    attributes: {
+      strength: 0,
+      intelligence: 0,
+      agility: 0,
+      spirit: 0
+    },
     badges: {},
     stickers: [],
     levelMilestones: {},
     bossBattlesWon: 0,
+    focusTreesPlanted: 0,
     lastCalculatedAtIso: nowIso
   };
 }
@@ -209,6 +227,16 @@ export function saveGamificationState(state: GamificationState) {
   }
 
   window.localStorage.setItem(GAMIFICATION_STORAGE_KEY, JSON.stringify(state));
+}
+
+export function plantFocusTree(state: GamificationState): GamificationState {
+  const newState = {
+    ...state,
+    focusTreesPlanted: (state.focusTreesPlanted ?? 0) + 1,
+    points: state.points + 50 // Bonus points for planting a tree
+  };
+  saveGamificationState(newState);
+  return newState;
 }
 
 function toDateKey(value: string) {
@@ -297,38 +325,72 @@ function calculatePoints(progress: UserProgress, modules: ModuleData[], stickers
   return modulePoints + pdPoints + completedScenarioPoints + strongScenarioNotePoints + assessmentPoints + practicalOutputPoints + stickerPoints;
 }
 
-function calculateTotalXp(progress: UserProgress, modules: ModuleData[], stickers: GamificationSticker[] = []): number {
-  // XP calculation for different activities
-  let totalXp = 0;
+function calculateAttributes(progress: UserProgress): RPGAttributes {
+  const attributes: RPGAttributes = {
+    strength: 0,
+    intelligence: 0,
+    agility: 0,
+    spirit: 0
+  };
 
-  // Module study XP: 2 XP per 1% of module completion across all modules
-  modules.forEach((moduleData) => {
-    const completion = getModuleCompletion(moduleData.id, progress, moduleData);
-    totalXp += Math.floor(completion * 2);
+  // Map assessment attempts to attributes
+  progress.assessmentAttempts.forEach((attempt) => {
+    const score = attempt.scoreBreakdown.total;
+    const weight = score >= 0.7 ? 10 : 2; // More attribute gain for passing
+
+    if (attempt.domain.includes('Endpoint') || attempt.domain.includes('Operations') || attempt.domain.includes('Foundations')) {
+      attributes.strength += weight;
+    }
+    if (attempt.domain.includes('Cloud') || attempt.domain.includes('Identity') || attempt.domain.includes('Data')) {
+      attributes.intelligence += weight;
+    }
+    if (attempt.domain.includes('Networking')) {
+      attributes.agility += weight;
+    }
+    if (attempt.domain.includes('Professional') || attempt.domain.includes('Practice')) {
+      attributes.spirit += weight;
+    }
   });
 
-  // PD log entries: 5 XP per 5 minutes studied (up to 90 minutes = 90 XP per entry)
+  // Spirit gained from journaling
+  const journalEntries = Object.keys(progress.reflectionJournal || {}).length;
+  attributes.spirit += journalEntries * 5;
+
+  return attributes;
+}
+
+function calculateTotalXp(progress: UserProgress, modules: ModuleData[], stickers: GamificationSticker[] = []): number {
+  // XP calculation for different activities based on user's RPG matrix
+  let totalXp = 0;
+
+  // 1-hour lecture (Module study) = 10 XP per significant chunk (estimated 15 mins chunks)
+  modules.forEach((moduleData) => {
+    const completion = getModuleCompletion(moduleData.id, progress, moduleData);
+    totalXp += Math.floor(completion * 2); // 200 XP for 100% completion
+  });
+
+  // PD log entries: 10 XP per 30 minutes studied (inspired by user matrix)
   totalXp += progress.pdLogEntries.reduce((sum, entry) => {
-    return sum + Math.floor(Math.min(entry.minutes, 90) / 5) * 5;
+    return sum + Math.floor(entry.minutes / 30) * 10;
   }, 0);
 
-  // Scenario completions: 50 XP per completion
+  // Scenario completions (Playable missions): 50 XP per completion
   totalXp += progress.scenarioRuns.filter((run) => run.completed).length * 50;
 
-  // Boss battle bonus (exam attempts): 75 XP for passing assessment, 30 XP for attempt
+  // Boss battle bonus (Full assessments): 100 XP for passing, 20 XP for attempt
   totalXp += progress.assessmentAttempts.reduce((sum, attempt) => {
     const score = attempt.scoreBreakdown.total;
-    return sum + (score >= 0.7 ? 75 : 30); // 75 XP for passing (70%+), 30 for attempt
+    return sum + (score >= 0.7 ? 100 : 20); 
   }, 0);
 
-  // Practical outputs: 100 XP per completed output
-  totalXp += countCompletedPracticalOutputs(progress) * 100;
+  // Practical outputs (Workplace evidence): 150 XP per completed output
+  totalXp += countCompletedPracticalOutputs(progress) * 150;
 
-  // Strong scenario notes (85%+ quality): 30 XP bonus
-  totalXp += progress.scenarioRuns.filter((run) => (run.noteScore ?? 0) >= 0.85).length * 30;
+  // Reflection Journal (Habit tracking): 25 XP per entry
+  totalXp += Object.keys(progress.reflectionJournal || {}).length * 25;
 
-  // Sticker achievements: 15 XP per sticker
-  totalXp += stickers.length * 15;
+  // Sticker achievements (Loot drops): 20 XP per sticker
+  totalXp += stickers.length * 20;
 
   return totalXp;
 }
@@ -450,6 +512,7 @@ export function deriveGamificationState(
   const totalXpEarned = calculateTotalXp(progress, modules, stickers);
   const { level, xpInCurrentLevel } = calculateLevelFromXp(totalXpEarned);
   const specialization = getSpecializationFromProgress(progress);
+  const attributes = calculateAttributes(progress);
 
   // Track level milestones
   const levelMilestones = { ...previousState.levelMilestones };
@@ -467,10 +530,12 @@ export function deriveGamificationState(
     totalXpEarned,
     studyStreakDays: calculateStudyStreakDays(progress),
     specialization,
+    attributes,
     badges,
     stickers,
     levelMilestones,
     bossBattlesWon,
+    focusTreesPlanted: previousState.focusTreesPlanted ?? 0,
     lastCalculatedAtIso: nowIso
   };
 }
@@ -496,11 +561,13 @@ export function getGamificationSummary(
     xpNeededForNextLevel,
     totalXpEarned: state.totalXpEarned,
     specialization: state.specialization,
+    attributes: state.attributes,
     studyStreakDays: state.studyStreakDays,
     completedBadgeCount: badges.filter((badge) => badge.earned).length,
     badges,
     stickers: state.stickers,
     bossBattlesWon: state.bossBattlesWon,
+    focusTreesPlanted: state.focusTreesPlanted,
     nextMilestone: getNextMilestone(badges),
     nextLevelTitle: getLevelTitle(state.level + 1, state.specialization)
   };

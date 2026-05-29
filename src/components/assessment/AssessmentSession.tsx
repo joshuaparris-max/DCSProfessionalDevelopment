@@ -249,44 +249,79 @@ export default function AssessmentSession({
         )
       : 0;
     const revisitCount = sessionAttempts.filter((attempt) => attempt.shouldRevisit).length;
+    const isBossBattle = source === 'strict-quiz';
+    const isVictory = averageScore >= 70;
 
     return (
-      <div className="space-y-4 rounded-3xl border border-slate-200 bg-white p-6">
-        <div>
-          <h3 className="text-2xl font-semibold text-slate-900">{title} complete</h3>
-          <p className="mt-2 text-sm text-slate-600">
-            Average score {averageScore}%. Weakest focus: {weakestTopicText(sessionAttempts)}.
-          </p>
+      <div className={`space-y-6 rounded-[2rem] border p-8 shadow-lg transition-all ${
+        isBossBattle && isVictory 
+          ? 'border-amber-200 bg-gradient-to-br from-amber-50 to-orange-50 shadow-amber-100' 
+          : 'border-slate-200 bg-white'
+      }`}>
+        <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
+          <div>
+            <div className="text-xs font-bold uppercase tracking-[0.2em] text-slate-400">
+              {isBossBattle ? 'Boss Battle Result' : 'Session Complete'}
+            </div>
+            <h3 className="mt-2 text-3xl font-bold text-slate-900">
+              {isBossBattle && isVictory ? '🏆 Boss Defeated!' : isBossBattle ? '💀 Boss Escaped...' : `${title} Complete`}
+            </h3>
+            <p className="mt-2 text-sm text-slate-600">
+              Average score <span className="font-bold text-slate-900">{averageScore}%</span>. 
+              Weakest focus: <span className="font-semibold text-indigo-600">{weakestTopicText(sessionAttempts)}</span>.
+            </p>
+          </div>
+          {isBossBattle && isVictory && (
+            <div className="text-5xl animate-bounce">👹</div>
+          )}
         </div>
 
         <div className="grid gap-4 md:grid-cols-3">
-          <div className="rounded-2xl bg-slate-100 p-4">
-            <div className="text-sm text-slate-500">Questions completed</div>
-            <div className="mt-2 text-2xl font-semibold text-slate-900">{sessionAttempts.length}</div>
+          <div className="rounded-2xl bg-white/50 border border-slate-100 p-5 shadow-sm">
+            <div className="text-xs font-bold uppercase tracking-widest text-slate-400">XP Earned</div>
+            <div className="mt-2 text-3xl font-bold text-slate-900">
+              +{isVictory ? 100 : 20} <span className="text-sm font-medium text-slate-400">XP</span>
+            </div>
           </div>
-          <div className="rounded-2xl bg-slate-100 p-4">
-            <div className="text-sm text-slate-500">Marked to revisit</div>
-            <div className="mt-2 text-2xl font-semibold text-slate-900">{revisitCount}</div>
+          <div className="rounded-2xl bg-white/50 border border-slate-100 p-5 shadow-sm">
+            <div className="text-xs font-bold uppercase tracking-widest text-slate-400">Marked to Revisit</div>
+            <div className="mt-2 text-3xl font-bold text-slate-900">{revisitCount}</div>
           </div>
-          <div className="rounded-2xl bg-slate-100 p-4">
-            <div className="text-sm text-slate-500">Assessment posture</div>
-            <div className="mt-2 text-sm text-slate-700">
-              Structured and constructive. Keep weak areas visible and revisit them on schedule.
+          <div className="rounded-2xl bg-white/50 border border-slate-100 p-5 shadow-sm">
+            <div className="text-xs font-bold uppercase tracking-widest text-slate-400">Status</div>
+            <div className="mt-2">
+              {isVictory ? (
+                <span className="inline-flex items-center rounded-full bg-emerald-100 px-3 py-1 text-xs font-bold text-emerald-700">
+                  VICTORY
+                </span>
+              ) : (
+                <span className="inline-flex items-center rounded-full bg-slate-100 px-3 py-1 text-xs font-bold text-slate-600">
+                  COMPLETED
+                </span>
+              )}
             </div>
           </div>
         </div>
 
-        <button
-          onClick={() => {
-            setCurrentIndex(0);
-            setSessionAttempts([]);
-            setDraft(buildInitialDraft(questions[0]));
-            setReviewMode(false);
-          }}
-          className="rounded-full bg-slate-900 px-4 py-2 text-sm text-white"
-        >
-          Run this session again
-        </button>
+        <div className="flex flex-wrap gap-4">
+          <button
+            onClick={() => {
+              setCurrentIndex(0);
+              setSessionAttempts([]);
+              setDraft(buildInitialDraft(questions[0]));
+              setReviewMode(false);
+            }}
+            className="rounded-full bg-slate-900 px-6 py-3 text-sm font-bold text-white shadow-md hover:bg-slate-800 transition-all active:scale-95"
+          >
+            Run Session Again 🔄
+          </button>
+          <button
+            onClick={() => window.location.href = '/'}
+            className="rounded-full border border-slate-200 bg-white px-6 py-3 text-sm font-bold text-slate-700 hover:bg-slate-50 transition-all active:scale-95"
+          >
+            Back to Dashboard 🏠
+          </button>
+        </div>
       </div>
     );
   }
