@@ -161,11 +161,21 @@ export async function POST(request: Request) {
     let feedback: FeedbackResponse | null = null;
     try {
       feedback = JSON.parse(groq.body.content) as FeedbackResponse;
+      
+      // Ensure arrays are actually arrays
+      if (feedback) {
+        if (!Array.isArray(feedback.missingPoints)) {
+          feedback.missingPoints = [];
+        }
+        if (!Array.isArray(feedback.nextSteps)) {
+          feedback.nextSteps = [];
+        }
+      }
     } catch {
       return NextResponse.json({ error: 'AI returned invalid JSON.' }, { status: 502 });
     }
 
-    if (!feedback || !feedback.summary || !feedback.suggestedNextEdit || !feedback.coachingTip || !feedback.encouragement || !feedback.nextSteps) {
+    if (!feedback || !feedback.summary || !feedback.suggestedNextEdit || !feedback.coachingTip || !feedback.encouragement) {
       return NextResponse.json({ error: 'AI response was missing required fields.' }, { status: 502 });
     }
 

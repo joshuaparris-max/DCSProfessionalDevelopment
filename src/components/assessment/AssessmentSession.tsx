@@ -573,7 +573,7 @@ export default function AssessmentSession({
                         <p className="mt-1 text-blue-800">{liveFeedback.coachingTip}</p>
                       </div>
                     ) : null}
-                    {liveFeedback.missingPoints?.length ? (
+                    {Array.isArray(liveFeedback.missingPoints) && liveFeedback.missingPoints.length ? (
                       <div className="mt-3">
                         <div className="font-semibold text-slate-900">Missing points</div>
                         <ul className="mt-2 space-y-1 text-slate-700">
@@ -583,7 +583,7 @@ export default function AssessmentSession({
                         </ul>
                       </div>
                     ) : null}
-                    {liveFeedback.nextSteps?.length ? (
+                    {Array.isArray(liveFeedback.nextSteps) && liveFeedback.nextSteps.length ? (
                       <div className="mt-3">
                         <div className="font-semibold text-slate-900">Next steps</div>
                         <ul className="mt-2 space-y-1 text-slate-700">
