@@ -45,7 +45,17 @@ self.addEventListener('fetch', (event) => {
   }
 
   if (request.mode === 'navigate') {
-    event.respondWith(fetch(request).catch(() => caches.match('/')));
+    event.respondWith(
+      fetch(request).catch(async () => {
+        const cache = await caches.open(CACHE_NAME);
+        const cachedResponse = await cache.match('/');
+        return cachedResponse || new Response('Offline: Page not available in cache.', {
+          status: 503,
+          statusText: 'Service Unavailable',
+          headers: new Headers({ 'Content-Type': 'text/plain' })
+        });
+      })
+    );
     return;
   }
 

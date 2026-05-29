@@ -11,7 +11,7 @@ import type {
   ConfidenceLevel
 } from '../../types/assessment';
 import { useRouter } from 'next/navigation';
-import { triggerXPGain } from '../XPToast';
+import { triggerXPGain } from '../../lib/xpEvents';
 
 type AssessmentSessionProps = {
   questions: AssessmentQuestion[];
