@@ -62,14 +62,16 @@ export function getDashboardRecommendation(progress: UserProgress): DashboardRec
 
   // Find first incomplete module
   const firstIncompleteModule = Object.entries(progress.modules).find(([id, data]) => {
-    // This is a bit simplified, ideally we'd pass the actual module definitions here
+    // A module is incomplete if its overall completion is less than 100%
+    // This requires access to the module definitions to calculate completion correctly.
+    // For now, we'll fallback to the main foundations module.
     return true; 
   });
 
   return {
     title: 'Main Quest: Foundations',
     detail: 'Begin your IT journey by mastering the foundational support modules.',
-    ctaHref: '/modules/messer-220-1101-foundations', // Hardcoding a logical start for now
+    ctaHref: '/modules/dcs-it-support-foundations',
     ctaLabel: 'Begin Quest'
   };
 }
