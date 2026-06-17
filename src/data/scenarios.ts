@@ -1403,5 +1403,216 @@ export const scenarios: Scenario[] = [
     riskNote: 'Telemetry summaries should avoid sensitive identifiers unless required for authorized troubleshooting.',
     ticketNoteExample:
       'Observed login latency spike 08:15-08:40 for cohort A; known-good comparison from campus B remains normal. Impact limited to specific roles; root cause unconfirmed. Escalating with trend + scope evidence.'
+  },
+  {
+    id: 'msp-backup-alert-first-response',
+    title: 'MSP backup alert first response',
+    summary: 'Triage a failed overnight backup alert without over-claiming recovery risk.',
+    missionType: 'Escalation Mission',
+    estimatedMinutes: 11,
+    initialReport: 'A fictional client backup job reports failed overnight for one server while other jobs completed.',
+    contextBullets: [
+      'The alert names a fictional server and backup job only.',
+      'You can view backup console status but cannot make destructive changes.',
+      'Senior engineer escalation is available for failed retry or suspected data risk.'
+    ],
+    careerTags: ['MSP support', 'Backup monitoring', 'Escalation'],
+    contextTags: ['msp', 'backup', 'client-safe'],
+    transferableSkills: ['impact scoping', 'evidence gathering', 'risk communication'],
+    steps: [
+      {
+        id: 'backup-step-1',
+        title: 'Scope the alert',
+        prompt: 'What should you check first?',
+        choices: [
+          {
+            id: 'backup-choice-1',
+            label: 'Check job status, last successful backup, affected asset, and whether other jobs completed.',
+            outcome: 'You establish the scope and avoid assuming the whole backup platform is down.',
+            riskNote: 'Backup alerts need precise scope before escalation.',
+            correct: true
+          },
+          {
+            id: 'backup-choice-2',
+            label: 'Tell the client their backups are broken and wait for a senior engineer.',
+            outcome: 'This overstates risk and provides no useful triage evidence.',
+            riskNote: 'Avoid alarming language before confirming impact.',
+            correct: false
+          }
+        ]
+      },
+      {
+        id: 'backup-step-2',
+        title: 'Escalate with evidence',
+        prompt: 'The retry fails. What belongs in the escalation?',
+        choices: [
+          {
+            id: 'backup-choice-3',
+            label: 'Affected job, last success, retry result, error summary, business impact, and next requested action.',
+            outcome: 'A senior engineer can act without repeating your first-line checks.',
+            riskNote: 'Good escalation notes reduce duplicate work and protect recovery time.',
+            correct: true
+          },
+          {
+            id: 'backup-choice-4',
+            label: 'Only paste the raw error text.',
+            outcome: 'Raw errors without scope and impact slow down handoff.',
+            riskNote: 'Summarise evidence before attaching raw detail.',
+            correct: false
+          }
+        ]
+      }
+    ],
+    idealTroubleshootingPath: [
+      'Confirm affected job and asset',
+      'Check last successful backup and whether other jobs completed',
+      'Run only approved retry or verification steps',
+      'Escalate with error summary, impact, and next action'
+    ],
+    escalationPoint: 'Escalate when an approved retry fails, last success is outside tolerance, or restore confidence is unclear.',
+    riskNote: 'Do not delete backup chains, change retention, or expose real client backup names in practice notes.',
+    ticketNoteExample:
+      'Fictional client backup alert scoped to one server job. Last successful backup recorded before failure window; other jobs completed. Approved retry failed with same summary error. Escalating for backup engineer review and recovery-risk confirmation.'
+  },
+  {
+    id: 'msp-shared-mailbox-permission',
+    title: 'Shared mailbox permission issue',
+    summary: 'Handle a client report where a user cannot access a shared mailbox after a role change.',
+    missionType: 'Triage Mission',
+    estimatedMinutes: 10,
+    initialReport: 'A fictional client says a staff member can open Outlook but cannot see the shared Accounts mailbox.',
+    contextBullets: [
+      'The user can sign in and send normal mail.',
+      'The issue appears limited to one shared mailbox.',
+      'Permission changes should follow the authorised request path.'
+    ],
+    careerTags: ['MSP support', 'Microsoft 365', 'Permissions'],
+    contextTags: ['msp', 'm365', 'mailbox'],
+    transferableSkills: ['scope isolation', 'permission triage', 'change boundary'],
+    steps: [
+      {
+        id: 'mailbox-step-1',
+        title: 'Separate login from permission',
+        prompt: 'What is the best first classification?',
+        choices: [
+          {
+            id: 'mailbox-choice-1',
+            label: 'Treat it as a mailbox permission or propagation issue, not a general Outlook outage.',
+            outcome: 'Correct. Normal Outlook access narrows the problem to mailbox visibility or permissions.',
+            riskNote: 'Classifying scope prevents unnecessary tenant-wide troubleshooting.',
+            correct: true
+          },
+          {
+            id: 'mailbox-choice-2',
+            label: 'Escalate as complete email outage.',
+            outcome: 'This misstates impact because the user can access normal mail.',
+            riskNote: 'Do not inflate impact when the symptom is narrow.',
+            correct: false
+          }
+        ]
+      },
+      {
+        id: 'mailbox-step-2',
+        title: 'Respect change boundaries',
+        prompt: 'What should happen before permissions are changed?',
+        choices: [
+          {
+            id: 'mailbox-choice-3',
+            label: 'Confirm the authorised request or approval path for the mailbox access change.',
+            outcome: 'Good. Permission changes need a valid request, not only a verbal report.',
+            riskNote: 'Access changes are security changes.',
+            correct: true
+          },
+          {
+            id: 'mailbox-choice-4',
+            label: 'Grant Full Access immediately to get the ticket closed.',
+            outcome: 'Fast but unsafe. This bypasses approval and least privilege.',
+            riskNote: 'Never grant access without the authorised path.',
+            correct: false
+          }
+        ]
+      }
+    ],
+    idealTroubleshootingPath: [
+      'Confirm normal Outlook access works',
+      'Confirm mailbox-specific symptom and affected user',
+      'Check authorised request or approval path',
+      'Apply or escalate permission change according to policy',
+      'Document propagation expectations and next action'
+    ],
+    escalationPoint: 'Escalate if approval is unclear, permission state conflicts with policy, or access still fails after expected propagation.',
+    riskNote: 'Do not add mailbox permissions from a practice scenario or store real mailbox names in the PD app.',
+    ticketNoteExample:
+      'User can access Outlook; issue scoped to fictional shared mailbox visibility. Confirmed request requires authorised approval before access change. Awaiting approval/escalating permission path rather than applying access directly.'
+  },
+  {
+    id: 'msp-single-workstation-internet',
+    title: 'Internet down for one workstation',
+    summary: 'Scope a client internet complaint before escalating it as a site outage.',
+    missionType: 'Troubleshooting Sequence Mission',
+    estimatedMinutes: 9,
+    initialReport: 'A fictional client reports "the internet is down", but only one workstation has been checked so far.',
+    contextBullets: [
+      'The report came from one user.',
+      'You need to determine whether the issue is device, user, network, DNS, or site-wide.',
+      'Avoid making broad network changes from a single-device symptom.'
+    ],
+    careerTags: ['MSP support', 'Networking', 'Endpoint triage'],
+    contextTags: ['msp', 'networking', 'first-response'],
+    transferableSkills: ['scope-first triage', 'known-good comparison', 'clear client questions'],
+    steps: [
+      {
+        id: 'internet-step-1',
+        title: 'Ask the scope question',
+        prompt: 'What should you ask or check first?',
+        choices: [
+          {
+            id: 'internet-choice-1',
+            label: 'Check whether other devices/users at the same site can access the internet.',
+            outcome: 'Correct. You need scope before deciding whether this is endpoint or site-wide.',
+            riskNote: 'Known-good comparison is the fastest way to avoid false outage escalation.',
+            correct: true
+          },
+          {
+            id: 'internet-choice-2',
+            label: 'Restart the site firewall immediately.',
+            outcome: 'This is too broad and could disrupt working users.',
+            riskNote: 'Avoid broad infrastructure actions from one unscoped report.',
+            correct: false
+          }
+        ]
+      },
+      {
+        id: 'internet-step-2',
+        title: 'Narrow the endpoint path',
+        prompt: 'Other devices work. What is the useful next check?',
+        choices: [
+          {
+            id: 'internet-choice-3',
+            label: 'Check Wi-Fi/Ethernet state, IP address, DNS symptoms, and whether internal resources still work.',
+            outcome: 'Good. These checks narrow the issue without changing infrastructure.',
+            riskNote: 'Endpoint evidence makes escalation faster if first-line checks fail.',
+            correct: true
+          },
+          {
+            id: 'internet-choice-4',
+            label: 'Tell the client the ISP is down.',
+            outcome: 'Incorrect. Other devices working makes an ISP outage unlikely.',
+            riskNote: 'Do not blame upstream services without evidence.',
+            correct: false
+          }
+        ]
+      }
+    ],
+    idealTroubleshootingPath: [
+      'Ask whether one user, one device, one room, or the whole site is affected',
+      'Compare against a known-good device',
+      'Check adapter, IP, DNS, captive/filtering symptoms, and internal access',
+      'Escalate with scope and endpoint evidence if unresolved'
+    ],
+    escalationPoint: 'Escalate when endpoint checks indicate policy, DNS, filtering, or infrastructure ownership beyond first line.',
+    riskNote: 'Do not restart network equipment or claim a site outage without scope evidence.',
+    ticketNoteExample:
+      'Internet complaint scoped to one fictional workstation; other site devices working. Checked adapter state, IP/DNS symptoms, and internal access path. Escalating endpoint/network policy path with scope evidence.'
   }
 ];
