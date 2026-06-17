@@ -43,36 +43,36 @@ export default function MspTransitionPage() {
 
   return (
     <div className="space-y-6">
-      <section className="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-sm">
+      <section className="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-700 dark:bg-slate-900">
         <div className="max-w-4xl">
-          <div className="text-sm font-semibold uppercase tracking-[0.2em] text-slate-500">MSP transition</div>
-          <h1 className="mt-3 text-3xl font-semibold tracking-tight text-slate-900">
+          <div className="text-sm font-semibold uppercase tracking-[0.2em] text-slate-500 dark:text-slate-400">MSP transition</div>
+          <h1 className="mt-3 text-3xl font-semibold tracking-tight text-slate-900 dark:text-slate-100">
             Avance MSP readiness cockpit
           </h1>
-          <p className="mt-3 text-sm leading-7 text-slate-600">
+          <p className="mt-3 text-sm leading-7 text-slate-600 dark:text-slate-300">
             Shift the app from DCS-first practice into client-facing MSP support readiness. DCS work remains useful
             as transferable evidence, but the next learning focus is ticket quality, client communication,
             Microsoft 365 support, endpoint triage, backups, security alerts, and clean escalation.
           </p>
-          <div className="mt-6 inline-flex rounded-2xl border border-blue-100 bg-blue-50 px-4 py-3 text-sm font-semibold text-blue-900">
+          <div className="mt-6 inline-flex rounded-2xl border border-blue-100 bg-blue-50 px-4 py-3 text-sm font-semibold text-blue-900 dark:border-blue-900/70 dark:bg-blue-950/50 dark:text-blue-100">
             First 30 days progress: {completedCount}/{mspThirtyDayTasks.length} tasks complete
           </div>
         </div>
       </section>
 
       <section className="grid gap-6 lg:grid-cols-[minmax(0,1.2fr)_minmax(320px,0.8fr)]">
-        <div className="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-sm">
-          <div className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">Next upgrades</div>
+        <div className="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-700 dark:bg-slate-900">
+          <div className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500 dark:text-slate-400">Next upgrades</div>
           <div className="mt-5 grid gap-4">
             {mspRoadmapItems.map((item) => (
               <Link
                 key={item.id}
                 href={item.href}
-                className="rounded-3xl border border-slate-200 bg-slate-50 p-5 transition hover:border-slate-400 hover:bg-white"
+                className="rounded-3xl border border-slate-200 bg-slate-50 p-5 transition hover:border-slate-400 hover:bg-white dark:border-slate-700 dark:bg-slate-800 dark:hover:border-slate-500 dark:hover:bg-slate-800"
               >
-                <h2 className="text-lg font-semibold text-slate-900">{item.title}</h2>
-                <p className="mt-2 text-sm leading-6 text-slate-600">{item.summary}</p>
-                <p className="mt-3 text-xs font-semibold uppercase tracking-[0.16em] text-slate-500">
+                <h2 className="text-lg font-semibold text-slate-900 dark:text-slate-100">{item.title}</h2>
+                <p className="mt-2 text-sm leading-6 text-slate-600 dark:text-slate-300">{item.summary}</p>
+                <p className="mt-3 text-xs font-semibold uppercase tracking-[0.16em] text-slate-500 dark:text-slate-400">
                   Outcome: {item.outcome}
                 </p>
               </Link>
@@ -96,16 +96,16 @@ export default function MspTransitionPage() {
         </aside>
       </section>
 
-      <section className="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-sm">
-        <div className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">First 30 days</div>
+      <section className="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-700 dark:bg-slate-900">
+        <div className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500 dark:text-slate-400">First 30 days</div>
         <div className="mt-5 grid gap-4 lg:grid-cols-3">
           {mspThirtyDayPlan.map((block) => (
-            <div key={block.label} className="rounded-3xl border border-slate-200 bg-slate-50 p-5">
-              <h2 className="text-lg font-semibold text-slate-900">{block.label}</h2>
-              <p className="mt-2 text-sm leading-6 text-slate-600">{block.focus}</p>
+            <div key={block.label} className="rounded-3xl border border-slate-200 bg-slate-50 p-5 dark:border-slate-700 dark:bg-slate-800">
+              <h2 className="text-lg font-semibold text-slate-900 dark:text-slate-100">{block.label}</h2>
+              <p className="mt-2 text-sm leading-6 text-slate-600 dark:text-slate-300">{block.focus}</p>
               <ul className="mt-4 space-y-2">
                 {block.drills.map((drill) => (
-                  <li key={drill} className="text-sm leading-6 text-slate-700">
+                  <li key={drill} className="text-sm leading-6 text-slate-700 dark:text-slate-300">
                     - {drill}
                   </li>
                 ))}
@@ -115,24 +115,24 @@ export default function MspTransitionPage() {
         </div>
       </section>
 
-      <section className="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-sm">
+      <section className="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-700 dark:bg-slate-900">
         <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
           <div>
-            <div className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">
+            <div className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500 dark:text-slate-400">
               Interactive 30-day task list
             </div>
-            <h2 className="mt-3 text-2xl font-semibold text-slate-900">Track the habits that matter at an MSP</h2>
+            <h2 className="mt-3 text-2xl font-semibold text-slate-900 dark:text-slate-100">Track the habits that matter at an MSP</h2>
           </div>
           <Link
             href="/client-communication"
-            className="rounded-3xl bg-slate-900 px-4 py-2 text-sm font-semibold text-white"
+            className="rounded-3xl bg-slate-900 px-4 py-2 text-sm font-semibold text-white dark:bg-[#dbeafe] dark:text-[#020617]"
           >
             Practise client updates
           </Link>
         </div>
         <div className="mt-5 grid gap-3">
           {mspThirtyDayTasks.map((task) => (
-            <div key={task.id} className="flex flex-col gap-3 rounded-3xl border border-slate-200 bg-slate-50 p-4 sm:flex-row sm:items-center sm:justify-between">
+            <div key={task.id} className="flex flex-col gap-3 rounded-3xl border border-slate-200 bg-slate-50 p-4 sm:flex-row sm:items-center sm:justify-between dark:border-slate-700 dark:bg-slate-800">
               <button
                 type="button"
                 onClick={() => toggleTask(task.id)}
@@ -140,18 +140,18 @@ export default function MspTransitionPage() {
               >
                 <span
                   className={`mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-lg border text-sm font-bold ${
-                    completedTasks[task.id] ? 'border-emerald-500 bg-emerald-500 text-white' : 'border-slate-300 bg-white text-white'
+                    completedTasks[task.id] ? 'border-emerald-500 bg-emerald-500 text-white' : 'border-slate-300 bg-white text-white dark:border-slate-600 dark:bg-slate-900'
                   }`}
                 >
                   {completedTasks[task.id] ? '✓' : ''}
                 </span>
                 <span>
-                  <span className="text-xs font-semibold uppercase tracking-[0.16em] text-blue-700">{task.week}</span>
-                  <span className="mt-1 block text-base font-semibold text-slate-900">{task.title}</span>
-                  <span className="mt-1 block text-sm leading-6 text-slate-600">{task.detail}</span>
+                  <span className="text-xs font-semibold uppercase tracking-[0.16em] text-blue-700 dark:text-blue-300">{task.week}</span>
+                  <span className="mt-1 block text-base font-semibold text-slate-900 dark:text-slate-100">{task.title}</span>
+                  <span className="mt-1 block text-sm leading-6 text-slate-600 dark:text-slate-300">{task.detail}</span>
                 </span>
               </button>
-              <Link href={task.href} className="rounded-2xl border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700">
+              <Link href={task.href} className="rounded-2xl border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700 dark:border-slate-600 dark:bg-slate-900 dark:text-slate-200">
                 Open practice
               </Link>
             </div>
@@ -159,27 +159,27 @@ export default function MspTransitionPage() {
         </div>
       </section>
 
-      <section className="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-sm">
-        <div className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">
+      <section className="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-700 dark:bg-slate-900">
+        <div className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500 dark:text-slate-400">
           DCS-to-MSP evidence bridge
         </div>
         <div className="mt-5 grid gap-4 lg:grid-cols-2">
           {mspEvidenceBridge.map((item) => (
-            <div key={item.dcsExperience} className="rounded-3xl border border-slate-200 bg-white p-5">
-              <div className="text-xs font-semibold uppercase tracking-[0.16em] text-slate-400">
+            <div key={item.dcsExperience} className="rounded-3xl border border-slate-200 bg-white p-5 dark:border-slate-700 dark:bg-slate-800">
+              <div className="text-xs font-semibold uppercase tracking-[0.16em] text-slate-400 dark:text-slate-500">
                 Transferable experience
               </div>
-              <h2 className="mt-2 text-lg font-semibold text-slate-900">{item.dcsExperience}</h2>
-              <p className="mt-2 text-sm font-semibold text-blue-700">{item.mspCapability}</p>
-              <p className="mt-3 text-sm leading-6 text-slate-600">{item.evidencePrompt}</p>
+              <h2 className="mt-2 text-lg font-semibold text-slate-900 dark:text-slate-100">{item.dcsExperience}</h2>
+              <p className="mt-2 text-sm font-semibold text-blue-700 dark:text-blue-300">{item.mspCapability}</p>
+              <p className="mt-3 text-sm leading-6 text-slate-600 dark:text-slate-300">{item.evidencePrompt}</p>
             </div>
           ))}
         </div>
       </section>
 
-      <section className="rounded-[2rem] border border-amber-200 bg-amber-50 p-6 shadow-sm">
-        <div className="text-xs font-semibold uppercase tracking-[0.18em] text-amber-700">Privacy boundary</div>
-        <p className="mt-3 text-sm leading-7 text-amber-950">
+      <section className="rounded-[2rem] border border-amber-200 bg-amber-50 p-6 shadow-sm dark:border-amber-900/60 dark:bg-amber-950/40">
+        <div className="text-xs font-semibold uppercase tracking-[0.18em] text-amber-700 dark:text-amber-300">Privacy boundary</div>
+        <p className="mt-3 text-sm leading-7 text-amber-950 dark:text-amber-100">
           Use fictional clients and generic support patterns. Do not enter real DCS, Avance, client, student, staff,
           credential, ticket, IP, endpoint, private record, internal URL, or confidential procedure details.
         </p>

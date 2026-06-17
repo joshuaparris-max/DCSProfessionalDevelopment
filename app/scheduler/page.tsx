@@ -456,7 +456,7 @@ export default function SchedulerPage() {
           </div>
           <Link
             href="/msp-transition"
-            className="inline-flex shrink-0 items-center justify-center rounded-3xl bg-slate-900 px-5 py-3 text-sm font-semibold text-white shadow-sm hover:bg-slate-800 dark:bg-white dark:text-slate-950"
+            className="inline-flex shrink-0 items-center justify-center rounded-3xl bg-slate-900 px-5 py-3 text-sm font-semibold text-white shadow-sm hover:bg-slate-800 dark:bg-[#dbeafe] dark:text-[#020617] dark:hover:bg-[#bfdbfe]"
           >
             Open MSP plan
           </Link>
