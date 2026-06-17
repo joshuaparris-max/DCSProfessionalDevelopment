@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { useEffect, useRef, useState } from 'react';
+import { mspThirtyDayPlan } from '../../src/data/mspTransition';
 import { trackUsageInteraction } from '../../src/hooks/useUsageTracking';
 import {
   type BlockLogDraft,
@@ -423,6 +424,42 @@ export default function SchedulerPage() {
               {formatClock(scheduler.now)}
             </div>
           </div>
+        </div>
+      </section>
+
+      <section className="rounded-[2rem] border border-blue-200 bg-blue-50 p-6 shadow-sm dark:border-blue-900/60 dark:bg-blue-950/40">
+        <div className="flex flex-col gap-5 lg:flex-row lg:items-start lg:justify-between">
+          <div className="max-w-4xl">
+            <div className="text-sm font-semibold uppercase tracking-[0.2em] text-blue-700 dark:text-blue-300">
+              Avance MSP transition
+            </div>
+            <h2 className="mt-3 text-2xl font-semibold tracking-tight text-slate-950 dark:text-slate-100">
+              Use quiet windows to prepare for MSP support desk work
+            </h2>
+            <p className="mt-3 text-sm leading-7 text-slate-700 dark:text-slate-300">
+              Prioritise ticket-note quality, client communication, M365 identity/access, endpoint triage,
+              backup alerts, and clean escalation. Keep DCS examples as privacy-safe transferable evidence.
+            </p>
+            <div className="mt-5 grid gap-3 md:grid-cols-3">
+              {mspThirtyDayPlan.map((block) => (
+                <div
+                  key={block.label}
+                  className="rounded-2xl border border-blue-100 bg-white/80 p-4 dark:border-blue-900/60 dark:bg-slate-900/70"
+                >
+                  <div className="text-xs font-semibold uppercase tracking-[0.16em] text-blue-700 dark:text-blue-300">
+                    {block.label}
+                  </div>
+                  <p className="mt-2 text-sm leading-6 text-slate-700 dark:text-slate-300">{block.focus}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+          <Link
+            href="/msp-transition"
+            className="inline-flex shrink-0 items-center justify-center rounded-3xl bg-slate-900 px-5 py-3 text-sm font-semibold text-white shadow-sm hover:bg-slate-800 dark:bg-white dark:text-slate-950"
+          >
+            Open MSP plan
+          </Link>
         </div>
       </section>
 

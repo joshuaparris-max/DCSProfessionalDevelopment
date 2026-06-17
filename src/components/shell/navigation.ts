@@ -30,6 +30,7 @@ export const navigationGroups: NavGroup[] = [
   {
     label: 'Practise',
     items: [
+      { href: '/msp-transition', label: 'MSP Transition' },
       { href: '/scenarios', label: 'Missions' },
       { href: '/support-tools', label: 'Support Tools' },
       { href: '/playground', label: 'Code Playground' }
