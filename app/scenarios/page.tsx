@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { scenarios } from '../../src/data/scenarios';
+import { mspTicketNoteCriteria } from '../../src/data/mspTransition';
 import { trackUsageInteraction } from '../../src/hooks/useUsageTracking';
 import {
   getInitialProgressSnapshot,
@@ -28,6 +29,7 @@ export default function ScenariosPage() {
   const [runChoices, setRunChoices] = useState<ScenarioRunChoice[]>([]);
   const [revealedChoice, setRevealedChoice] = useState<ScenarioChoice | null>(null);
   const [rubricSelfCheck, setRubricSelfCheck] = useState<Record<string, boolean>>({});
+  const [ticketNoteDraft, setTicketNoteDraft] = useState('');
   const [scenarioSaved, setScenarioSaved] = useState(false);
 
   useEffect(() => {
@@ -56,6 +58,7 @@ export default function ScenariosPage() {
     setRunChoices([]);
     setRevealedChoice(null);
     setRubricSelfCheck({});
+    setTicketNoteDraft('');
     setScenarioSaved(false);
     const nextScenario = scenarios.find((entry) => entry.id === nextScenarioId);
     trackUsageInteraction({
@@ -160,6 +163,30 @@ export default function ScenariosPage() {
   }
 
   const finished = stepIndex >= scenario.steps.length;
+  const ticketNoteSignals = [
+    {
+      label: 'Scope or affected service',
+      met: /\b(client|user|device|service|mailbox|backup|workstation|outlook|m365|site|server)\b/i.test(ticketNoteDraft)
+    },
+    {
+      label: 'Impact or urgency',
+      met: /\b(impact|urgent|blocked|affected|business|teaching|unable|failed|risk)\b/i.test(ticketNoteDraft)
+    },
+    {
+      label: 'Checks completed',
+      met: /\b(checked|confirmed|verified|tested|compared|scoped|reviewed)\b/i.test(ticketNoteDraft)
+    },
+    {
+      label: 'Next action or escalation',
+      met: /\b(next|escalat|awaiting|follow|review|handoff|monitor)\b/i.test(ticketNoteDraft)
+    },
+    {
+      label: 'Privacy-safe wording',
+      met: !/\b(password|secret|token|student name|staff name|ip address|credential)\b/i.test(ticketNoteDraft)
+    }
+  ];
+  const ticketNoteSignalCount = ticketNoteSignals.filter((signal) => signal.met).length;
+  const canLogScenario = ticketNoteDraft.trim().length >= 30 && ticketNoteSignalCount >= 4;
 
   return (
     <div className="space-y-6">
@@ -336,10 +363,57 @@ export default function ScenariosPage() {
 
               {!scenarioSaved ? (
                 <div className="rounded-[2rem] border border-indigo-200 bg-indigo-50 p-8">
-                  <h3 className="text-xl font-bold text-slate-900">Log Career Evidence</h3>
+                  <h3 className="text-xl font-bold text-slate-900">MSP Ticket Note Coach</h3>
                   <p className="mt-2 text-sm text-slate-600">
-                    Review your ticket documentation against the rubric to finalise this mission.
+                    Draft a short privacy-safe support note before logging this mission. The draft is used only for this
+                    on-screen check and is not saved into your progress record.
                   </p>
+
+                  <div className="mt-6 rounded-3xl border border-white bg-white/80 p-5">
+                    <label htmlFor="ticket-note-draft" className="text-xs font-bold uppercase tracking-widest text-slate-500">
+                      Draft support note
+                    </label>
+                    <textarea
+                      id="ticket-note-draft"
+                      value={ticketNoteDraft}
+                      onChange={(event) => setTicketNoteDraft(event.target.value)}
+                      rows={5}
+                      className="mt-3 w-full rounded-2xl border border-slate-200 bg-white p-4 text-sm leading-6 text-slate-800 shadow-sm outline-none transition focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100"
+                      placeholder="Example: Fictional client issue scoped to one workstation. Confirmed other devices working, checked adapter/IP/DNS symptoms, and escalating endpoint policy path with scope evidence."
+                    />
+                    <div className="mt-4 grid gap-2 sm:grid-cols-2">
+                      {ticketNoteSignals.map((signal) => (
+                        <div
+                          key={signal.label}
+                          className={`rounded-2xl border px-3 py-2 text-xs font-semibold ${
+                            signal.met
+                              ? 'border-emerald-200 bg-emerald-50 text-emerald-800'
+                              : 'border-slate-200 bg-slate-50 text-slate-500'
+                          }`}
+                        >
+                          {signal.met ? 'Met: ' : 'Missing: '}
+                          {signal.label}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="mt-6 grid gap-4 lg:grid-cols-2">
+                    <div className="rounded-3xl border border-white bg-white/80 p-5">
+                      <div className="text-xs font-bold uppercase tracking-widest text-slate-500">MSP criteria</div>
+                      <ul className="mt-4 space-y-2">
+                        {mspTicketNoteCriteria.map((criterion) => (
+                          <li key={criterion} className="text-sm leading-6 text-slate-700">
+                            - {criterion}
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                    <div className="rounded-3xl border border-white bg-white/80 p-5">
+                      <div className="text-xs font-bold uppercase tracking-widest text-slate-500">Model note</div>
+                      <p className="mt-4 text-sm leading-7 text-slate-700">{scenario.ticketNoteExample}</p>
+                    </div>
+                  </div>
                   
                   <div className="mt-8 space-y-4">
                     {scenarioNoteRubric.map((check) => (
@@ -368,10 +442,16 @@ export default function ScenariosPage() {
                   </div>
 
                   <div className="mt-8 flex items-center justify-between">
-                    <div className="text-sm font-bold text-slate-700">Documentation Quality: {currentNoteScorePercent}%</div>
+                    <div>
+                      <div className="text-sm font-bold text-slate-700">Documentation Quality: {currentNoteScorePercent}%</div>
+                      <div className="mt-1 text-xs font-semibold text-slate-500">
+                        MSP note readiness: {ticketNoteSignalCount}/5 signals
+                      </div>
+                    </div>
                     <button
                       onClick={saveScenarioResult}
-                      className="rounded-full bg-indigo-600 px-8 py-3 text-sm font-bold text-white shadow-lg hover:bg-indigo-700 transition-all active:scale-95"
+                      disabled={!canLogScenario}
+                      className="rounded-full bg-indigo-600 px-8 py-3 text-sm font-bold text-white shadow-lg transition-all active:scale-95 disabled:cursor-not-allowed disabled:bg-slate-300 disabled:shadow-none hover:bg-indigo-700"
                     >
                       Log Mission Results
                     </button>
