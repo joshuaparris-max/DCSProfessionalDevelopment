@@ -1614,5 +1614,355 @@ export const scenarios: Scenario[] = [
     riskNote: 'Do not restart network equipment or claim a site outage without scope evidence.',
     ticketNoteExample:
       'Internet complaint scoped to one fictional workstation; other site devices working. Checked adapter state, IP/DNS symptoms, and internal access path. Escalating endpoint/network policy path with scope evidence.'
+  },
+  {
+    id: 'msp-outlook-access-issue',
+    title: 'Outlook access issue',
+    summary: 'Separate account, mailbox, app, and service symptoms before choosing a fix.',
+    missionType: 'Triage Mission',
+    estimatedMinutes: 10,
+    initialReport: 'A fictional client says Outlook will not open on their laptop this morning.',
+    contextBullets: [
+      'The report does not say whether webmail works.',
+      'You need to avoid treating every Outlook complaint as the same issue.',
+      'A client update is expected after first checks.'
+    ],
+    careerTags: ['MSP support', 'Microsoft 365', 'Client communication'],
+    contextTags: ['msp', 'outlook', 'm365'],
+    transferableSkills: ['scope isolation', 'client questioning', 'known-good checks'],
+    steps: [
+      {
+        id: 'outlook-step-1',
+        title: 'Find the working path',
+        prompt: 'What should you ask or test first?',
+        choices: [
+          {
+            id: 'outlook-choice-1',
+            label: 'Check whether Outlook Web works and whether other M365 apps are affected.',
+            outcome: 'Good. This separates device/app symptoms from account or service symptoms.',
+            riskNote: 'Known-good web checks prevent unnecessary local rebuilds.',
+            correct: true
+          },
+          {
+            id: 'outlook-choice-2',
+            label: 'Recreate the mail profile immediately.',
+            outcome: 'Too early. You have not scoped account, web, or service symptoms.',
+            riskNote: 'Profile rebuilds can be useful, but only after simpler scope checks.',
+            correct: false
+          }
+        ]
+      },
+      {
+        id: 'outlook-step-2',
+        title: 'Write the update',
+        prompt: 'Outlook Web works, desktop Outlook fails. What should the client update say?',
+        choices: [
+          {
+            id: 'outlook-choice-3',
+            label: 'Webmail is available while desktop Outlook is investigated; next checks are app/cache/profile path.',
+            outcome: 'Clear and reassuring without claiming root cause.',
+            riskNote: 'Good updates include a workaround when one exists.',
+            correct: true
+          },
+          {
+            id: 'outlook-choice-4',
+            label: 'Microsoft is down.',
+            outcome: 'Incorrect. Webmail working makes a broad service outage unlikely.',
+            riskNote: 'Do not blame upstream services without evidence.',
+            correct: false
+          }
+        ]
+      }
+    ],
+    idealTroubleshootingPath: [
+      'Check webmail and other M365 services',
+      'Confirm scope: one user, one device, or multiple users',
+      'Check app state/cache/profile only after account path is scoped',
+      'Update the client with workaround and next action'
+    ],
+    escalationPoint: 'Escalate if account/service checks conflict, multiple users are affected, or desktop repair steps fail.',
+    riskNote: 'Do not delete profiles or data paths before confirming sync and backup state.',
+    ticketNoteExample:
+      'Fictional client Outlook issue scoped to desktop app on one laptop. Outlook Web works and other M365 services available. Investigating local app/cache/profile path; user has webmail workaround during checks.'
+  },
+  {
+    id: 'msp-new-starter-setup',
+    title: 'New starter setup readiness',
+    summary: 'Check the repeatable pieces needed before a new user can work on day one.',
+    missionType: 'Ticket Note Mission',
+    estimatedMinutes: 12,
+    initialReport: 'A fictional client requests setup for a new starter beginning Monday.',
+    contextBullets: [
+      'The request has a start date but limited access detail.',
+      'You need role, licence, groups, device, MFA, and app readiness.',
+      'Do not guess access based on a similar user without approval.'
+    ],
+    careerTags: ['MSP support', 'Onboarding', 'Microsoft 365'],
+    contextTags: ['msp', 'new-starter', 'access'],
+    transferableSkills: ['checklist building', 'access boundaries', 'handover quality'],
+    steps: [
+      {
+        id: 'starter-step-1',
+        title: 'Collect required details',
+        prompt: 'What information is most important before creating access?',
+        choices: [
+          {
+            id: 'starter-choice-1',
+            label: 'Role, manager approval, start date, licence needs, groups/apps, device requirement, and MFA path.',
+            outcome: 'Correct. These details prevent incomplete or excessive access.',
+            riskNote: 'New starter tickets fail when role and approval are unclear.',
+            correct: true
+          },
+          {
+            id: 'starter-choice-2',
+            label: 'Copy all permissions from another employee immediately.',
+            outcome: 'Unsafe. Similar-user copying can grant unnecessary access.',
+            riskNote: 'Least privilege and approval still apply.',
+            correct: false
+          }
+        ]
+      },
+      {
+        id: 'starter-step-2',
+        title: 'Confirm readiness',
+        prompt: 'What should your completion note include?',
+        choices: [
+          {
+            id: 'starter-choice-3',
+            label: 'Account/licence/device/apps/MFA status, outstanding access approvals, and handover next step.',
+            outcome: 'This gives the client a clear readiness picture.',
+            riskNote: 'Completion notes should state what is done and what remains blocked.',
+            correct: true
+          },
+          {
+            id: 'starter-choice-4',
+            label: 'User created.',
+            outcome: 'Too vague for MSP handover and client confidence.',
+            riskNote: 'Short notes create follow-up tickets.',
+            correct: false
+          }
+        ]
+      }
+    ],
+    idealTroubleshootingPath: [
+      'Confirm role, approval, start date, and required systems',
+      'Prepare identity, licence, groups, device, and MFA setup',
+      'Record blockers separately from completed actions',
+      'Send a clear handover/readiness note'
+    ],
+    escalationPoint: 'Escalate unclear access approval, privileged access, or unsupported application setup.',
+    riskNote: 'Do not grant access based on assumptions or store real user names in practice notes.',
+    ticketNoteExample:
+      'Fictional new starter setup checked against role, licence, groups, device, apps, and MFA readiness. Core account path prepared; one shared access item awaiting authorised approval. Client update sent with remaining blocker and next action.'
+  },
+  {
+    id: 'msp-onedrive-device-replacement',
+    title: 'OneDrive sync after device replacement',
+    summary: 'Triage missing or duplicated files after a user receives a replacement laptop.',
+    missionType: 'Troubleshooting Sequence Mission',
+    estimatedMinutes: 11,
+    initialReport: 'A fictional client says files are missing from a replacement laptop after signing into OneDrive.',
+    contextBullets: [
+      'The user can sign into Microsoft 365.',
+      'You need to compare local sync state with OneDrive web.',
+      'Avoid deleting conflict copies or local files during first response.'
+    ],
+    careerTags: ['MSP support', 'OneDrive', 'Endpoint'],
+    contextTags: ['msp', 'onedrive', 'sync'],
+    transferableSkills: ['data-safe troubleshooting', 'known-good web comparison', 'sync triage'],
+    steps: [
+      {
+        id: 'onedrive-step-1',
+        title: 'Protect the data path',
+        prompt: 'What is the safest first check?',
+        choices: [
+          {
+            id: 'onedrive-choice-1',
+            label: 'Compare OneDrive web with local sync state and pause destructive cleanup.',
+            outcome: 'Good. Web state is the known-good source before local cleanup.',
+            riskNote: 'Never delete local or conflict files until source of truth is known.',
+            correct: true
+          },
+          {
+            id: 'onedrive-choice-2',
+            label: 'Delete the local OneDrive folder and start again.',
+            outcome: 'Unsafe. You may remove unsynced local changes.',
+            riskNote: 'Data-preservation comes before cleanup.',
+            correct: false
+          }
+        ]
+      },
+      {
+        id: 'onedrive-step-2',
+        title: 'Document the next action',
+        prompt: 'What belongs in the ticket note?',
+        choices: [
+          {
+            id: 'onedrive-choice-3',
+            label: 'Web comparison result, sync status, affected folders, conflict files preserved, and next action.',
+            outcome: 'Clear evidence for escalation or continued first-line repair.',
+            riskNote: 'Document preservation steps for data-sensitive tickets.',
+            correct: true
+          },
+          {
+            id: 'onedrive-choice-4',
+            label: 'OneDrive broken.',
+            outcome: 'Too vague and unhelpful for handoff.',
+            riskNote: 'Cloud sync tickets need specific folder and state evidence.',
+            correct: false
+          }
+        ]
+      }
+    ],
+    idealTroubleshootingPath: [
+      'Confirm sign-in and OneDrive web availability',
+      'Compare web source of truth against local sync state',
+      'Preserve conflict/local files',
+      'Escalate or continue repair with affected folder evidence'
+    ],
+    escalationPoint: 'Escalate if web data is missing, sync errors persist after safe checks, or conflict risk is high.',
+    riskNote: 'Do not delete files, reset sync, or expose real filenames in practice notes.',
+    ticketNoteExample:
+      'Fictional OneDrive issue after device replacement. Web source checked; local sync incomplete for selected folders. Conflict/local files preserved. Escalating with sync state and affected folder summary before cleanup.'
+  },
+  {
+    id: 'msp-suspicious-email-report',
+    title: 'Suspicious email report',
+    summary: 'Respond to a possible phishing report without clicking links or losing evidence.',
+    missionType: 'Security Judgement Mission',
+    estimatedMinutes: 9,
+    initialReport: 'A fictional client forwards a message asking whether an unexpected invoice link is safe.',
+    contextBullets: [
+      'The email may be malicious.',
+      'The user has not clicked the link yet.',
+      'You need to preserve useful evidence and escalate through the security path.'
+    ],
+    careerTags: ['MSP support', 'Security', 'Client communication'],
+    contextTags: ['msp', 'phishing', 'security'],
+    transferableSkills: ['risk containment', 'user guidance', 'evidence preservation'],
+    steps: [
+      {
+        id: 'phish-step-1',
+        title: 'Contain first',
+        prompt: 'What should you tell the user first?',
+        choices: [
+          {
+            id: 'phish-choice-1',
+            label: 'Do not click links or open attachments; keep the email available for review.',
+            outcome: 'Correct. This reduces risk while preserving evidence.',
+            riskNote: 'Containment and evidence preservation come before curiosity.',
+            correct: true
+          },
+          {
+            id: 'phish-choice-2',
+            label: 'Click the link in a browser to see where it goes.',
+            outcome: 'Unsafe and unnecessary.',
+            riskNote: 'Never interact with suspected malicious content in normal user context.',
+            correct: false
+          }
+        ]
+      },
+      {
+        id: 'phish-step-2',
+        title: 'Escalate cleanly',
+        prompt: 'What should the escalation include?',
+        choices: [
+          {
+            id: 'phish-choice-3',
+            label: 'Sender, subject, received time, whether clicked, affected user count, and preserved message path.',
+            outcome: 'Security review has the context needed to act.',
+            riskNote: 'Security escalations need facts, not screenshots alone.',
+            correct: true
+          },
+          {
+            id: 'phish-choice-4',
+            label: 'A vague note saying "maybe phishing".',
+            outcome: 'Insufficient for security triage.',
+            riskNote: 'Vague reports slow containment.',
+            correct: false
+          }
+        ]
+      }
+    ],
+    idealTroubleshootingPath: [
+      'Tell user not to click or forward broadly',
+      'Preserve message evidence',
+      'Check whether anyone clicked or received similar messages',
+      'Escalate with sender, subject, time, scope, and click status'
+    ],
+    escalationPoint: 'Escalate any suspicious email with link/attachment risk, credential prompt, or possible compromise.',
+    riskNote: 'Do not paste real email headers, links, names, or private message content into practice notes.',
+    ticketNoteExample:
+      'Fictional suspicious invoice email reported. User advised not to click; message preserved for review. Click status negative, scope currently one user. Escalating with sender/subject/time summary and security review request.'
+  },
+  {
+    id: 'msp-device-performance-pressure',
+    title: 'Device performance pressure',
+    summary: 'Triage slow workstation symptoms using evidence before recommending replacement.',
+    missionType: 'Triage Mission',
+    estimatedMinutes: 10,
+    initialReport: 'A fictional client says one workstation is too slow to use during normal business work.',
+    contextBullets: [
+      'Only one workstation is reported so far.',
+      'You can collect basic CPU, RAM, disk, startup, and storage observations.',
+      'Replacement should not be the first assumption.'
+    ],
+    careerTags: ['MSP support', 'Endpoint', 'Performance'],
+    contextTags: ['msp', 'endpoint', 'performance'],
+    transferableSkills: ['evidence gathering', 'impact scoping', 'upgrade recommendation quality'],
+    steps: [
+      {
+        id: 'perf-step-1',
+        title: 'Collect useful evidence',
+        prompt: 'What should your first evidence set include?',
+        choices: [
+          {
+            id: 'perf-choice-1',
+            label: 'CPU/RAM/disk pressure, free storage, startup load, recent changes, and user impact.',
+            outcome: 'Good. This makes performance triage evidence-based.',
+            riskNote: 'Performance complaints need measurements and impact.',
+            correct: true
+          },
+          {
+            id: 'perf-choice-2',
+            label: 'Tell the client to buy a new computer immediately.',
+            outcome: 'Premature and not evidence-based.',
+            riskNote: 'Recommendations need evidence.',
+            correct: false
+          }
+        ]
+      },
+      {
+        id: 'perf-step-2',
+        title: 'Recommend next step',
+        prompt: 'Disk is near full and startup load is high. What is the best next note?',
+        choices: [
+          {
+            id: 'perf-choice-3',
+            label: 'Document pressure findings, safe cleanup/startup actions, impact, and escalation if hardware limits remain.',
+            outcome: 'Clear, measured, and action-oriented.',
+            riskNote: 'Separate safe first-line actions from upgrade decisions.',
+            correct: true
+          },
+          {
+            id: 'perf-choice-4',
+            label: 'Close as user error.',
+            outcome: 'Dismissive and unsupported.',
+            riskNote: 'Avoid blame language in client notes.',
+            correct: false
+          }
+        ]
+      }
+    ],
+    idealTroubleshootingPath: [
+      'Confirm one device vs broader issue',
+      'Collect CPU/RAM/disk/storage/startup observations',
+      'Perform safe approved cleanup or startup checks',
+      'Escalate with evidence if hardware or policy action is needed'
+    ],
+    escalationPoint: 'Escalate when hardware limits, disk health, security tooling, or business-critical impact needs senior review.',
+    riskNote: 'Do not remove software or data without approval and backup confidence.',
+    ticketNoteExample:
+      'Fictional workstation performance issue scoped to one device. CPU/RAM/disk/storage/startup observations collected; disk pressure and startup load noted. Safe first-line cleanup path proposed; escalation if hardware limit remains.'
   }
 ];

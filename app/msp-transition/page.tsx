@@ -1,12 +1,46 @@
+'use client';
+
 import Link from 'next/link';
+import { useEffect, useMemo, useState } from 'react';
 import {
   mspEvidenceBridge,
   mspRoadmapItems,
+  mspThirtyDayTasks,
   mspThirtyDayPlan,
   mspTicketNoteCriteria
 } from '../../src/data/mspTransition';
 
+const MSP_TASKS_KEY = 'supportOpsMspThirtyDayTasks';
+
+function loadCompletedTasks() {
+  if (typeof window === 'undefined') return {};
+  try {
+    return JSON.parse(window.localStorage.getItem(MSP_TASKS_KEY) ?? '{}') as Record<string, boolean>;
+  } catch {
+    return {};
+  }
+}
+
 export default function MspTransitionPage() {
+  const [completedTasks, setCompletedTasks] = useState<Record<string, boolean>>({});
+
+  useEffect(() => {
+    setCompletedTasks(loadCompletedTasks());
+  }, []);
+
+  const completedCount = useMemo(
+    () => mspThirtyDayTasks.filter((task) => completedTasks[task.id]).length,
+    [completedTasks]
+  );
+
+  function toggleTask(taskId: string) {
+    setCompletedTasks((current) => {
+      const next = { ...current, [taskId]: !current[taskId] };
+      window.localStorage.setItem(MSP_TASKS_KEY, JSON.stringify(next));
+      return next;
+    });
+  }
+
   return (
     <div className="space-y-6">
       <section className="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-sm">
@@ -20,6 +54,9 @@ export default function MspTransitionPage() {
             as transferable evidence, but the next learning focus is ticket quality, client communication,
             Microsoft 365 support, endpoint triage, backups, security alerts, and clean escalation.
           </p>
+          <div className="mt-6 inline-flex rounded-2xl border border-blue-100 bg-blue-50 px-4 py-3 text-sm font-semibold text-blue-900">
+            First 30 days progress: {completedCount}/{mspThirtyDayTasks.length} tasks complete
+          </div>
         </div>
       </section>
 
@@ -73,6 +110,50 @@ export default function MspTransitionPage() {
                   </li>
                 ))}
               </ul>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <section className="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-sm">
+        <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
+          <div>
+            <div className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">
+              Interactive 30-day task list
+            </div>
+            <h2 className="mt-3 text-2xl font-semibold text-slate-900">Track the habits that matter at an MSP</h2>
+          </div>
+          <Link
+            href="/client-communication"
+            className="rounded-3xl bg-slate-900 px-4 py-2 text-sm font-semibold text-white"
+          >
+            Practise client updates
+          </Link>
+        </div>
+        <div className="mt-5 grid gap-3">
+          {mspThirtyDayTasks.map((task) => (
+            <div key={task.id} className="flex flex-col gap-3 rounded-3xl border border-slate-200 bg-slate-50 p-4 sm:flex-row sm:items-center sm:justify-between">
+              <button
+                type="button"
+                onClick={() => toggleTask(task.id)}
+                className="flex flex-1 items-start gap-3 text-left"
+              >
+                <span
+                  className={`mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-lg border text-sm font-bold ${
+                    completedTasks[task.id] ? 'border-emerald-500 bg-emerald-500 text-white' : 'border-slate-300 bg-white text-white'
+                  }`}
+                >
+                  {completedTasks[task.id] ? '✓' : ''}
+                </span>
+                <span>
+                  <span className="text-xs font-semibold uppercase tracking-[0.16em] text-blue-700">{task.week}</span>
+                  <span className="mt-1 block text-base font-semibold text-slate-900">{task.title}</span>
+                  <span className="mt-1 block text-sm leading-6 text-slate-600">{task.detail}</span>
+                </span>
+              </button>
+              <Link href={task.href} className="rounded-2xl border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700">
+                Open practice
+              </Link>
             </div>
           ))}
         </div>

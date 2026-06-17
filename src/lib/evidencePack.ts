@@ -1,6 +1,7 @@
 import { getMonthlyPdSummary } from './pdSummary';
 import { getOverallProgress, getModuleCompletion } from './moduleMath';
 import { modules as moduleCatalogue } from '../data/modules';
+import { mspEvidenceBridge } from '../data/mspTransition';
 import { deriveGamificationState, loadGamificationState, getLevelTitle } from './gamification';
 import type { PDLogEntry, UserProgress } from './progress';
 
@@ -61,6 +62,18 @@ export function buildEvidencePackMarkdown(progress: UserProgress, monthKey: stri
     `- **Active Track:** ${gamificationState.specialization.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ')}`,
     `- **Module Completion:** ${completedModules.length} modules verified`,
     `- **Mission Success:** ${completedScenarios.length} practical scenarios completed`,
+    `- **MSP Transition Focus:** ${progress.selectedWorkContext === 'MSP Support' ? 'Active' : 'Available'}`,
+    '',
+    '## DCS-to-MSP Transferable Evidence',
+    '',
+    'Use this section to explain previous school IT work as general MSP-ready capability. Keep examples anonymised and do not include real tickets, people, IP addresses, device names, screenshots, client details, or confidential procedures.',
+    '',
+    ...mspEvidenceBridge.flatMap((item) => [
+      `### ${item.mspCapability}`,
+      `- **Transferable source:** ${item.dcsExperience}`,
+      `- **Evidence prompt:** ${item.evidencePrompt}`,
+      ''
+    ]),
     '',
     '## Practical Output & Verification',
     '',

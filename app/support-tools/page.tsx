@@ -12,6 +12,19 @@ export default function SupportToolsPage() {
       </section>
 
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+        <div className="rounded-[2rem] border border-blue-200 bg-blue-50 p-6 shadow-sm">
+          <h3 className="text-lg font-semibold text-slate-900">MSP KB article builder</h3>
+          <p className="mt-2 text-sm text-slate-600">
+            Draft reusable client-safe MSP support articles for common ticket patterns.
+          </p>
+          <a
+            href="/msp-kb-builder"
+            className="mt-4 inline-block rounded-3xl bg-slate-900 px-4 py-2 text-sm font-medium text-white hover:bg-slate-800"
+          >
+            Build KB articles
+          </a>
+        </div>
+
         <div className="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-sm">
           <h3 className="text-lg font-semibold text-slate-900">Printer symptom-to-cause matrix</h3>
           <p className="mt-2 text-sm text-slate-600">

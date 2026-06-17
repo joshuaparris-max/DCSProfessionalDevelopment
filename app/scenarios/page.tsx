@@ -187,6 +187,15 @@ export default function ScenariosPage() {
   ];
   const ticketNoteSignalCount = ticketNoteSignals.filter((signal) => signal.met).length;
   const canLogScenario = ticketNoteDraft.trim().length >= 30 && ticketNoteSignalCount >= 4;
+  const noteCoachLabel =
+    ticketNoteSignalCount >= 5
+      ? 'Client-ready'
+      : ticketNoteSignalCount >= 4
+      ? 'Nearly ready'
+      : ticketNoteSignalCount >= 2
+      ? 'Needs scope or next action'
+      : 'Too vague for MSP handoff';
+  const missingSignals = ticketNoteSignals.filter((signal) => !signal.met).map((signal) => signal.label);
 
   return (
     <div className="space-y-6">
@@ -445,8 +454,13 @@ export default function ScenariosPage() {
                     <div>
                       <div className="text-sm font-bold text-slate-700">Documentation Quality: {currentNoteScorePercent}%</div>
                       <div className="mt-1 text-xs font-semibold text-slate-500">
-                        MSP note readiness: {ticketNoteSignalCount}/5 signals
+                        MSP note readiness: {ticketNoteSignalCount}/5 signals - {noteCoachLabel}
                       </div>
+                      {missingSignals.length ? (
+                        <div className="mt-1 text-xs text-slate-500">
+                          Add: {missingSignals.join(', ')}
+                        </div>
+                      ) : null}
                     </div>
                     <button
                       onClick={saveScenarioResult}

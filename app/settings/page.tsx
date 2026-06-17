@@ -212,6 +212,12 @@ export default function SettingsPage() {
             <p className="mt-2 max-w-3xl text-sm leading-7 text-slate-600">
               Choose a work context to make the dashboard and suggested actions feel more aligned with your support operations goals.
             </p>
+            {progress?.selectedWorkContext === 'MSP Support' ? (
+              <p className="mt-3 max-w-3xl rounded-2xl border border-blue-100 bg-blue-50 p-4 text-sm leading-7 text-blue-950">
+                MSP Support mode is active. Use the MSP Transition page, client communication trainer, MSP missions,
+                and KB builder to prepare for Avance-style client support work.
+              </p>
+            ) : null}
           </div>
           <div className="flex flex-wrap gap-3">
             {workContexts.map((context) => (
