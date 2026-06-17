@@ -217,7 +217,12 @@ export default function SettingsPage() {
                 MSP Support mode is active. Use the MSP Transition page, client communication trainer, MSP missions,
                 and KB builder to prepare for Avance-style client support work.
               </p>
-            ) : null}
+            ) : (
+              <p className="mt-3 max-w-3xl rounded-2xl border border-slate-200 bg-slate-50 p-4 text-sm leading-7 text-slate-700">
+                MSP/Avance tools are hidden while another context is selected. Choose MSP Support on Avance/MSP days
+                to show those links and scheduler prompts.
+              </p>
+            )}
           </div>
           <div className="flex flex-wrap gap-3">
             {workContexts.map((context) => (

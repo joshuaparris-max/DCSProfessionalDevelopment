@@ -2,6 +2,7 @@ export type NavItem = {
   href: string;
   label: string;
   icon?: string;
+  workContext?: 'MSP Support';
 };
 
 export type NavGroup = {
@@ -30,11 +31,11 @@ export const navigationGroups: NavGroup[] = [
   {
     label: 'Practise',
     items: [
-      { href: '/msp-transition', label: 'MSP Transition' },
-      { href: '/client-communication', label: 'Client Communication' },
+      { href: '/msp-transition', label: 'MSP Transition', workContext: 'MSP Support' },
+      { href: '/client-communication', label: 'Client Communication', workContext: 'MSP Support' },
       { href: '/scenarios', label: 'Missions' },
       { href: '/support-tools', label: 'Support Tools' },
-      { href: '/msp-kb-builder', label: 'MSP KB Builder' },
+      { href: '/msp-kb-builder', label: 'MSP KB Builder', workContext: 'MSP Support' },
       { href: '/playground', label: 'Code Playground' }
     ]
   },

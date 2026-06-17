@@ -3,9 +3,11 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { navigationGroups } from './navigation';
+import { useSelectedWorkContext } from '../../hooks/useWorkContext';
 
 export default function Sidebar() {
   const pathname = usePathname();
+  const selectedWorkContext = useSelectedWorkContext();
 
   return (
     <aside className="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-sm">
@@ -16,7 +18,7 @@ export default function Sidebar() {
               {group.label}
             </div>
             <div className="mt-3 space-y-1">
-              {group.items.map((item) => {
+              {group.items.filter((item) => !item.workContext || item.workContext === selectedWorkContext).map((item) => {
                 const isActive = pathname === item.href;
                 return (
                   <Link
