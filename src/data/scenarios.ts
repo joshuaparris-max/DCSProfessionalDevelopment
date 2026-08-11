@@ -71,6 +71,7 @@ export const scenarios: Scenario[] = [
     id: 'msp-m365-mfa-locked',
     title: 'Client locked out by MFA',
     summary: 'Handle a common MSP request where a client cannot access their M365 account due to MFA issues.',
+    recommendedModuleId: 'm365-identity-offboarding-basics',
     missionType: 'User Communication Mission',
     estimatedMinutes: 10,
     initialReport: 'A client calls saying they have a new phone and can no longer receive their MFA code to log into Outlook.',

@@ -5,7 +5,7 @@ describe('PWA manifest', () => {
   it('declares installable app metadata and core icon', () => {
     const appManifest = manifest();
 
-    expect(appManifest.name).toBe('DCSPrep');
+    expect(appManifest.name).toBe('SupportOps Career Lab');
     expect(appManifest.display).toBe('standalone');
     expect(appManifest.start_url).toBe('/');
     expect(appManifest.icons).toEqual(

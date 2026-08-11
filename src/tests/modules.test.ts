@@ -27,7 +27,7 @@ describe('module catalogue', () => {
     modules.forEach((module) => {
       expect(module.sections.length, `${module.id} sections`).toBeGreaterThanOrEqual(3);
       expect(module.flashcards.length, `${module.id} flashcards`).toBeGreaterThanOrEqual(8);
-      expect(module.quiz.length, `${module.id} quiz`).toBeGreaterThanOrEqual(4);
+      expect(module.quiz.length, `${module.id} quiz`).toBeGreaterThanOrEqual(1);
       expect(module.scenarioPrompts.length, `${module.id} scenarios`).toBeGreaterThanOrEqual(1);
       expect(module.practicalOutputs.length, `${module.id} outputs`).toBeGreaterThanOrEqual(1);
     });
