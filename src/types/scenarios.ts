@@ -48,6 +48,7 @@ export type Scenario = {
   summary: string;
   missionType?: MissionType;
   estimatedMinutes: number;
+  recommendedModuleId?: string;
   initialReport: string;
   contextBullets: string[];
   careerTags?: string[];
